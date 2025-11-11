@@ -14,18 +14,24 @@
 #include <vector>
 #include <map>
 
+/* #include "User.hpp" */
+
+//other classes visibility
 class Channel;
 class User;
+class CommandHandler;
 
-class server
+
+
+class Server
 {
     public :
-    /*-------------------- OCF --------------------*/ 
-                            server();
-                            server(int _portNbr, std::string _pass);
-                            server(const server &other);
-        server&             operator=(const server &other);
-                            ~server();
+    /*-------------------- OCF --------------------*/
+                            Server();
+                            Server(int _portNbr, std::string _pass);
+                            Server(const Server &other);
+        Server&             operator=(const Server &other);
+                            ~Server();
     
     /*-------------------- Public Methods --------------------*/
    
@@ -42,6 +48,7 @@ class server
         std::vector<pollfd>     _pollVector;
         std::vector<Channel>    _channelVector;
         std::map<int, User>     _fdUserMap;
+        CommandHandler          *_command;
 
     /*-------------------- Private Methods --------------------*/
 
