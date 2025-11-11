@@ -1,4 +1,8 @@
 #include "Server.hpp"
+#include "CommandHandler.hpp"
+# include <string.h>
+# include <stdio.h>
+# include <iostream>
 
 /*------------------- OCF -------------------*/
 
@@ -8,6 +12,7 @@ Server::Server(const Server &other) : _password(other._password), _port(other._p
 
 Server::Server(int _portNbr, std::string _pass) : _port(_portNbr), _password(_pass), _pollVector(1)
 {
+    _command = new CommandHandler(*this);
     try
     {
         initSocket();
@@ -22,7 +27,11 @@ Server::Server(int _portNbr, std::string _pass) : _port(_portNbr), _password(_pa
 
 Server&     Server::operator=(const Server &other)
 {
+    if (this != &other)
+    {
 
+    }
+    return (*this);
 }
 
 Server::~Server()

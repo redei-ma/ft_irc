@@ -6,15 +6,17 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 10:56:33 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/11 16:41:23 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/11 18:18:29 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "CommandHandler.hpp"
 #include <iostream>
 
+/* ================MACRO================ */
 #define REGISTERED_CMD(enum, name) commandMap[enum] = &CommandHandler::name##Command
 
+/* ================CONSTRUCTOR================ */
 CommandHandler::CommandHandler(Server& server) : server(server)
 {
 	initCommand();
@@ -22,6 +24,7 @@ CommandHandler::CommandHandler(Server& server) : server(server)
 
 CommandHandler::CommandHandler(const CommandHandler& other) : server(other.server), commandMap(other.commandMap) {}
 
+/* ================METHODS================ */
 void CommandHandler::initCommand()
 {
 	REGISTERED_CMD(JOIN, join);
@@ -62,6 +65,56 @@ std::vector<std::string>	splitArgs(std::string args)
 	
 }
 
+void	CommandHandler::passCommand(std::vector<std::string> commandArgs)
+{
+
+}
+
+void	CommandHandler::nickCommand(std::vector<std::string> commandArgs)
+{
+
+}
+
+void	CommandHandler::userCommand(std::vector<std::string> commandArgs)
+{
+
+}
+
+void	CommandHandler::joinCommand(std::vector<std::string> commandArgs)
+{
+
+}
+
+void	CommandHandler::msgCommand(std::vector<std::string> commandArgs)
+{
+
+}
+
+void	CommandHandler::kickCommand(std::vector<std::string> commandArgs)
+{
+
+}
+
+void	CommandHandler::inviteCommand(std::vector<std::string> commandArgs)
+{
+
+}
+
+void	CommandHandler::topicCommand(std::vector<std::string> commandArgs)
+{
+
+}
+
+void	CommandHandler::modeCommand(std::vector<std::string> commandArgs)
+{
+
+}
+
+void	CommandHandler::pingCommand(std::vector<std::string> commandArgs)
+{
+
+}
+
 void	CommandHandler::execCommand(std::string commandAndArgs)
 {
 	std::vector<std::string>	splittedArgs = splitArgs(commandAndArgs);
@@ -81,3 +134,6 @@ void	CommandHandler::execCommand(std::string commandAndArgs)
 
 	(this->*commandMap[commandToExec])(splittedArgs);
 }
+
+/* ================DESTRUCTOR================ */
+CommandHandler::~CommandHandler() {}
