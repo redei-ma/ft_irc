@@ -1,13 +1,12 @@
 #include "Server.hpp"
-#include "User.hpp"
 
 /*------------------- OCF -------------------*/
 
-Server::Server() : _password(""), _port(0), _serverSin() {}
+Server::Server() : _password(""), _port(0), _pollVector(1), _serverSin() {}
 
-Server::Server(const Server &other) : _password(other._password), _port(other._port), _serverSin(other._serverSin), _channelVector(0), _fdUserMap(0, 0){}
+Server::Server(const Server &other) : _password(other._password), _port(other._port),  _serverSin(other._serverSin){}
 
-Server::Server(int _portNbr, std::string _pass) : _pollVector(1), _port(_portNbr), _password(_pass), _channelVector(0), _fdUserMap(0, 0)
+Server::Server(int _portNbr, std::string _pass) : _port(_portNbr), _password(_pass), _pollVector(1)
 {
     try
     {
@@ -36,19 +35,25 @@ Server::~Server()
 void    Server::sinInit()
 {
     memset(&_serverSin, 0, sizeof(_serverSin));
-    _serverSin.sin_port = htons(5555);
+    _serverSin.sin_port = htons(_port);
     _serverSin.sin_addr.s_addr = inet_addr("127.0.0.1");
     _serverSin.sin_family = AF_INET;
 }/*--- altri eventi ---*/
 
 bool    Server::bindSocket()
 {
-    return bind(this->_serverSocket, (sockaddr *)&this->_serverSin, sizeof(_serverSin));
+    if (bind(this->_serverSocket, (sockaddr *)&this->_serverSin, sizeof(_serverSin)) < 0)
+        return false;
+    return true;
 }/*--- altri eventi ---*/
 
 bool    Server::putInListen()
 {
-    return listen(this->_serverSocket, 1024);
+    int reuse = 1;
+    setsockopt(this->_serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
+    if (listen(this->_serverSocket, 1024) < 0)
+        return false;
+    return true;
 }
 
 void    Server::run()
@@ -67,6 +72,7 @@ void    Server::run()
             {
                 if (_pollVector[i].fd == this->_serverSocket)
                 {
+                    std::cout << "Nuovo utente" << std::endl;
                     int tmpFd = accept(_serverSocket, NULL, NULL);
                     if (tmpFd == -1)
                         throw (std::runtime_error("Error: something went wrong in the call to accept()."));
@@ -75,14 +81,22 @@ void    Server::run()
                     tmpPoll.events = POLLIN;
                     tmpPoll.revents = 0;
                     _pollVector.push_back(tmpPoll);
-                    User tmpUser(tmpFd);
-                    this->_fdUserMap.insert(std::make_pair(tmpFd, tmpUser));
+                    User *tmpUser = new User(tmpFd);
+                    this->_fdUserMap[tmpFd] = tmpUser;
                 }
                 else
                 {
+                    std::cout << "Mes" << std::endl;
                     char buffer[513];
-                    size_t size = recv(_pollVector[i].fd, buffer, 512, 0);
+                    size_t size = recv(_pollVector[i].fd, buffer, sizeof(buffer) - 1, 0);
+                    if (size <= 0)
+                    {
+                        std::cout << "connesione chiusa" << std::endl;
+                        close(_pollVector[i].fd);
+                        break;
+                    }
                     buffer[size] = '\0';
+                    std::cout << buffer << std::endl;
                     /* if ()
                     {
                         

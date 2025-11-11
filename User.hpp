@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 14:55:58 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/11 14:09:47 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/11 17:16:48 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,9 @@ class User
 				/* char		_bufferRcv[512]; */
 
 				time_t	_lastPongTime;
-
+				
+				User();
 	public:
-			User();
 			User(int fd);
 			User(const User& other);
 			User& operator=(const User& other);

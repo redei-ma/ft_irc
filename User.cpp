@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 14:55:56 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/11 14:09:35 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/11 15:06:02 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ User::User(): _fd(-1), _userName(""), _nickName(""), _password(""),
 				_isAuthenticated(false), _hasNickName(false), _hasUserName(false), _hasPassword(false)
 {}
 
-User::User(int fd) : User()
+User::User(int fd) :  _fd(-1), _userName(""), _nickName(""), _password(""),
+				_isAuthenticated(false), _hasNickName(false), _hasUserName(false), _hasPassword(false)
 {
 	_fd = fd;
 }

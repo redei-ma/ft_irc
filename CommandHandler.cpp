@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 10:56:33 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/11 14:13:49 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/11 16:41:23 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void CommandHandler::initCommand()
 
 t_command	CommandHandler::reconizeCommand(std::string command)
 {
-	const char  *commands[]{
+	const char  *commands[] = {
 		"PASS",
 		"NICK",
 		"USER",
