@@ -6,14 +6,13 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 14:55:58 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/11 12:50:00 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/11 14:09:47 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef USER_HPP
 # define USER_HPP
 
-# include <iostream>
 # include <string>
 # include <sys/socket.h>
 
@@ -32,7 +31,7 @@ class User
 				std::string	_password;
 
 				std::string	_bufferStr;
-				char		_bufferRcv[512];
+				/* char		_bufferRcv[512]; */
 
 				time_t	_lastPongTime;
 
@@ -59,14 +58,14 @@ class User
 			const std::string	getUserName() const;
 			const std::string	getNickName() const;
 			const std::string	getPassword() const;
-			const char*			getRcvBuffer() const;
+			/* const char*			getRcvBuffer() const; */
 			const std::string	getStrBuffer() const;
 
 			void		updateStrBuffer(char *buffer, size_t size);
 			void		updateAuthenticationStatus();
 			void		sendMessage(std::string message) const;
 			void		closeConnection();
-			void		resetBuffers();
+			void		resetBuffer();
 
 			~User();
 };

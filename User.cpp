@@ -6,14 +6,14 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 14:55:56 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/11 12:48:54 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/11 14:09:35 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "User.hpp"
 #include <cstring>
-#include <string>
 #include <unistd.h>
+#include <iostream>
 
 /* ================CONSTRUCTORS================ */
 User::User(): _fd(-1), _userName(""), _nickName(""), _password(""),
@@ -52,9 +52,9 @@ void	User::updateStrBuffer(char *buffer, size_t size)
 	_bufferStr.append(buffer, size);
 }
 
-void	User::resetBuffers()
+void	User::resetBuffer()
 {
-	memset(&_bufferRcv, 0, sizeof(_bufferRcv));
+/* 	memset(&_bufferRcv, 0, sizeof(_bufferRcv)); */
 	_bufferStr = "";
 }
 
@@ -132,7 +132,7 @@ const int	User::getUserFd() const { return (_fd); }
 
 const time_t	User::getLastPongTime() const { return (_lastPongTime); }
 
-const char*	User::getRcvBuffer() const { return (_bufferRcv); }
+/* const char*	User::getRcvBuffer() const { return (_bufferRcv); } */
 
 const std::string	User::getStrBuffer() const { return (_bufferStr); };
 

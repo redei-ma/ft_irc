@@ -6,11 +6,12 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 10:56:33 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/11 12:02:25 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/11 14:13:03 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "CommandHandler.hpp"
+#include <iostream>
 
 #define REGISTERED_CMD(enum, name) commandMap[enum] = &CommandHandler::name##Command
 
@@ -53,7 +54,7 @@ t_command	CommandHandler::reconizeCommand(std::string command)
 		if (command == commands[i])
 			return static_cast<t_command>(i);
 	}
-	return ERROR;
+	return NOT_FOUND;
 }
 
 std::vector<std::string>	splitArgs(std::string args)
@@ -65,14 +66,14 @@ void	CommandHandler::execCommand(std::string commandAndArgs)
 {
 	std::vector<std::string>	splittedArgs = splitArgs(commandAndArgs);
 
-	t_command	commandToExec = ERROR;
+	t_command	commandToExec = NOT_FOUND;
 
 	if (commandAndArgs.size() == 2)
 		commandToExec = reconizeCommand(splittedArgs[0]);
 	else if (commandAndArgs.size() == 3)
 		commandToExec = reconizeCommand(splittedArgs[1]);
 
-		if (commandToExec == ERROR)
+		if (commandToExec == NOT_FOUND)
 	{
 		std::cout << "Command not found" << std::endl;
 		return ;

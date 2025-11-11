@@ -6,19 +6,18 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 11:32:48 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/11 12:02:04 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/11 14:10:48 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef COMMANDHANDLER_HPP
 # define COMMANDHANDLER_HPP
 
-#include <vector>
+# include <vector>
+# include <string>
+# include <map>
 
-#define DECLERE_COMMAND(name) void name##Command(std::vector<std::string>)
-
-# include <iostream>
-#include <map>
+# define DECLERE_COMMAND(name) void name##Command(std::vector<std::string>)
 
 class Server;
 
@@ -33,7 +32,7 @@ typedef enum	s_command
 	INVITE,
 	TOPIC,
 	MODE,
-	ERROR,
+	NOT_FOUND,
 }	t_command;
 
 class	CommandHandler
