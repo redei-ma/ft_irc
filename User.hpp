@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 14:55:58 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/10 18:57:57 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/11 12:19:23 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,9 @@ class User
 				std::string	_nickName;
 				std::string	_password;
 
+				std::string	_bufferStr;
+				char	buffer[512];
+
 				time_t	_lastPongTime;
 
 	public:
@@ -48,7 +51,7 @@ class User
 			const bool	getHasUserName() const;
 			const bool	getHasNickName() const;
 			const bool	getHasPassword() const;
-			
+
 			const int getUserFd() const;
 
 			const time_t	getLastPongTime() const;
@@ -56,7 +59,7 @@ class User
 			const std::string	getUserName() const;
 			const std::string	getNickName() const;
 			const std::string	getPassword() const;
-
+			const std::string	getBufferStr() const;
 
 			void	updateAuthenticationStatus();
 			void	sendMessage(std::string message) const;

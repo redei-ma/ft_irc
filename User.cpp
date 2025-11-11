@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 14:55:56 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/10 18:58:18 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/11 12:20:08 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,7 @@ const int	User::getUserFd() const { return (_fd); }
 
 const time_t	User::getLastPongTime() const { return (_lastPongTime); }
 
+const std::string	User::getBufferStr() const { return (_bufferStr); }
 /* ================DESTRUCTOR================ */
 User::~User()
 {
