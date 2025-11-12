@@ -56,9 +56,11 @@ t_command	CommandHandler::reconizeCommand(std::string command)
 	};
 	for (int i = 0; i < 10; i++)
 	{
+		std::cout << "morte3" << std::endl;
 		if (command == commands[i])
 			return static_cast<t_command>(i);
 	}
+	std::cout << "morte4" << std::endl;
 	return NOT_FOUND;
 }
 
@@ -153,6 +155,7 @@ void	CommandHandler::execCommand(User* executer, std::string input)
 	{
 		std::vector<std::string> splittedArgs;
 		splitArgs(splittedArgs, splittedCommands[i]);
+
 		t_command	commandToExec = NOT_FOUND;
 		commandToExec = reconizeCommand(splittedArgs[0]);
 		if (commandToExec == NOT_FOUND)
