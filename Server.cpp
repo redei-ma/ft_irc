@@ -1,18 +1,20 @@
 #include "Server.hpp"
-#include "CommandHandler.hpp"
-# include <string.h>
-# include <stdio.h>
-# include <iostream>
 
-/*------------------- OCF -------------------*/
+/*-------------------------------------- OCF --------------------------------------*/
 
-Server::Server() : _password(""), _port(0), _pollVector(1), _serverSin() {}
+Server::Server() : _password(""), _port(0), _pollVector(1), _serverSin()
+{
+    this->_command = new CommandHandler(*this);
+}
 
-Server::Server(const Server &other) : _password(other._password), _port(other._port),  _serverSin(other._serverSin){}
+Server::Server(const Server &other) : _password(other._password), _port(other._port),  _serverSin(other._serverSin)
+{
+    this->_command = new CommandHandler(*this);
+}
 
 Server::Server(int _portNbr, std::string _pass) : _port(_portNbr), _password(_pass), _pollVector(1)
 {
-    _command = new CommandHandler(*this);
+    this->_command = new CommandHandler(*this);
     try
     {
         initSocket();
@@ -27,19 +29,22 @@ Server::Server(int _portNbr, std::string _pass) : _port(_portNbr), _password(_pa
 
 Server&     Server::operator=(const Server &other)
 {
-    if (this != &other)
-    {
 
-    }
-    return (*this);
 }
 
 Server::~Server()
 {
-        close(this->_serverSocket);
+    delete(_command);
+    delete(_fdUserMap[0]);
+    for (size_t i = 1; i < _fdUserMap.size(); i++)
+    {
+        close(_pollVector[i].fd);
+        delete(_fdUserMap[i]);
+    }
+    close(this->_serverSocket);
 }
 
-/*------------------- Methods -------------------*/
+/*-------------------------------------- Methods --------------------------------------*/
 
 void    Server::sinInit()
 {
@@ -47,14 +52,14 @@ void    Server::sinInit()
     _serverSin.sin_port = htons(_port);
     _serverSin.sin_addr.s_addr = inet_addr("127.0.0.1");
     _serverSin.sin_family = AF_INET;
-}/*--- altri eventi ---*/
+}
 
 bool    Server::bindSocket()
 {
     if (bind(this->_serverSocket, (sockaddr *)&this->_serverSin, sizeof(_serverSin)) < 0)
         return false;
     return true;
-}/*--- altri eventi ---*/
+}
 
 bool    Server::putInListen()
 {
@@ -72,7 +77,7 @@ void    Server::run()
     _pollVector[0].revents = 0;
     while (1)
     {
-        int ret = poll(_pollVector.data(), _pollVector.size(), -1); //non sono covinto
+        int ret = poll(_pollVector.data(), _pollVector.size(), -1); //non sono convinto (Renato non e' convinto)
         if (ret == -1)
             throw(std::runtime_error("Error: something went wrong in the call to poll()."));
         for (size_t i = 0; i < _pollVector.size(); i++)
@@ -81,7 +86,7 @@ void    Server::run()
             {
                 if (_pollVector[i].fd == this->_serverSocket)
                 {
-                    std::cout << "Nuovo utente" << std::endl;
+                    std::cout << "Nuovo utente creato." << std::endl;
                     int tmpFd = accept(_serverSocket, NULL, NULL);
                     if (tmpFd == -1)
                         throw (std::runtime_error("Error: something went wrong in the call to accept()."));
@@ -95,29 +100,31 @@ void    Server::run()
                 }
                 else
                 {
-                    std::cout << "Mes" << std::endl;
                     char buffer[513];
                     size_t size = recv(_pollVector[i].fd, buffer, sizeof(buffer) - 1, 0);
-                    if (size <= 0)
+                    if (size == 0)
                     {
                         std::cout << "connesione chiusa" << std::endl;
                         close(_pollVector[i].fd);
-                        break;
+                        _pollVector.erase(_pollVector.begin() + i);
+                        i--;
+                        continue ;
+                    }
+                    else if (size == -1)
+                    {
+                        std::cout << "Error: recv() returned -1." << std::endl;
+                        close(_pollVector[i].fd);
+                        _pollVector.erase(_pollVector.begin() + i);
+                        i--;
+                        continue ;
                     }
                     buffer[size] = '\0';
-                    std::cout << buffer << std::endl;
-                    _command->execCommand(_fdUserMap[_pollVector[i].fd], buffer);
-                    /* if ()
+                    _fdUserMap[_pollVector[i].fd]->updateStrBuffer(buffer, sizeof(buffer));
+                    if (_fdUserMap[_pollVector[i].fd]->getStrBuffer().find("\n\r"))
                     {
-                        
+                        _command->execCommand(_fdUserMap[_pollVector[i].fd], _fdUserMap[_pollVector[i].fd]->getStrBuffer());
+                        _fdUserMap[_pollVector[i].fd]->resetBuffer();
                     }
-                    else if ()
-                    {
-
-                    }  
-                    else
-                    {
-                    } */
                 }
             }
         }

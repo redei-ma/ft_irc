@@ -6,18 +6,25 @@
 # include <sys/types.h>
 # include <arpa/inet.h>
 # include <unistd.h>
-
+# include <string.h>
+# include <stdio.h>
 # include <stdlib.h>
+# include <iostream>
 # include <poll.h>
 # include <vector>
 # include <map>
 
 # include "User.hpp"
 # include "Channel.hpp"
+# include "CommandHandler.hpp"
 
 
 //other classes visibility
-class CommandHandler;
+/* class Channel;
+class User;
+class CommandHandler; */
+
+
 
 class Server
 {
@@ -42,8 +49,8 @@ class Server
         struct sockaddr_in      _serverSin;
         std::string             _password;
         std::vector<pollfd>     _pollVector;
-        std::vector<Channel*>    _channelVector;
-        std::map<int, User*>     _fdUserMap;
+        std::vector<Channel*>   _channelVector;
+        std::map<int, User*>    _fdUserMap;
         CommandHandler          *_command;
 
     /*-------------------- Private Methods --------------------*/
