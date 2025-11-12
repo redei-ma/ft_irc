@@ -8,6 +8,7 @@
 # include <unistd.h>
 
 # include <stdlib.h>
+
 # include <poll.h>
 # include <vector>
 # include <map>
@@ -17,7 +18,11 @@
 
 
 //other classes visibility
+class Channel;
+class User;
 class CommandHandler;
+
+
 
 class Server
 {
@@ -42,8 +47,8 @@ class Server
         struct sockaddr_in      _serverSin;
         std::string             _password;
         std::vector<pollfd>     _pollVector;
-        std::vector<Channel*>    _channelVector;
-        std::map<int, User*>     _fdUserMap;
+        std::vector<Channel*>   _channelVector;
+        std::map<int, User*>    _fdUserMap;
         CommandHandler          *_command;
 
     /*-------------------- Private Methods --------------------*/

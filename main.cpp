@@ -6,13 +6,14 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/11 16:42:12 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/11 16:50:41 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/12 12:44:28 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include <cstdlib>
 #include <errno.h>
+#include <iostream>
 
 int main(int argc, char **argv)
 {
