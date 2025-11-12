@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 11:32:48 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/11 18:15:24 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/12 11:48:18 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ typedef enum	s_command
 class	CommandHandler
 {
 	private:
-			Server&		server;
+			Server&		_server;
 			void		initCommand();
 			DECLERE_COMMAND(join);
 			DECLERE_COMMAND(pass);
@@ -60,7 +60,7 @@ class	CommandHandler
 			~CommandHandler();
 
 			CommandHandler& operator=(const CommandHandler& other);
-			void		execCommand(std::string commandAndArgs);
+			void		execCommand(User* executer, std::string commandAndArgs);
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 14:55:56 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/11 17:28:44 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/11 18:39:01 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <cstring>
 #include <unistd.h>
 #include <iostream>
+# include <sys/socket.h>
 
 /* ================CONSTRUCTORS================ */
 User::User():

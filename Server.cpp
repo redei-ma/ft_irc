@@ -106,6 +106,7 @@ void    Server::run()
                     }
                     buffer[size] = '\0';
                     std::cout << buffer << std::endl;
+                    _command->execCommand(_fdUserMap[_pollVector[i].fd], buffer);
                     /* if ()
                     {
                         

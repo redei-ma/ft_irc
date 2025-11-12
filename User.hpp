@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 14:55:58 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/11 18:10:06 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/11 18:38:55 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 # define USER_HPP
 
 # include <string>
-# include <sys/socket.h>
 
 class User
 {
