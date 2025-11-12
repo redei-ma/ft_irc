@@ -6,23 +6,21 @@
 # include <sys/types.h>
 # include <arpa/inet.h>
 # include <unistd.h>
-# include <string.h>
-# include <stdio.h>
+
 # include <stdlib.h>
-# include <iostream>
+
 # include <poll.h>
 # include <vector>
 # include <map>
 
 # include "User.hpp"
 # include "Channel.hpp"
-# include "CommandHandler.hpp"
 
 
 //other classes visibility
-/* class Channel;
+class Channel;
 class User;
-class CommandHandler; */
+class CommandHandler;
 
 
 

@@ -1,5 +1,8 @@
 #include "Server.hpp"
-
+#include "CommandHandler.hpp"
+# include <string.h>
+# include <stdio.h>
+# include <iostream>
 /*-------------------------------------- OCF --------------------------------------*/
 
 Server::Server() : _password(""), _port(0), _pollVector(1), _serverSin()
@@ -29,7 +32,7 @@ Server::Server(int _portNbr, std::string _pass) : _port(_portNbr), _password(_pa
 
 Server&     Server::operator=(const Server &other)
 {
-
+    return (*this);
 }
 
 Server::~Server()
