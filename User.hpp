@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 14:55:58 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/11 18:38:55 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/12 15:14:48 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ class User
 				std::string	_password;
 
 				std::string	_bufferStr;
-				/* char		_bufferRcv[512]; */
 
 				time_t	_lastPongTime;
 				
@@ -57,7 +56,6 @@ class User
 			const std::string	getUserName() const;
 			const std::string	getNickName() const;
 			const std::string	getPassword() const;
-			/* const char*			getRcvBuffer() const; */
 			const std::string	getStrBuffer() const;
 
 			void		updateStrBuffer(char *buffer, size_t size);

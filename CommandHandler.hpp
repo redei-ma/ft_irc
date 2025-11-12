@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 11:32:48 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/12 13:59:43 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/12 17:45:20 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,10 @@
 # include <vector>
 # include <string>
 # include <map>
-
+# include <exception>
 # define DECLERE_COMMAND(name) void name##Command(std::vector<std::string>)
 
 #include "Server.hpp"
-
 
 typedef enum	s_command
 {
@@ -39,7 +38,7 @@ typedef enum	s_command
 typedef enum	s_error
 {
 	ERR_NOSUCHNICK = 401,		//<nick> :No such nick/channel	Il nickname o canale specificato non esiste.
-	ERR_NOSUCHSERVER = 402,		//<server> :No such server	Server non trovato.
+	//ERR_NOSUCHSERVER = 402,		//<server> :No such server	Server non trovato.
 	ERR_NOSUCHCHANNEL = 403,	//<channel> :No such channel	Canale non esistente.
 	ERR_CANNOTSENDTOCHAN = 404,	//<channel> :Cannot send to channel	Il client non può inviare messaggi al canale.
 	ERR_TOOMANYCHANNELS = 405,	//<channel> :You have joined too many channels	Limite di canali raggiunto per un utente.
@@ -61,20 +60,22 @@ typedef enum	s_error
 	ERR_NOPRIVILEGES = 481,		//Permission Denied- You're not an IRC operator	Comando riservato agli operatori.
 	ERR_CHANOPRIVSNEEDED = 482,	//You're not channel operator	L’utente non è operatore del canale.
 	ERR_CANTKILLSERVER = 483,	//You can't kill a server!	Comando KILL verso un server.
-	
+
 	//DA METTERE NEL SERVER???
-	RPL_WELCOME = 001,			//Welcome to the IRC network, <nick>!<user>@<host>	Messaggio di benvenuto dopo registrazione.
-	RPL_YOURHOST = 002,			//Your host is <servername>	Info sul server.
-	RPL_CREATED = 003,			//This server was created <date>	Data di creazione server.
-	RPL_MYINFO = 004,			//<servername> <version> <available user modes> <available channel modes>	Info sul server e modalità
-	
+	//RPL_YOURHOST = 002,			//Your host is <servername>	Info sul server.
+	//RPL_CREATED = 003,			//This server was created <date>	Data di creazione server.
+	//RPL_MYINFO = 004,			//<servername> <version> <available user modes> <available channel modes>	Info sul server e modalità
+
 }	t_error;
 
 class	CommandHandler
 {
 	private:
 			Server&		_server;
+			std::map<t_command, void (CommandHandler::*)(std::vector<std::string>)> commandMap;
+
 			void		initCommand();
+
 			DECLERE_COMMAND(join);
 			DECLERE_COMMAND(pass);
 			DECLERE_COMMAND(nick);
@@ -85,17 +86,26 @@ class	CommandHandler
 			DECLERE_COMMAND(topic);
 			DECLERE_COMMAND(mode);
 			DECLERE_COMMAND(ping);
-			t_command	reconizeCommand(std::string command);
-			std::map<t_command, void (CommandHandler::*)(std::vector<std::string>)> commandMap;
-			void		parseCommandArgs(std::string args);
-			void		errorHandler(t_error);
-	public:
-			CommandHandler(Server& server);
-			CommandHandler(const CommandHandler& other);
-			~CommandHandler();
 
-			CommandHandler& operator=(const CommandHandler& other);
-			void		execCommand(User* executer, std::string commandAndArgs);
+			t_command	reconizeCommand(std::string);
+			void		parseCommandArgs(std::string);
+			public:
+			CommandHandler(Server&);
+			CommandHandler(const CommandHandler&);
+			~CommandHandler();
+			
+			CommandHandler& operator=(const CommandHandler&);
+			void		execCommand(User*, std::string);
+			void		errorHandler(t_error, const User&, const std::string&, const std::string&) const;
+			
+/* 			DA CAPIRE
+			class ErrorHandler: public std::exception
+			{
+				public:
+					void		errorHandler(t_error, const User&, const std::string&, const std::string&) const;
+					virtual const char* what() const throw();
+					virtual ~ErrorHandler();
+			}; */
 };
 
 #endif
