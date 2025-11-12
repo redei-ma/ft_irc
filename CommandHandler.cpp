@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CommandHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fzuccaro <fzuccaro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 10:56:33 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/12 12:33:04 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/12 14:41:19 by fzuccaro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ void CommandHandler::initCommand()
 
 t_command	CommandHandler::reconizeCommand(std::string command)
 {
-	std::cout << "morte" << std::endl;
 	const char  *commands[10] = {
 		"PASS",
 		"NICK",
@@ -55,7 +54,6 @@ t_command	CommandHandler::reconizeCommand(std::string command)
 		"MODE",
 		"PING"
 	};
-	std::cout << "morte2" << std::endl;
 	for (int i = 0; i < 10; i++)
 	{
 		std::cout << "morte3" << std::endl;
@@ -149,12 +147,10 @@ void	CommandHandler::pingCommand(std::vector<std::string> commandArgs)
 {
 
 }
-
 void	CommandHandler::execCommand(User* executer, std::string input)
 {
 	std::vector<std::string>	splittedCommands;
 	splitCommand(splittedCommands, input);
-
 	for (size_t i = 0; i < splittedCommands.size(); i++)
 	{
 		std::vector<std::string> splittedArgs;

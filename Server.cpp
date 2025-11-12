@@ -1,8 +1,10 @@
 #include "Server.hpp"
 #include "CommandHandler.hpp"
-# include <string.h>
+# include <cstring>
 # include <stdio.h>
 # include <iostream>
+# include <algorithm>
+
 /*-------------------------------------- OCF --------------------------------------*/
 
 Server::Server() : _password(""), _port(0), _pollVector(1), _serverSin()
@@ -122,8 +124,8 @@ void    Server::run()
                         continue ;
                     }
                     buffer[size] = '\0';
-                    _fdUserMap[_pollVector[i].fd]->updateStrBuffer(buffer, sizeof(buffer));
-                    if (_fdUserMap[_pollVector[i].fd]->getStrBuffer().find("\n\r"))
+                    _fdUserMap[_pollVector[i].fd]->updateStrBuffer(buffer, std::strlen(buffer));
+                    if (_fdUserMap[_pollVector[i].fd]->getStrBuffer().find("\r\n") != std::string::npos)
                     {
                         _command->execCommand(_fdUserMap[_pollVector[i].fd], _fdUserMap[_pollVector[i].fd]->getStrBuffer());
                         _fdUserMap[_pollVector[i].fd]->resetBuffer();
