@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 10:56:33 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/13 13:21:21 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/13 15:05:19 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,15 +164,13 @@ void	splitArgs(std::vector<std::string>& splittedArgs, std::string args)
 
 void	splitCommand(std::vector<std::string>& splittedCommands, std::string input)
 {
-	std::string::iterator	commandLimit = input.begin();
-	std::string::iterator	commandStart = input.begin();
+	std::string::size_type start = 0;
+	std::string::size_type pos;
 
-	while (commandLimit != input.end())
+	while ((pos = input.find("\r\n", start)) != std::string::npos)
 	{
-		commandLimit = std::find(commandStart, input.end(), '\n');
-		splittedCommands.push_back(std::string(commandStart, commandLimit));
-		++commandLimit;
-		commandStart = commandLimit;
+		splittedCommands.push_back(input.substr(start, pos - start));
+		start = pos + 2; // salta "\r\n"
 	}
 }
 
@@ -252,6 +250,7 @@ void	CommandHandler::execCommand(User* executer, std::string input)
 		t_command	commandToExec = reconizeCommand(splittedArgs[0]);
 		if (commandToExec == NOT_FOUND)
 		{
+			std::cout << splittedArgs[0] << " Comando non trovato" << std::endl;
 			errorHandler(ERR_UNKNOWNCOMMAND, *executer, splittedArgs[1], splittedArgs[0]);
 			continue ;
 		}

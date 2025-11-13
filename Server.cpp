@@ -39,7 +39,6 @@ Server::Server(int _portNbr, std::string _pass) : _port(_portNbr),  _userNbr(0),
     {
         std::cerr << e.what() << '\n';
     }
-    
 }
 
 Server&     Server::operator=(const Server &other)
@@ -114,6 +113,7 @@ bool    Server::acceptNewConnection()
     }
     else
     {
+        std::cout << "Nuovo utente connesso" << std::endl;
         _pollVector.push_back(tmpPoll);
         User *tmpUser = new User(tmpFd);
         this->_fdUserMap[tmpFd] = tmpUser;
@@ -127,18 +127,18 @@ void                Server::receiveNewMessage(int i)
     while (_serverRunning)
     {
         char buffer[513];
-        size_t size = recv(_pollVector[i].fd, buffer, sizeof(buffer) - 1, 0);
-        if (size == (size_t)0)
+        ssize_t size = recv(_pollVector[i].fd, buffer, sizeof(buffer) - 1, 0);
+        if (size == 0)
         {
             std::cout << "connesione chiusa" << std::endl, close(_pollVector[i].fd), _pollVector.erase(_pollVector.begin() + i);
             i--, _userNbr--;
-            continue ;
+            return ;
         }
-        else if (size == (size_t)-1)
+        else if (size == -1)
         {
             std::cout << "Error: recv() returned -1." << std::endl, close(_pollVector[i].fd), _pollVector.erase(_pollVector.begin() + i);
             i--, _userNbr--;
-            continue ;
+            return ;
         }
         buffer[size] = '\0';
         _fdUserMap[_pollVector[i].fd]->updateStrBuffer(buffer, std::strlen(buffer));
