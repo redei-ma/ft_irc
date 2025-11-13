@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 11:32:48 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/12 17:45:20 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/13 11:57:55 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 # include <string>
 # include <map>
 # include <exception>
-# define DECLERE_COMMAND(name) void name##Command(std::vector<std::string>)
+# define DECLERE_COMMAND(name) t_status name##Command(std::vector<std::string>)
 
 #include "Server.hpp"
 
@@ -35,8 +35,9 @@ typedef enum	s_command
 	NOT_FOUND,
 }	t_command;
 
-typedef enum	s_error
+typedef enum	s_status
 {
+	SUCCESS = 0,
 	ERR_NOSUCHNICK = 401,		//<nick> :No such nick/channel	Il nickname o canale specificato non esiste.
 	//ERR_NOSUCHSERVER = 402,		//<server> :No such server	Server non trovato.
 	ERR_NOSUCHCHANNEL = 403,	//<channel> :No such channel	Canale non esistente.
@@ -66,13 +67,13 @@ typedef enum	s_error
 	//RPL_CREATED = 003,			//This server was created <date>	Data di creazione server.
 	//RPL_MYINFO = 004,			//<servername> <version> <available user modes> <available channel modes>	Info sul server e modalità
 
-}	t_error;
+}	t_status;
 
 class	CommandHandler
 {
 	private:
 			Server&		_server;
-			std::map<t_command, void (CommandHandler::*)(std::vector<std::string>)> commandMap;
+			std::map<t_command, t_status (CommandHandler::*)(std::vector<std::string>)> commandMap;
 
 			void		initCommand();
 
@@ -93,11 +94,11 @@ class	CommandHandler
 			CommandHandler(Server&);
 			CommandHandler(const CommandHandler&);
 			~CommandHandler();
-			
+
 			CommandHandler& operator=(const CommandHandler&);
 			void		execCommand(User*, std::string);
-			void		errorHandler(t_error, const User&, const std::string&, const std::string&) const;
-			
+			void		errorHandler(t_status, const User&, const std::string&, const std::string&) const;
+
 /* 			DA CAPIRE
 			class ErrorHandler: public std::exception
 			{

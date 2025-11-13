@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 10:56:33 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/12 17:45:24 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/13 12:18:18 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ CommandHandler::CommandHandler(const CommandHandler& other) : _server(other._ser
 
 /* ================ERROR HANDLING================ */
 
-void CommandHandler::errorHandler(t_error error, const User& user, const std::string& arg, const std::string& command) const
+void CommandHandler::errorHandler(t_status error, const User& user, const std::string& arg, const std::string& command) const
 {
 	std::string prefix(":irc_server ");
 	std::string target = user.getNickName().empty() ? "*" : user.getNickName();
@@ -102,10 +102,12 @@ void CommandHandler::errorHandler(t_error error, const User& user, const std::st
 		case ERR_CANTKILLSERVER:
 			buffer = prefix + "483 " + target + " :You can't kill a server!";
 			break;
+		case SUCCESS:
+			break;
 	}
-	user.sendMessage(buffer);
+	if (error != SUCCESS)
+		user.sendMessage(buffer);
 }
-
 
 /* ================METHODS================ */
 void CommandHandler::initCommand()
@@ -174,79 +176,83 @@ void	splitCommand(std::vector<std::string>& splittedCommands, std::string input)
 	}
 }
 
-void	CommandHandler::passCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::passCommand(std::vector<std::string> commandArgs)
 {
 	for (size_t i = 0; i < commandArgs.size(); i++)
 	{
 		std::cout << "ARG["<<i<<"]" << commandArgs[i] << std::endl;
 	}
+	return SUCCESS;
 }
 
-void	CommandHandler::nickCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::nickCommand(std::vector<std::string> commandArgs)
 {
-
+	return SUCCESS;
 }
 
-void	CommandHandler::userCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::userCommand(std::vector<std::string> commandArgs)
 {
-
+	return SUCCESS;
 }
 
-void	CommandHandler::joinCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::joinCommand(std::vector<std::string> commandArgs)
 {
-
+	return SUCCESS;
 }
 
-void	CommandHandler::msgCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::msgCommand(std::vector<std::string> commandArgs)
 {
-
+	return SUCCESS;
 }
 
-void	CommandHandler::kickCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::kickCommand(std::vector<std::string> commandArgs)
 {
-
+	return SUCCESS;
 }
 
-void	CommandHandler::inviteCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::inviteCommand(std::vector<std::string> commandArgs)
 {
-
+	return SUCCESS;
 }
 
-void	CommandHandler::topicCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::topicCommand(std::vector<std::string> commandArgs)
 {
-
+	return SUCCESS;
 }
 
-void	CommandHandler::modeCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::modeCommand(std::vector<std::string> commandArgs)
 {
-
+	return SUCCESS;
 }
 
-void	CommandHandler::pingCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::pingCommand(std::vector<std::string> commandArgs)
 {
-
+	return SUCCESS;
 }
+
 void	CommandHandler::execCommand(User* executer, std::string input)
 {
 	std::vector<std::string>	splittedCommands;
 	splitCommand(splittedCommands, input);
-	try
+
+	for (size_t i = 0; i < splittedCommands.size(); i++)
 	{
-		for (size_t i = 0; i < splittedCommands.size(); i++)
+		std::vector<std::string> splittedArgs;
+		splitArgs(splittedArgs, splittedCommands[i]);
+
+		t_command	commandToExec = reconizeCommand(splittedArgs[0]);
+		if (commandToExec == NOT_FOUND)
 		{
-			std::vector<std::string> splittedArgs;
-			splitArgs(splittedArgs, splittedCommands[i]);
-		
-			t_command	commandToExec = NOT_FOUND;
-			commandToExec = reconizeCommand(splittedArgs[0]);
-			splittedArgs.erase(splittedArgs.begin());
-			(this->*commandMap[commandToExec])(splittedArgs);
+			errorHandler(ERR_UNKNOWNCOMMAND, *executer, splittedArgs[1], splittedArgs[0]);
+			continue ;
 		}
-	}
-	catch(const std::exception& e)
-	{
-		//errorHandler();
-		std::cerr << e.what() << '\n';
+
+		std::string	command = *splittedArgs.begin();
+		splittedArgs.erase(splittedArgs.begin());
+		t_status exitStatus = (this->*commandMap[commandToExec])(splittedArgs);
+
+		if (exitStatus != SUCCESS)
+			errorHandler(exitStatus, *executer, splittedArgs[i], command);
 	}
 }
 
