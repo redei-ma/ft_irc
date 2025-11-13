@@ -1,6 +1,6 @@
 NAME = IRC
 CXX = c++
-CXXFLAGS = -std=c++98 -g
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g
 
 VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --track-fds=yes --log-file=log_valgrind.txt
 
