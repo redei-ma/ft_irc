@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 14:55:58 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/13 13:26:38 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/13 13:37:41 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,8 @@ class User
 				bool	_hasUserName;
 				bool	_hasPassword;
 
-
 				time_t	_lastPongTime;
-				
+
 				User();
 	public:
 			User(int fd);
