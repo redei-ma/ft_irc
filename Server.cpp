@@ -4,7 +4,6 @@
 # include <cstring>
 # include <stdio.h>
 # include <iostream>
-# include <algorithm>
 
 /*-------------------------------------- SIGNAL --------------------------------------*/
 
