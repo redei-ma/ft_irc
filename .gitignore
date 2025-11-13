@@ -1,3 +1,5 @@
 a.out
 .vscode
 *.o
+IRC
+log_valgrind.txt

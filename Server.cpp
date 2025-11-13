@@ -13,7 +13,7 @@ volatile sig_atomic_t _serverRunning = 1;
 void    handle_sigint(int)
 {
     _serverRunning = 0;
-    std::cerr << "Closing server al cleaning datas." << std::endl;
+    std::cerr << "\nClosing server al cleaning datas." << std::endl;
 }
 
 /*-------------------------------------- OCF --------------------------------------*/
