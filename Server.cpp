@@ -1,23 +1,34 @@
 #include "Server.hpp"
 #include "CommandHandler.hpp"
+
 # include <cstring>
 # include <stdio.h>
 # include <iostream>
 # include <algorithm>
 
+/*-------------------------------------- SIGNAL --------------------------------------*/
+
+volatile sig_atomic_t _serverRunning = 1;
+
+void    handle_sigint(int)
+{
+    _serverRunning = 0;
+    std::cerr << "Closing server al cleaning datas." << std::endl;
+}
+
 /*-------------------------------------- OCF --------------------------------------*/
 
-Server::Server() : _password(""), _port(0), _pollVector(1), _serverSin()
+Server::Server() : _port(0),  _userNbr(0), _serverSin(), _password(""), _pollVector(1)
 {
     this->_command = new CommandHandler(*this);
 }
 
-Server::Server(const Server &other) : _password(other._password), _port(other._port),  _serverSin(other._serverSin)
+Server::Server(const Server &other) : _port(other._port),  _userNbr(0), _serverSin(other._serverSin), _password(other._password), _pollVector(1)
 {
     this->_command = new CommandHandler(*this);
 }
 
-Server::Server(int _portNbr, std::string _pass) : _port(_portNbr), _password(_pass), _pollVector(1)
+Server::Server(int _portNbr, std::string _pass) : _port(_portNbr),  _userNbr(0), _serverSin(), _password(_pass), _pollVector(1)
 {
     this->_command = new CommandHandler(*this);
     try
@@ -34,7 +45,15 @@ Server::Server(int _portNbr, std::string _pass) : _port(_portNbr), _password(_pa
 
 Server&     Server::operator=(const Server &other)
 {
-    return (*this);
+    if (this != &other)
+    {
+        this->_port = other._port;
+        this->_userNbr = other._userNbr;
+        this->_serverSin = other._serverSin;
+        this->_password = other._password;
+        this->_pollVector = other._pollVector;
+    }
+    return *this;
 }
 
 Server::~Server()
@@ -75,12 +94,71 @@ bool    Server::putInListen()
     return true;
 }
 
+bool    Server::acceptNewConnection()
+{
+    int tmpFd = accept(_serverSocket, NULL, NULL);
+    if (tmpFd == -1)
+    {
+        std::cerr << "Error: something went wrong in the call to accept()." << std::endl;
+        
+    }
+    struct pollfd tmpPoll;
+    tmpPoll.fd = tmpFd;
+    tmpPoll.events = POLLIN;
+    tmpPoll.revents = 0;
+    if (_userNbr >= MAX_USR_NBR)
+    {
+        const char *errorMsg = "Error: max capacity of user has been reached. Connection will be interrupted now.";
+        send(tmpFd, errorMsg, 81, 0);
+        close(tmpFd);
+        return false ;
+    }
+    else
+    {
+        _pollVector.push_back(tmpPoll);
+        User *tmpUser = new User(tmpFd);
+        this->_fdUserMap[tmpFd] = tmpUser;
+        _userNbr++;
+    }
+    return true;
+}
+
+void                Server::receiveNewMessage(int i)
+{
+    while (_serverRunning)
+    {
+        char buffer[513];
+        size_t size = recv(_pollVector[i].fd, buffer, sizeof(buffer) - 1, 0);
+        if (size == (size_t)0)
+        {
+            std::cout << "connesione chiusa" << std::endl, close(_pollVector[i].fd), _pollVector.erase(_pollVector.begin() + i);
+            i--, _userNbr--;
+            continue ;
+        }
+        else if (size == (size_t)-1)
+        {
+            std::cout << "Error: recv() returned -1." << std::endl, close(_pollVector[i].fd), _pollVector.erase(_pollVector.begin() + i);
+            i--, _userNbr--;
+            continue ;
+        }
+        buffer[size] = '\0';
+        _fdUserMap[_pollVector[i].fd]->updateStrBuffer(buffer, std::strlen(buffer));
+        if (_fdUserMap[_pollVector[i].fd]->getStrBuffer().find("\r\n") != std::string::npos)
+        {
+            _command->execCommand(_fdUserMap[_pollVector[i].fd], _fdUserMap[_pollVector[i].fd]->getStrBuffer());
+            _fdUserMap[_pollVector[i].fd]->resetBuffer();
+        }
+        return ;
+    }
+}
+
+
 void    Server::run()
 {
     _pollVector[0].fd = this->_serverSocket;
     _pollVector[0].events = POLLIN;
     _pollVector[0].revents = 0;
-    while (1)
+    while (_serverRunning)
     {
         int ret = poll(_pollVector.data(), _pollVector.size(), -1); //non sono convinto (Renato non e' convinto)
         if (ret == -1)
@@ -91,45 +169,12 @@ void    Server::run()
             {
                 if (_pollVector[i].fd == this->_serverSocket)
                 {
-                    std::cout << "Nuovo utente creato." << std::endl;
-                    int tmpFd = accept(_serverSocket, NULL, NULL);
-                    if (tmpFd == -1)
-                        throw (std::runtime_error("Error: something went wrong in the call to accept()."));
-                    struct pollfd tmpPoll;
-                    tmpPoll.fd = tmpFd;
-                    tmpPoll.events = POLLIN;
-                    tmpPoll.revents = 0;
-                    _pollVector.push_back(tmpPoll);
-                    User *tmpUser = new User(tmpFd);
-                    this->_fdUserMap[tmpFd] = tmpUser;
+                    if (!acceptNewConnection())
+                        continue ;
                 }
                 else
                 {
-                    char buffer[513];
-                    size_t size = recv(_pollVector[i].fd, buffer, sizeof(buffer) - 1, 0);
-                    if (size == 0)
-                    {
-                        std::cout << "connesione chiusa" << std::endl;
-                        close(_pollVector[i].fd);
-                        _pollVector.erase(_pollVector.begin() + i);
-                        i--;
-                        continue ;
-                    }
-                    else if (size == -1)
-                    {
-                        std::cout << "Error: recv() returned -1." << std::endl;
-                        close(_pollVector[i].fd);
-                        _pollVector.erase(_pollVector.begin() + i);
-                        i--;
-                        continue ;
-                    }
-                    buffer[size] = '\0';
-                    _fdUserMap[_pollVector[i].fd]->updateStrBuffer(buffer, std::strlen(buffer));
-                    if (_fdUserMap[_pollVector[i].fd]->getStrBuffer().find("\r\n") != std::string::npos)
-                    {
-                        _command->execCommand(_fdUserMap[_pollVector[i].fd], _fdUserMap[_pollVector[i].fd]->getStrBuffer());
-                        _fdUserMap[_pollVector[i].fd]->resetBuffer();
-                    }
+                    receiveNewMessage(i);
                 }
             }
         }
