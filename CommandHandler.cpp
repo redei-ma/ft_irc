@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 10:56:33 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/13 12:18:18 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/13 13:21:21 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,77 +30,77 @@ CommandHandler::CommandHandler(const CommandHandler& other) : _server(other._ser
 
 void CommandHandler::errorHandler(t_status error, const User& user, const std::string& arg, const std::string& command) const
 {
-	std::string prefix(":irc_server ");
+	std::string prefix(":irc.rfg.com ");
 	std::string target = user.getNickName().empty() ? "*" : user.getNickName();
 	std::string buffer;
 
 	switch (error)
 	{
 		case ERR_NOSUCHNICK:
-			buffer = prefix + "401 " + target + " " + arg + " :No such nick/channel";
+			buffer = prefix + "401 " + target + " " + arg + " :No such nick/channel\r\n";
 			break;
 		case ERR_NOSUCHCHANNEL:
-			buffer = prefix + "403 " + target + " " + arg + " :No such channel";
+			buffer = prefix + "403 " + target + " " + arg + " :No such channel\r\n";
 			break;
 		case ERR_CANNOTSENDTOCHAN:
-			buffer = prefix + "404 " + target + " " + arg + " :Cannot send to channel";
+			buffer = prefix + "404 " + target + " " + arg + " :Cannot send to channel\r\n";
 			break;
 		case ERR_TOOMANYCHANNELS:
-			buffer = prefix + "405 " + target + " " + arg + " :You have joined too many channels";
+			buffer = prefix + "405 " + target + " " + arg + " :You have joined too many channels\r\n";
 			break;
 		case ERR_NORECIPIENT:
-			buffer = prefix + "411 " + target + " :No recipient given (" + command + ")";
+			buffer = prefix + "411 " + target + " :No recipient given (" + command + ")\r\n";
 			break;
 		case ERR_NOTEXTTOSEND:
-			buffer = prefix + "412 " + target + " :No text to send";
+			buffer = prefix + "412 " + target + " :No text to send\r\n";
 			break;
 		case ERR_UNKNOWNCOMMAND:
-			buffer = prefix + "421 " + target + " " + command + " :Unknown command";
+			buffer = prefix + "421 " + target + " " + command + " :Unknown command\r\n";
 			break;
 		case ERR_NONICKNAMEGIVEN:
-			buffer = prefix + "431 " + target + " :No nickname given";
+			buffer = prefix + "431 " + target + " :No nickname given\r\n";
 			break;
 		case ERR_ERRONEUSNICKNAME:
-			buffer = prefix + "432 " + target + " " + arg + " :Erroneous nickname";
+			buffer = prefix + "432 " + target + " " + arg + " :Erroneous nickname\r\n";
 			break;
 		case ERR_NICKNAMEINUSE:
-			buffer = prefix + "433 " + target + " " + arg + " :Nickname is already in use";
+			buffer = prefix + "433 " + target + " " + arg + " :Nickname is already in use\r\n";
 			break;
 		case ERR_NICKCOLLISION:
-			buffer = prefix + "436 " + target + " " + arg + " :Nickname collision";
+			buffer = prefix + "436 " + target + " " + arg + " :Nickname collision\r\n";
 			break;
 		case ERR_USERNOTINCHANNEL:
-			buffer = prefix + "441 " + target + " " + arg + " :They aren't on that channel";
+			buffer = prefix + "441 " + target + " " + arg + " :They aren't on that channel\r\n";
 			break;
 		case ERR_NOTONCHANNEL:
-			buffer = prefix + "442 " + target + " " + arg + " :You're not on that channel";
+			buffer = prefix + "442 " + target + " " + arg + " :You're not on that channel\r\n";
 			break;
 		case ERR_USERONCHANNEL:
-			buffer = prefix + "443 " + target + " " + arg + " :is already on channel";
+			buffer = prefix + "443 " + target + " " + arg + " :is already on channel\r\n";
 			break;
 		case ERR_NOTREGISTERED:
-			buffer = prefix + "451 " + target + " :You have not registered";
+			buffer = prefix + "451 " + target + " :You have not registered\r\n";
 			break;
 		case ERR_CHANNELISFULL:
-			buffer = prefix + "471 " + target + " " + arg + " :Cannot join channel (+l)";
+			buffer = prefix + "471 " + target + " " + arg + " :Cannot join channel (+l)\r\n";
 			break;
 		case ERR_INVITEONLYCHAN:
-			buffer = prefix + "473 " + target + " " + arg + " :Cannot join channel (+i)";
+			buffer = prefix + "473 " + target + " " + arg + " :Cannot join channel (+i)\r\n";
 			break;
 		case ERR_BANNEDFROMCHAN:
-			buffer = prefix + "474 " + target + " " + arg + " :Cannot join channel (+b)";
+			buffer = prefix + "474 " + target + " " + arg + " :Cannot join channel (+b)\r\n";
 			break;
 		case ERR_BADCHANNELKEY:
-			buffer = prefix + "475 " + target + " " + arg + " :Cannot join channel (+k)";
+			buffer = prefix + "475 " + target + " " + arg + " :Cannot join channel (+k)\r\n";
 			break;
 		case ERR_NOPRIVILEGES:
-			buffer = prefix + "481 " + target + " :Permission Denied- You're not an IRC operator";
+			buffer = prefix + "481 " + target + " :Permission Denied- You're not an IRC operator\r\n";
 			break;
 		case ERR_CHANOPRIVSNEEDED:
-			buffer = prefix + "482 " + target + " " + arg + " :You're not channel operator";
+			buffer = prefix + "482 " + target + " " + arg + " :You're not channel operator\r\n";
 			break;
 		case ERR_CANTKILLSERVER:
-			buffer = prefix + "483 " + target + " :You can't kill a server!";
+			buffer = prefix + "483 " + target + " :You can't kill a server!\r\n";
 			break;
 		case SUCCESS:
 			break;
@@ -187,46 +187,55 @@ t_status	CommandHandler::passCommand(std::vector<std::string> commandArgs)
 
 t_status	CommandHandler::nickCommand(std::vector<std::string> commandArgs)
 {
+	(void)commandArgs;
 	return SUCCESS;
 }
 
 t_status	CommandHandler::userCommand(std::vector<std::string> commandArgs)
 {
+	(void)commandArgs;
 	return SUCCESS;
 }
 
 t_status	CommandHandler::joinCommand(std::vector<std::string> commandArgs)
 {
+	(void)commandArgs;
 	return SUCCESS;
 }
 
 t_status	CommandHandler::msgCommand(std::vector<std::string> commandArgs)
 {
+	(void)commandArgs;
 	return SUCCESS;
 }
 
 t_status	CommandHandler::kickCommand(std::vector<std::string> commandArgs)
 {
+	(void)commandArgs;
 	return SUCCESS;
 }
 
 t_status	CommandHandler::inviteCommand(std::vector<std::string> commandArgs)
 {
+	(void)commandArgs;
 	return SUCCESS;
 }
 
 t_status	CommandHandler::topicCommand(std::vector<std::string> commandArgs)
 {
+	(void)commandArgs;
 	return SUCCESS;
 }
 
 t_status	CommandHandler::modeCommand(std::vector<std::string> commandArgs)
 {
+	(void)commandArgs;
 	return SUCCESS;
 }
 
 t_status	CommandHandler::pingCommand(std::vector<std::string> commandArgs)
 {
+	(void)commandArgs;
 	return SUCCESS;
 }
 

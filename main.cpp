@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/11 16:42:12 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/12 12:44:28 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/13 13:24:28 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 
     char    *endptr;
     int portNbr = std::strtol(argv[1], &endptr,10);
-    if (errno == ERANGE || *endptr != '\0' || (portNbr < 6660 && portNbr > 6699))
+    if (errno == ERANGE || *endptr != '\0' || (portNbr < 6660 || portNbr > 6699))
     {
         std::cerr << "Invalid port number" << std::endl;
         return (2);

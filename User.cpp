@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 14:55:56 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/12 17:26:31 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/13 13:30:07 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,19 +20,27 @@
 User::User():
 			_fd(-1), _userName(""),
 			_nickName(""), _password(""),
-				_isAuthenticated(false), _hasNickName(false),
-					_hasUserName(false), _hasPassword(false)
+			_bufferStr(""), _isAuthenticated(false),
+			_hasNickName(false), _hasUserName(false),
+			_hasPassword(false)
 {}
 
-User::User(int fd) :  _fd(-1), _userName(""), _nickName(""), _password(""),
-				_isAuthenticated(false), _hasNickName(false), _hasUserName(false), _hasPassword(false)
+User::User(int fd) :
+				_fd(-1), _userName(""),
+				_nickName(""), _password(""),
+				_bufferStr(""), _isAuthenticated(false),
+				_hasNickName(false), _hasUserName(false),
+				_hasPassword(false)
 {
 	_fd = fd;
 }
 
-User::User(const User &other) : _userName(other.getUserName()), _nickName(other.getNickName()), _password(other.getPassword()),
-									_isAuthenticated(other.getIsAuthenticated()), _hasNickName(other.getHasNickName()), _hasUserName(other.getHasUserName()),
-									_hasPassword(other.getHasPassword())
+User::User(const User &other) :
+							_fd(getUserFd()), _userName(other.getUserName()),
+							_nickName(other.getNickName()), _password(other.getPassword()),
+							_bufferStr(other.getStrBuffer()), _isAuthenticated(other.getIsAuthenticated()),
+							_hasNickName(other.getHasNickName()), _hasUserName(other.getHasUserName()),
+							_hasPassword(other.getHasPassword())
 {}
 
 /* ================OPERATOR================ */
@@ -118,27 +126,25 @@ void	User::setLastPongTime()
 }
 
 /* ================GETTERS================ */
-const std::string	User::getUserName() const { return (_userName); }
+std::string	User::getUserName() const { return (_userName); }
 
-const std::string	User::getNickName() const { return (_nickName); }
+std::string	User::getNickName() const { return (_nickName); }
 
-const std::string	User::getPassword() const { return (_password); }
+std::string	User::getPassword() const { return (_password); }
 
-const bool	User::getIsAuthenticated() const { return (_isAuthenticated); }
+bool	User::getIsAuthenticated() const { return (_isAuthenticated); }
 
-const bool	User::getHasUserName() const { return (_hasUserName); }
+bool	User::getHasUserName() const { return (_hasUserName); }
 
-const bool	User::getHasNickName() const { return (_hasNickName); }
+bool	User::getHasNickName() const { return (_hasNickName); }
 
-const bool	User::getHasPassword() const { return (_hasPassword); }
+bool	User::getHasPassword() const { return (_hasPassword); }
 
-const int	User::getUserFd() const { return (_fd); }
+int	User::getUserFd() const { return (_fd); }
 
-const time_t	User::getLastPongTime() const { return (_lastPongTime); }
+time_t	User::getLastPongTime() const { return (_lastPongTime); }
 
-/* const char*	User::getRcvBuffer() const { return (_bufferRcv); } */
-
-const std::string	User::getStrBuffer() const { return (_bufferStr); };
+std::string	User::getStrBuffer() const { return (_bufferStr); };
 
 /* ================DESTRUCTOR================ */
 User::~User()

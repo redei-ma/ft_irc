@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 14:55:58 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/12 15:14:48 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/13 13:26:38 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,23 @@
 # define USER_HPP
 
 # include <string>
+# include <time.h>
 
 class User
 {
 	private:
 				int	_fd;
-
-				bool	_isAuthenticated;
-				bool	_hasUserName;
-				bool	_hasNickName;
-				bool	_hasPassword;
-
+				
 				std::string	_userName;
 				std::string	_nickName;
 				std::string	_password;
-
 				std::string	_bufferStr;
+
+				bool	_isAuthenticated;
+				bool	_hasNickName;
+				bool	_hasUserName;
+				bool	_hasPassword;
+
 
 				time_t	_lastPongTime;
 				
@@ -44,19 +45,19 @@ class User
 			void	setPassword(std::string password);
 			void	setLastPongTime();
 
-			const bool	getIsAuthenticated() const;
-			const bool	getHasUserName() const;
-			const bool	getHasNickName() const;
-			const bool	getHasPassword() const;
+			bool	getIsAuthenticated() const;
+			bool	getHasUserName() const;
+			bool	getHasNickName() const;
+			bool	getHasPassword() const;
 
-			const int getUserFd() const;
+			int getUserFd() const;
 
-			const time_t	getLastPongTime() const;
+			time_t	getLastPongTime() const;
 
-			const std::string	getUserName() const;
-			const std::string	getNickName() const;
-			const std::string	getPassword() const;
-			const std::string	getStrBuffer() const;
+			std::string	getUserName() const;
+			std::string	getNickName() const;
+			std::string	getPassword() const;
+			std::string	getStrBuffer() const;
 
 			void		updateStrBuffer(char *buffer, size_t size);
 			void		updateAuthenticationStatus();
