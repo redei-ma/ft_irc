@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include "User.hpp"
 
 Channel::Channel(const std::string& name)
 	: _name(name),
@@ -36,24 +37,17 @@ bool Channel::hasTopic() const { return !_topic.empty(); }
 
 const std::string& Channel::getTopic() const { return _topic; }
 
-void Channel::setTopic(const std::string& topic)
-{
-	_topic = topic;
-}
+void Channel::setTopic(const std::string& topic) { _topic = topic; }
 
 bool Channel::getTopicRestriction() const { return _isTopicRestricted; }
 
-void Channel::setTopicRestriction(bool topicRestriction)
-{
-	_isTopicRestricted = topicRestriction;
-}
+void Channel::setTopicRestriction(bool topicRestriction) { _isTopicRestricted = topicRestriction; }
+
+bool Channel::isTopicRestricted() const { return _isTopicRestricted; }
 
 bool Channel::isInviteOnly() const { return _isInviteOnly; }
 
-void Channel::setInviteOnly(bool isInviteOnly)
-{
-	_isInviteOnly = isInviteOnly;
-}
+void Channel::setInviteOnly(bool isInviteOnly) { _isInviteOnly = isInviteOnly; }
 
 bool Channel::hasUsersLimit() const { return _usersLimit > 0; }
 
@@ -62,11 +56,14 @@ std::size_t Channel::getUsersLimit() const { return _usersLimit; }
 void Channel::setUsersLimit(std::size_t limit)
 {
 	_usersLimit = limit;
+	if (_users.size() >= _usersLimit)
+		_isFull = true;
 }
 
 void Channel::removeUsersLimit()
 {
 	_usersLimit = 0;
+	_isFull = false;
 }
 
 bool Channel::isFull() const { return _isFull; }
@@ -75,14 +72,30 @@ const std::vector<User*>& Channel::getUsers() const { return _users; }
 
 void Channel::addUser(User* user)
 {
-	// quando aggiungo un user chi controlla che non sia gia peieno prima?
 	_users.push_back(user);
 	if (hasUsersLimit() && _users.size() >= _usersLimit)
 		_isFull = true;
 }
 
+void Channel::addInvitedUser(User* user)
+{
+	_users.push_back(user);
+	if (hasUsersLimit() && _users.size() >= _usersLimit)
+		_isFull = true;
+	removeInvitedUser(user);
+}
+
+void Channel::removeInvitedUser(User* user)
+{
+	iterator it = std::find(_invitedUsers.begin(), _invitedUsers.end(), user);
+	if (it != _invitedUsers.end())
+		_invitedUsers.erase(it);
+}
+
 void Channel::removeUser(User* user)
 {
+	removeOperator(user);
+	removeInvitedUser(user);
 	iterator it = std::find(_users.begin(), _users.end(), user);
 	if (it != _users.end())
 		_users.erase(it);
@@ -92,10 +105,7 @@ void Channel::removeUser(User* user)
 
 const std::vector<User*>& Channel::getOperators() const { return _operators; }
 
-void Channel::addOperator(User* user)
-{
-	_operators.push_back(user);
-}
+void Channel::addOperator(User* user) { _operators.push_back(user); }
 
 void Channel::removeOperator(User* user)
 {
@@ -104,22 +114,20 @@ void Channel::removeOperator(User* user)
 		_operators.erase(it);
 }
 
-bool Channel::isMember(User* user) const
+bool Channel::isMember(User* user) const { return std::find(_users.begin(), _users.end(), user) != _users.end(); }
+
+bool Channel::isOperator(User* user) const { return std::find(_operators.begin(), _operators.end(), user) != _operators.end(); }
+
+bool Channel::isInvited(User* user) const { return std::find(_invitedUsers.begin(), _invitedUsers.end(), user) != _invitedUsers.end(); }
+
+std::size_t Channel::getUserCount() const { return _users.size(); }
+
+void Channel::broadcastMessage(const std::string& message, User* sender)
 {
-	return std::find(_users.begin(), _users.end(), user) != _users.end();
+	for (iterator it = _users.begin(); it != _users.end(); ++it)
+	{
+		if (*it != sender)
+			(*it)->sendMessage(message);
+	}
 }
 
-bool Channel::isOperator(User* user) const
-{
-	return std::find(_operators.begin(), _operators.end(), user) != _operators.end();
-}
-
-bool Channel::isInvited(User* user) const
-{
-	return std::find(_invitedUsers.begin(), _invitedUsers.end(), user) != _invitedUsers.end();
-}
-
-std::size_t Channel::getUserCount() const
-{
-	return _users.size();
-}

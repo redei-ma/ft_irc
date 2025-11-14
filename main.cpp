@@ -6,7 +6,7 @@
 /*   By: redei-ma <redei-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/11 16:42:12 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/14 11:08:16 by redei-ma         ###   ########.fr       */
+/*   Updated: 2025/11/14 15:45:25 by redei-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,17 +29,24 @@ int main(int argc, char **argv)
     if (errno == ERANGE || *endptr != '\0' || (portNbr < 6660 || portNbr > 6699))
     {
         std::cerr << "Invalid port number" << std::endl;
-        return (2);
+        return (1);
     }
-    std::string input2(argv[2]);
+    std::string pass(argv[2]);
+	// if (pass.empty())
+	// {
+	// 	std::cerr << "Invalid password" << std::endl;
+    //     return (1);
+	// }
+	
 	try
 	{
-		Server  myServer(portNbr, input2);
+		Server  myServer(portNbr, pass);
 		myServer.run();
 	}
 	catch (std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
+		return (1);
 	}
 	return (0);
 }

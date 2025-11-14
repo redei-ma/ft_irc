@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CommandHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: redei-ma <redei-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 10:56:33 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/13 15:05:19 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/14 16:09:25 by redei-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,9 @@ void CommandHandler::errorHandler(t_status error, const User& user, const std::s
 			break;
 		case ERR_NOTREGISTERED:
 			buffer = prefix + "451 " + target + " :You have not registered\r\n";
+			break;
+		case ERR_NEEDMOREPARAMS:
+			buffer = prefix + "461 " + target + " " + arg + " :Not enough parameters\r\n";
 			break;
 		case ERR_CHANNELISFULL:
 			buffer = prefix + "471 " + target + " " + arg + " :Cannot join channel (+l)\r\n";
@@ -174,7 +177,7 @@ void	splitCommand(std::vector<std::string>& splittedCommands, std::string input)
 	}
 }
 
-t_status	CommandHandler::passCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::passCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	for (size_t i = 0; i < commandArgs.size(); i++)
 	{
@@ -183,55 +186,92 @@ t_status	CommandHandler::passCommand(std::vector<std::string> commandArgs)
 	return SUCCESS;
 }
 
-t_status	CommandHandler::nickCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::nickCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::userCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::userCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::joinCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::joinCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::msgCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::msgCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::kickCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::kickCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::inviteCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::inviteCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::topicCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::topicCommand(User* executer, std::vector<std::string> commandArgs)
+{
+	// if (!executer->getIsAuthenticated())
+	// 	return ERR_NOTREGISTERED;
+
+	// if (commandArgs.size() < 1)
+	// 	return ERR_NEEDMOREPARAMS;
+	// else if (commandArgs.size() > 2)
+	// 	return ERR_TOOMANYPARAMS;
+	// else
+	// {
+	// 	if (!_server.channelNameExists(commandArgs[0]))
+	// 		return ERR_NOSUCHCHANNEL;
+	// 	Channel tmp = _server.getChannel(commandArgs[0]);
+
+	// 	if (!tmp.isMember)
+	// 		return ERR_NOTONCHANNEL;
+		
+	// 	if (commandArgs.size() == 1)
+	// 	{
+	// 		if (!tmp.hasTopic())
+	// 			return RPL_NOTOPIC;
+	// 		else
+	// 			return RPL_TOPIC;	
+	// 	}
+	// 	else if (commandArgs.size() == 2)
+	// 	{
+	// 		if (tmp.isTopicRestricted() && !tmp.isOperator(executer))
+	// 			return ERR_CHANOPRIVSNEEDED;
+	// 		else
+	// 		{
+	// 			tmp.setTopic(commandArgs[1]);
+	// 			// std::string message = ":" + executer->getNickName() + " TOPIC " + tmp.getName() + " :" + commandArgs[1] + "\r\n";
+	// 			// tmp.broadcastMessage(message, executer);
+	// 			return RPL_TOPIC;
+	// 		}
+	// 	}
+	// }
+	(void)commandArgs;
+
+	return SUCCESS;
+}
+
+t_status	CommandHandler::modeCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::modeCommand(std::vector<std::string> commandArgs)
-{
-	(void)commandArgs;
-	return SUCCESS;
-}
-
-t_status	CommandHandler::pingCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::pingCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
@@ -257,7 +297,7 @@ void	CommandHandler::execCommand(User* executer, std::string input)
 
 		std::string	command = *splittedArgs.begin();
 		splittedArgs.erase(splittedArgs.begin());
-		t_status exitStatus = (this->*commandMap[commandToExec])(splittedArgs);
+		t_status exitStatus = (this->*commandMap[commandToExec])(executer, splittedArgs);
 
 		if (exitStatus != SUCCESS)
 			errorHandler(exitStatus, *executer, splittedArgs[i], command);
