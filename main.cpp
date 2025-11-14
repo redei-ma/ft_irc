@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fzuccaro <fzuccaro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: redei-ma <redei-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/11 16:42:12 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/13 14:02:05 by fzuccaro         ###   ########.fr       */
+/*   Updated: 2025/11/14 11:08:16 by redei-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,5 +32,14 @@ int main(int argc, char **argv)
         return (2);
     }
     std::string input2(argv[2]);
-    Server  myServer(portNbr, input2);
+	try
+	{
+		Server  myServer(portNbr, input2);
+		myServer.run();
+	}
+	catch (std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+	return (0);
 }

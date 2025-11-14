@@ -17,7 +17,7 @@
 
 
 
-# define MAX_USR_NBR 2 // Max user capacity.
+# define MAX_USR_NBR 5 // Max user capacity.
 
 
 

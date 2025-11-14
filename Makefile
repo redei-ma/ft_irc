@@ -27,7 +27,7 @@ re: fclean all
 
 val: $(NAME)
 	@echo "Running Valgrind..."
-	@$(VALGRIND) ./$(NAME) $(port) $(password)
+	@$(VALGRIND) ./$(NAME) $(port) $(pass)
 
 .PHONY: all clean fclean re debug
 .SILENT:
