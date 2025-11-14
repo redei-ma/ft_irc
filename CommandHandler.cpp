@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CommandHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fzuccaro <fzuccaro@student.42.fr>          +#+  +:+       +#+        */
+/*   By: redei-ma <redei-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 10:56:33 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/14 16:03:32 by fzuccaro         ###   ########.fr       */
+/*   Updated: 2025/11/14 16:21:34 by redei-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -307,15 +307,52 @@ t_status	CommandHandler::inviteCommand(User* executer, std::vector<std::string> 
 	return SUCCESS;
 }
 
-t_status	CommandHandler::topicCommand(User* executer, std::vector<std::string> commandArgs)
+t_status	CommandHandler::modeCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::modeCommand(User* executer, std::vector<std::string> commandArgs)
+t_status	CommandHandler::topicCommand(User* executer, std::vector<std::string> commandArgs)
 {
+	// if (!executer->getIsAuthenticated())
+	// 	return ERR_NOTREGISTERED;
+
+	// if (commandArgs.size() < 1)
+	// 	return ERR_NEEDMOREPARAMS;
+	// else if (commandArgs.size() > 2)
+	// 	return ERR_TOOMANYPARAMS;
+	// else
+	// {
+	// 	if (!_server.channelNameExists(commandArgs[0]))
+	// 		return ERR_NOSUCHCHANNEL;
+	// 	Channel tmp = _server.getChannel(commandArgs[0]);
+
+	// 	if (!tmp.isMember)
+	// 		return ERR_NOTONCHANNEL;
+		
+	// 	if (commandArgs.size() == 1)
+	// 	{
+	// 		if (!tmp.hasTopic())
+	// 			return RPL_NOTOPIC;
+	// 		else
+	// 			return RPL_TOPIC;	
+	// 	}
+	// 	else if (commandArgs.size() == 2)
+	// 	{
+	// 		if (tmp.isTopicRestricted() && !tmp.isOperator(executer))
+	// 			return ERR_CHANOPRIVSNEEDED;
+	// 		else
+	// 		{
+	// 			tmp.setTopic(commandArgs[1]);
+	// 			// std::string message = ":" + executer->getNickName() + " TOPIC " + tmp.getName() + " :" + commandArgs[1] + "\r\n";
+	// 			// tmp.broadcastMessage(message, executer);
+	// 			return RPL_TOPIC;
+	// 		}
+	// 	}
+	// }
 	(void)commandArgs;
+
 	return SUCCESS;
 }
 

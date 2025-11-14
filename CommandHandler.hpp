@@ -3,6 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   CommandHandler.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
+<<<<<<< HEAD
 /*   By: fzuccaro <fzuccaro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 11:32:48 by gpirozzi          #+#    #+#             */
@@ -11,6 +12,12 @@
 =======
 /*   Updated: 2025/11/14 14:49:38 by fzuccaro         ###   ########.fr       */
 >>>>>>> francesco
+=======
+/*   By: redei-ma <redei-ma@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/07 11:32:48 by gpirozzi          #+#    #+#             */
+/*   Updated: 2025/11/14 14:55:47 by redei-ma         ###   ########.fr       */
+>>>>>>> renato
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +27,8 @@
 # include <vector>
 # include <string>
 # include <map>
-<<<<<<< HEAD
-# define DECLERE_COMMAND(name) t_status name##Command(User* executer, std::vector<std::string>)
-=======
 # include <exception>
 # define DECLERE_COMMAND(name) t_status name##Command(User*, std::vector<std::string>)
->>>>>>> francesco
 
 #include "Server.hpp"
 
@@ -62,7 +65,7 @@ typedef enum	s_status
 	ERR_NOTONCHANNEL = 442,		//You're not on that channel	Tentativo di operazione su un canale dove l’utente non è presente.
 	ERR_USERONCHANNEL = 443,	//is already on channel	L’utente è già nel canale.
 	ERR_NOTREGISTERED = 451,	//You have not registered	Il client non ha completato la registrazione.
-	ERR_NEEDMOREPARAMS = 461,	//Too few args	pochi argomenti
+	ERR_NEEDMOREPARAMS = 461,	//Not enough parameters	Parametri insufficienti per il comando.
 	ERR_PASSWDMISMATCH = 464,	
 	ERR_CHANNELISFULL = 471,	//Cannot join channel (+l)	Canale pieno.
 	ERR_INVITEONLYCHAN = 473,	//Cannot join channel (+i)	Canale solo su invito.

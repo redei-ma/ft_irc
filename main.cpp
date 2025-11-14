@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: redei-ma <redei-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/11 16:42:12 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/14 15:36:47 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/14 16:14:46 by redei-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,22 +29,23 @@ int main(int argc, char **argv)
     if (errno == ERANGE || *endptr != '\0' || (portNbr < 6660 || portNbr > 6699))
     {
         std::cerr << "Invalid port number" << std::endl;
-        return (2);
+        return (1);
     }
-    std::string input2(argv[2]);
+    std::string pass(argv[2]);	
 	try
 	{
-        for (size_t i = 0; i < input2.size(); i++)
+        for (size_t i = 0; i < pass.size(); i++)
         {
-            if (std::isspace(input2[2]) || std::isprint(input2[2]))
+            if (std::isspace(pass[i]) || std::isprint(pass[i]))
                 throw std::invalid_argument("Invalid characher in password");
         }
-		Server  myServer(portNbr, input2);
+		Server  myServer(portNbr, pass);
 		myServer.run();
 	}
 	catch (std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
+		return (1);
 	}
 	return (0);
 }

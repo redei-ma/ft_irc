@@ -28,16 +28,20 @@ class Channel
 		Channel(const Channel& other);
 		Channel&	operator=(const Channel& other);
 
+	public:
+		Channel(const std::string& name);
+		~Channel();
+
 		bool						hasPassword() const;//
 		const std::string&			getPassword() const;//
 		void						setPassword(const std::string& password);//
 		void						removePassword();//
 
 		bool						hasTopic() const;//
-		const std::string&			getTopic() const;//
 		void						setTopic(const std::string& topic);//
 		bool						getTopicRestriction() const;//
 		void						setTopicRestriction(bool topicRestriction);//
+		bool						isTopicRestricted() const;//
 
 		bool						isInviteOnly() const;//
 		void						setInviteOnly(bool isInviteOnly);//
@@ -60,15 +64,18 @@ class Channel
 		bool						isOperator(User* user) const;//
 		bool						isInvited(User* user) const;//
 		std::size_t					getUserCount() const;//
+
 		
-	public:
+		
+		
+		void						broadcastMessage(const std::string& message, User* sender);
+		const std::string&			getName() const;
 
+		const std::string&			getTopic() const;//
 
-		Channel(const std::string& name);
-		const std::string&			getName() const;//
-		~Channel();
+		void addInvitedUser(User*);
+		void removeInvitedUser(User*);
 
-		//broadcast message to all users in the channel
 
 };
 
