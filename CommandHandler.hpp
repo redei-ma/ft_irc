@@ -3,10 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   CommandHandler.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fzuccaro <fzuccaro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 11:32:48 by gpirozzi          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/11/14 15:17:29 by gpirozzi         ###   ########.fr       */
+=======
+/*   Updated: 2025/11/14 14:49:38 by fzuccaro         ###   ########.fr       */
+>>>>>>> francesco
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +20,12 @@
 # include <vector>
 # include <string>
 # include <map>
+<<<<<<< HEAD
 # define DECLERE_COMMAND(name) t_status name##Command(User* executer, std::vector<std::string>)
+=======
+# include <exception>
+# define DECLERE_COMMAND(name) t_status name##Command(User*, std::vector<std::string>)
+>>>>>>> francesco
 
 #include "Server.hpp"
 
@@ -75,7 +84,7 @@ class	CommandHandler
 {
 	private:
 			Server&		_server;
-			std::map<t_command, t_status (CommandHandler::*)(User* executer, std::vector<std::string>)> commandMap;
+			std::map<t_command, t_status (CommandHandler::*)(User*, std::vector<std::string>)> commandMap;
 
 			void		initCommand();
 

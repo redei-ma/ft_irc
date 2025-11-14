@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CommandHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fzuccaro <fzuccaro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 10:56:33 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/14 15:52:45 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/14 16:03:32 by fzuccaro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -345,7 +345,6 @@ void	CommandHandler::execCommand(User* executer, std::string input)
 
 		std::string	command = *splittedArgs.begin();
 		splittedArgs.erase(splittedArgs.begin());
-
 		t_status exitStatus = (this->*commandMap[commandToExec])(executer, splittedArgs);
 
 		if (exitStatus != SUCCESS)

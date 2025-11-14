@@ -4,6 +4,7 @@
 # include <cstring>
 # include <stdio.h>
 # include <iostream>
+# include <fcntl.h>
 
 /*-------------------------------------- SIGNAL --------------------------------------*/
 
@@ -15,7 +16,7 @@ void	handle_sigint(int)
 	std::cerr << "\nClosing server al cleaning datas." << std::endl;
 }
 
-/*-------------------------------------- OCF --------------------------------------*/
+/*-------------------------------------- O.C.F. --------------------------------------*/
 
 Server::Server() : _port(0),  _userNbr(0), _serverSin(), _password(""), _pollVector(1)
 {
@@ -56,7 +57,21 @@ Server::~Server()
 
 /*-------------------------------------- Methods --------------------------------------*/
 
-void	Server::sinInit()
+void    Server::initSocket()
+{
+	this->_serverSocket = socket(AF_INET, SOCK_STREAM, 0); // AF_INET gestisce 127.0.0.1 che utilizza IPv4
+	if (this->_serverSocket == -1)
+		throw(std::runtime_error("Error: something went wrong in the call to socket()."));
+
+	this->sinInit();
+
+	if (!this->bindSocket())
+		throw(std::runtime_error("Error: something went wrong in the call to bind()."));
+	if (!this->putInListen())
+		throw(std::runtime_error("Error: something went wrong int he call to listen()."));
+}
+
+void    Server::sinInit()
 {
 	memset(&_serverSin, 0, sizeof(_serverSin));
 	_serverSin.sin_port = htons(_port);
@@ -87,6 +102,7 @@ bool	Server::acceptNewConnection()
 	{
 		std::cerr << "Error: something went wrong in the call to accept()." << std::endl;
 	}
+	fcntl(tmpFd, F_SETFL, O_NONBLOCK);
 	struct pollfd tmpPoll;
 	tmpPoll.fd = tmpFd;
 	tmpPoll.events = POLLIN;
@@ -109,31 +125,67 @@ bool	Server::acceptNewConnection()
 	return true;
 }
 
-void	Server::receiveNewMessage(int i)
+void	Server::receiveNewMessage(int iterator)
 {
-		char buffer[513];
-		ssize_t size = recv(_pollVector[i].fd, buffer, sizeof(buffer) - 1, 0);
-		if (size <= 0)
-		{
-			std::cout << "connesione chiusa" << std::endl;
-			std::map<int, User*>::iterator it = _fdUserMap.find(_pollVector[i].fd);
-			delete (_fdUserMap[_pollVector[i].fd]);
-			_pollVector.erase(_pollVector.begin() + i);
-			_fdUserMap.erase(it);
-			_userNbr--;
-			i--;
-			return ;
-		}
-		buffer[size] = '\0';
-		_fdUserMap[_pollVector[i].fd]->updateStrBuffer(buffer, std::strlen(buffer));
-		if (_fdUserMap[_pollVector[i].fd]->getStrBuffer().find("\r\n") != std::string::npos)
-		{
-			_command->execCommand(_fdUserMap[_pollVector[i].fd], _fdUserMap[_pollVector[i].fd]->getStrBuffer());
-			_fdUserMap[_pollVector[i].fd]->resetBuffer();
-		}
+	char buffer[513];
+	ssize_t size = recv(_pollVector[iterator].fd, buffer, sizeof(buffer) - 1, 0);
+	if (size <= 0)
+	{
+		std::cout << "connesione chiusa" << std::endl;
+		std::map<int, User*>::iterator it = _fdUserMap.find(_pollVector[iterator].fd);
+		delete (_fdUserMap[_pollVector[iterator].fd]);
+		_pollVector.erase(_pollVector.begin() + iterator);
+		_fdUserMap.erase(it);
+		_userNbr--;
+		iterator--;
 		return ;
+	}
+	buffer[size] = '\0';
+	_fdUserMap[_pollVector[iterator].fd]->updateStrBuffer(buffer, std::strlen(buffer));
+	if (_fdUserMap[_pollVector[iterator].fd]->getStrBuffer().find("\r\n") != std::string::npos)
+	{
+		_command->execCommand(_fdUserMap[_pollVector[iterator].fd], _fdUserMap[_pollVector[iterator].fd]->getStrBuffer());
+		_fdUserMap[_pollVector[iterator].fd]->resetBuffer();
+	}
+	return ;
 }
 
+bool            Server::channelNameExists(const std::string &channelName)
+{
+	for (size_t i = 0; i < _channelVector.size(); i++)
+	{
+		if (_channelVector[i]->getName() == channelName)
+			return true;
+	}
+	return false;
+}
+
+bool            Server::userNickEsists(const std::string &nickName)
+{
+	for (size_t i = 0; i < _fdUserMap.size(); i++)
+	{
+		if (_fdUserMap[i]->getNickName() == nickName)
+			return true;
+	}
+	return false;
+}
+
+Channel*       Server::getChannelName(const std::string &channelName)
+{
+	for (size_t i = 0; i < _channelVector.size(); i++)
+	{
+		if (_channelVector[i]->getName() == channelName)
+			return _channelVector[i];
+	}
+	return NULL;
+}
+
+std::string&        Server::getPassword()
+{
+	return this->_password;
+}
+
+/*------------------------------------------------CORE LOOP----------------------------------------------------------*/
 
 void	Server::run()
 {
@@ -142,9 +194,10 @@ void	Server::run()
 	_pollVector[0].revents = 0;
 	while (_serverRunning)
 	{
-		int ret = poll(_pollVector.data(), _pollVector.size(), -1); //(Renato non e' convinto)
+		int ret = poll(_pollVector.data(), _pollVector.size(), -1); //Non sono convinto (Renato non e' convinto e Giovanni e' un po scemo)
 		if (ret == -1)
 			break;
+		fcntl(_serverSocket, F_SETFL, O_NONBLOCK);
 		for (size_t i = 0; i < _pollVector.size(); i++)
 		{
 			if (_pollVector[i].revents & POLLIN)
@@ -159,18 +212,4 @@ void	Server::run()
 			}
 		}
 	}
-}
-
-void	Server::initSocket()
-{
-	this->_serverSocket = socket(AF_INET, SOCK_STREAM, 0); // AF_INET gestisce 127.0.0.1 che utilizza IPv4
-	if (this->_serverSocket == -1)
-		throw(std::runtime_error("Error: something went wrong in the call to socket()."));
-
-	this->sinInit();
-
-	if (!this->bindSocket())
-		throw(std::runtime_error("Error: something went wrong in the call to bind()."));
-	if (!this->putInListen())
-		throw(std::runtime_error("Error: something went wrong int he call to listen()."));
 }
