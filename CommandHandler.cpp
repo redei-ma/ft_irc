@@ -188,6 +188,13 @@ t_status	CommandHandler::passCommand(User* executer, std::vector<std::string> co
 		executer->sendMessage("You are already authenticated, please try to execute a command");
 		return (SUCCESS);
 	}
+
+	if (executer->getHasPassword())
+	{
+		executer->sendMessage("Your password is already set, please try to execute USER/NICK command");
+		return (SUCCESS);
+	}
+
 	if (commandArgs.empty())
 		return (ERR_NEEDMOREPARAMS);
 

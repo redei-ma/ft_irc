@@ -6,7 +6,7 @@
 /*   By: redei-ma <redei-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/11 16:42:12 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/14 16:14:46 by redei-ma         ###   ########.fr       */
+/*   Updated: 2025/11/14 16:38:47 by redei-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,24 @@ int main(int argc, char **argv)
         std::cerr << "Invalid port number" << std::endl;
         return (1);
     }
-    std::string pass(argv[2]);	
+
+    std::string pass(argv[2]);
+	if (pass.empty())
+	{
+		std::cerr << "Empty password is not allowed" << std::endl;
+		return (1);
+	}
+	for (size_t i = 0; i < pass.size(); i++)
+	{
+		if (std::isspace(pass[i]) || !std::isprint(pass[i]))
+		{
+			std::cerr << "Invalid characher in password" << std::endl;
+        	return (1);
+		}
+	}
+
 	try
 	{
-        for (size_t i = 0; i < pass.size(); i++)
-        {
-            if (std::isspace(pass[i]) || std::isprint(pass[i]))
-                throw std::invalid_argument("Invalid characher in password");
-        }
 		Server  myServer(portNbr, pass);
 		myServer.run();
 	}
