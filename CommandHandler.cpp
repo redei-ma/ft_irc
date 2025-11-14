@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   CommandHandler.cpp                                 :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: redei-ma <redei-ma@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/07 10:56:33 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/14 16:21:34 by redei-ma         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "CommandHandler.hpp"
 #include <algorithm>
 #include <iostream>
@@ -206,7 +194,7 @@ t_status	CommandHandler::passCommand(User* executer, std::vector<std::string> co
 	if (commandArgs.size() > 1)
 		return (ERR_TOOMANYPARAMS);
 
-	if (_server.getPassword() != commandArgs)
+	if (_server.getPassword() != commandArgs[0])
 		return (ERR_PASSWDMISMATCH);
 	else
 		executer->setPassword(commandArgs[0]);
@@ -240,7 +228,7 @@ t_status	CommandHandler::nickCommand(User* executer, std::vector<std::string> co
 			return (ERR_ERRONEUSNICKNAME);
 	}
 
-	if (_server.checkNickName(commandArgs[0]))
+	if (_server.userNickEsists(commandArgs[0]))
 		return (ERR_NICKNAMEINUSE);
 
 	if (executer->getHasNickName() == true)
@@ -285,30 +273,35 @@ t_status	CommandHandler::userCommand(User* executer, std::vector<std::string> co
 
 t_status	CommandHandler::joinCommand(User* executer, std::vector<std::string> commandArgs)
 {
+	(void)executer;
 	(void)commandArgs;
 	return SUCCESS;
 }
 
 t_status	CommandHandler::msgCommand(User* executer, std::vector<std::string> commandArgs)
 {
+	(void)executer;
 	(void)commandArgs;
 	return SUCCESS;
 }
 
 t_status	CommandHandler::kickCommand(User* executer, std::vector<std::string> commandArgs)
 {
+	(void)executer;
 	(void)commandArgs;
 	return SUCCESS;
 }
 
 t_status	CommandHandler::inviteCommand(User* executer, std::vector<std::string> commandArgs)
 {
+	(void)executer;
 	(void)commandArgs;
 	return SUCCESS;
 }
 
 t_status	CommandHandler::modeCommand(User* executer, std::vector<std::string> commandArgs)
 {
+	(void)executer;
 	(void)commandArgs;
 	return SUCCESS;
 }
@@ -351,6 +344,7 @@ t_status	CommandHandler::topicCommand(User* executer, std::vector<std::string> c
 	// 		}
 	// 	}
 	// }
+	(void)executer;
 	(void)commandArgs;
 
 	return SUCCESS;
@@ -358,6 +352,7 @@ t_status	CommandHandler::topicCommand(User* executer, std::vector<std::string> c
 
 t_status	CommandHandler::pingCommand(User* executer, std::vector<std::string> commandArgs)
 {
+	(void)executer;
 	(void)commandArgs;
 	return SUCCESS;
 }
