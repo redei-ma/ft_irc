@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 14:55:56 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/13 13:32:06 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/14 11:52:00 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,19 +26,19 @@ User::User():
 {}
 
 User::User(int fd) :
-				_fd(fd), _userName(""),
-				_nickName(""), _password(""),
-				_bufferStr(""), _isAuthenticated(false),
-				_hasNickName(false), _hasUserName(false),
-				_hasPassword(false), _lastPongTime(0)
+			_fd(fd), _userName(""),
+			_nickName(""), _password(""),
+			_bufferStr(""), _isAuthenticated(false),
+			_hasNickName(false), _hasUserName(false),
+			_hasPassword(false), _lastPongTime(0)
 {}
 
 User::User(const User &other) :
-							_fd(getUserFd()), _userName(other.getUserName()),
-							_nickName(other.getNickName()), _password(other.getPassword()),
-							_bufferStr(other.getStrBuffer()), _isAuthenticated(other.getIsAuthenticated()),
-							_hasNickName(other.getHasNickName()), _hasUserName(other.getHasUserName()),
-							_hasPassword(other.getHasPassword()), _lastPongTime(0)
+			_fd(getUserFd()), _userName(other.getUserName()),
+			_nickName(other.getNickName()), _password(other.getPassword()),
+			_bufferStr(other.getStrBuffer()), _isAuthenticated(other.getIsAuthenticated()),
+			_hasNickName(other.getHasNickName()), _hasUserName(other.getHasUserName()),
+			_hasPassword(other.getHasPassword()), _lastPongTime(0)
 {}
 
 /* ================OPERATOR================ */
@@ -49,6 +49,7 @@ User&	User::operator=(const User& other)
 		_userName = other.getUserName();
 		_nickName = other.getNickName();
 		_password = other.getPassword();
+		_bufferStr = other.getStrBuffer();
 
 		_hasUserName = other.getHasUserName();
 		_hasNickName = other.getHasNickName();

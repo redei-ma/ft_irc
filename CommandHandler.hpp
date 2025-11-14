@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 11:32:48 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/13 11:57:55 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/14 15:17:29 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,7 @@
 # include <vector>
 # include <string>
 # include <map>
-# include <exception>
-# define DECLERE_COMMAND(name) t_status name##Command(std::vector<std::string>)
+# define DECLERE_COMMAND(name) t_status name##Command(User* executer, std::vector<std::string>)
 
 #include "Server.hpp"
 
@@ -54,6 +53,8 @@ typedef enum	s_status
 	ERR_NOTONCHANNEL = 442,		//You're not on that channel	Tentativo di operazione su un canale dove l’utente non è presente.
 	ERR_USERONCHANNEL = 443,	//is already on channel	L’utente è già nel canale.
 	ERR_NOTREGISTERED = 451,	//You have not registered	Il client non ha completato la registrazione.
+	ERR_NEEDMOREPARAMS = 461,	//Too few args	pochi argomenti
+	ERR_PASSWDMISMATCH = 464,	
 	ERR_CHANNELISFULL = 471,	//Cannot join channel (+l)	Canale pieno.
 	ERR_INVITEONLYCHAN = 473,	//Cannot join channel (+i)	Canale solo su invito.
 	ERR_BANNEDFROMCHAN = 474,	//Cannot join channel (+b)	L’utente è bannato dal canale.
@@ -61,6 +62,7 @@ typedef enum	s_status
 	ERR_NOPRIVILEGES = 481,		//Permission Denied- You're not an IRC operator	Comando riservato agli operatori.
 	ERR_CHANOPRIVSNEEDED = 482,	//You're not channel operator	L’utente non è operatore del canale.
 	ERR_CANTKILLSERVER = 483,	//You can't kill a server!	Comando KILL verso un server.
+	ERR_TOOMANYPARAMS = 900,
 
 	//DA METTERE NEL SERVER???
 	//RPL_YOURHOST = 002,			//Your host is <servername>	Info sul server.
@@ -73,7 +75,7 @@ class	CommandHandler
 {
 	private:
 			Server&		_server;
-			std::map<t_command, t_status (CommandHandler::*)(std::vector<std::string>)> commandMap;
+			std::map<t_command, t_status (CommandHandler::*)(User* executer, std::vector<std::string>)> commandMap;
 
 			void		initCommand();
 

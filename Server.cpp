@@ -9,7 +9,7 @@
 
 volatile sig_atomic_t _serverRunning = 1;
 
-void    handle_sigint(int)
+void	handle_sigint(int)
 {
 	_serverRunning = 0;
 	std::cerr << "\nClosing server al cleaning datas." << std::endl;
@@ -30,11 +30,10 @@ Server::Server(const Server &other) : _port(other._port),  _userNbr(0), _serverS
 Server::Server(int _portNbr, std::string _pass) : _port(_portNbr),  _userNbr(0), _serverSin(), _password(_pass), _pollVector(1)
 {
 	this->_command = new CommandHandler(*this);
-		initSocket();
+	initSocket();
 }
-	
 
-Server&     Server::operator=(const Server &other)
+Server&	Server::operator=(const Server &other)
 {
 	if (this != &other)
 	{
@@ -57,7 +56,7 @@ Server::~Server()
 
 /*-------------------------------------- Methods --------------------------------------*/
 
-void    Server::sinInit()
+void	Server::sinInit()
 {
 	memset(&_serverSin, 0, sizeof(_serverSin));
 	_serverSin.sin_port = htons(_port);
@@ -65,14 +64,14 @@ void    Server::sinInit()
 	_serverSin.sin_family = AF_INET;
 }
 
-bool    Server::bindSocket()
+bool	Server::bindSocket()
 {
 	if (bind(this->_serverSocket, (sockaddr *)&this->_serverSin, sizeof(_serverSin)) < 0)
 		return false;
 	return true;
 }
 
-bool    Server::putInListen()
+bool	Server::putInListen()
 {
 	int reuse = 1;
 	setsockopt(this->_serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
@@ -81,13 +80,12 @@ bool    Server::putInListen()
 	return true;
 }
 
-bool    Server::acceptNewConnection()
+bool	Server::acceptNewConnection()
 {
 	int tmpFd = accept(_serverSocket, NULL, NULL);
 	if (tmpFd == -1)
 	{
 		std::cerr << "Error: something went wrong in the call to accept()." << std::endl;
-		
 	}
 	struct pollfd tmpPoll;
 	tmpPoll.fd = tmpFd;
@@ -137,7 +135,7 @@ void	Server::receiveNewMessage(int i)
 }
 
 
-void    Server::run()
+void	Server::run()
 {
 	_pollVector[0].fd = this->_serverSocket;
 	_pollVector[0].events = POLLIN;
@@ -163,7 +161,7 @@ void    Server::run()
 	}
 }
 
-void    Server::initSocket()
+void	Server::initSocket()
 {
 	this->_serverSocket = socket(AF_INET, SOCK_STREAM, 0); // AF_INET gestisce 127.0.0.1 che utilizza IPv4
 	if (this->_serverSocket == -1)

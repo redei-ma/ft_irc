@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 10:56:33 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/13 15:05:19 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/14 15:30:13 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,12 @@ void CommandHandler::errorHandler(t_status error, const User& user, const std::s
 		case ERR_NOTREGISTERED:
 			buffer = prefix + "451 " + target + " :You have not registered\r\n";
 			break;
+		case ERR_NEEDMOREPARAMS:
+			buffer = prefix + "461 " + target + " " + arg + " :Not enough parameters\r\n";
+			break;
+		case ERR_PASSWDMISMATCH:
+			buffer = prefix + "464 " + target + " " + arg + " :Password incorrect\r\n"; //controlla messaggio vero
+			break;
 		case ERR_CHANNELISFULL:
 			buffer = prefix + "471 " + target + " " + arg + " :Cannot join channel (+l)\r\n";
 			break;
@@ -101,6 +107,9 @@ void CommandHandler::errorHandler(t_status error, const User& user, const std::s
 			break;
 		case ERR_CANTKILLSERVER:
 			buffer = prefix + "483 " + target + " :You can't kill a server!\r\n";
+			break;
+		case ERR_TOOMANYPARAMS: //controllare se puo' andare bene
+			buffer = prefix + "900 " + target + " :Too many args for command " + command + "\r\n";
 			break;
 		case SUCCESS:
 			break;
@@ -174,64 +183,143 @@ void	splitCommand(std::vector<std::string>& splittedCommands, std::string input)
 	}
 }
 
-t_status	CommandHandler::passCommand(std::vector<std::string> commandArgs)
+static bool	isInvalidCharacher(char c)
 {
-	for (size_t i = 0; i < commandArgs.size(); i++)
+	return (c == '-' || c == '_' || c == '.' || c == '#');
+}
+
+static bool isValidCharacher(char c)
+{
+	return (c == '[' || c == ']' || c == '\'' || c == '`' || c == '^' || c == '{' || c == '}');
+}
+
+t_status	CommandHandler::passCommand(User* executer, std::vector<std::string> commandArgs)
+{
+	if (executer->getIsAuthenticated())
 	{
-		std::cout << "ARG["<<i<<"]" << commandArgs[i] << std::endl;
+		executer->sendMessage("You are already authenticated, please try to execute a command");
+		return (SUCCESS);
 	}
+	if (commandArgs.empty())
+		return (ERR_NEEDMOREPARAMS);
+
+	if (commandArgs.size() > 1)
+		return (ERR_TOOMANYPARAMS);
+
+	if (_server.getPassword() != commandArgs)
+		return (ERR_PASSWDMISMATCH);
+	else
+		executer->setPassword(commandArgs[0]);
+
 	return SUCCESS;
 }
 
-t_status	CommandHandler::nickCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::nickCommand(User* executer, std::vector<std::string> commandArgs)
+{
+	if (!executer->getHasPassword())
+		return (ERR_NOTREGISTERED);
+
+	if (commandArgs.size() > 1)
+		return (ERR_ERRONEUSNICKNAME);
+
+	if (commandArgs[0].empty())
+		return (ERR_NONICKNAMEGIVEN);
+
+	if (commandArgs[0].size() > 9)
+		return (ERR_ERRONEUSNICKNAME);
+
+	if ((std::isdigit(commandArgs[0][0]) || isInvalidCharacher(commandArgs[0][0])) &&
+			!isValidCharacher(commandArgs[0][0]))
+		return (ERR_ERRONEUSNICKNAME);
+
+	for (size_t i = 0; i < commandArgs[0].size(); i++)
+	{
+		if (!std::isalnum(commandArgs[0][i])
+			&& !isValidCharacher(commandArgs[0][i])
+			&& commandArgs[0][i] != '-')
+			return (ERR_ERRONEUSNICKNAME);
+	}
+
+	if (_server.checkNickName(commandArgs[0]))
+		return (ERR_NICKNAMEINUSE);
+
+	if (executer->getHasNickName() == true)
+	{
+		executer->sendMessage("NickName is already set"); // da vedere se si deve dare un errore o no
+		return (SUCCESS);
+	}
+
+	executer->setNickName(commandArgs[0]);
+	return SUCCESS;
+}
+
+t_status	CommandHandler::userCommand(User* executer, std::vector<std::string> commandArgs)
+{
+	if (!executer->getHasPassword())
+		return (ERR_NOTREGISTERED);
+
+	if (commandArgs[0].empty())
+		return (ERR_NEEDMOREPARAMS);
+	//:real name e' da fare????
+	if (commandArgs.size() > 1)
+		return (ERR_TOOMANYPARAMS);
+	
+	if (commandArgs[0].size() > 9)
+		return (ERR_NEEDMOREPARAMS);
+
+	for (size_t i = 0; i < commandArgs[0].size(); i++)
+	{
+		if (!std::isprint(commandArgs[0][i]) && std::isspace(commandArgs[0][i]))
+			return (ERR_NEEDMOREPARAMS);
+	}
+
+	if (executer->getHasUserName() == true)
+	{
+		executer->sendMessage("User is already set"); // da vedere se si deve dare un errore o no
+		return (SUCCESS);
+	}
+
+	executer->setUserName(commandArgs[0]);
+	return SUCCESS;
+}
+
+t_status	CommandHandler::joinCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::userCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::msgCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::joinCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::kickCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::msgCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::inviteCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::kickCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::topicCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::inviteCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::modeCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::topicCommand(std::vector<std::string> commandArgs)
-{
-	(void)commandArgs;
-	return SUCCESS;
-}
-
-t_status	CommandHandler::modeCommand(std::vector<std::string> commandArgs)
-{
-	(void)commandArgs;
-	return SUCCESS;
-}
-
-t_status	CommandHandler::pingCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::pingCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
@@ -257,7 +345,8 @@ void	CommandHandler::execCommand(User* executer, std::string input)
 
 		std::string	command = *splittedArgs.begin();
 		splittedArgs.erase(splittedArgs.begin());
-		t_status exitStatus = (this->*commandMap[commandToExec])(splittedArgs);
+
+		t_status exitStatus = (this->*commandMap[commandToExec])(executer, splittedArgs);
 
 		if (exitStatus != SUCCESS)
 			errorHandler(exitStatus, *executer, splittedArgs[i], command);

@@ -15,11 +15,7 @@
 # include "User.hpp"
 # include "Channel.hpp"
 
-
-
 # define MAX_USR_NBR 5 // Max user capacity.
-
-
 
 //---------------------------RECOGNIZE OTHER CLASSES-----------------------------            
 
@@ -44,7 +40,7 @@ class Server
         Server&             operator=(const Server &other);
                             ~Server();
             bool            checkChannel();
-            bool            checkUser();
+            bool            checkNickName(std::string&);
     
     /*-------------------- Public Methods --------------------*/
    
