@@ -28,8 +28,6 @@ class Channel
 		Channel(const Channel& other);
 		Channel&	operator=(const Channel& other);
 
-		const std::string&			getName() const;//
-
 		bool						hasPassword() const;//
 		const std::string&			getPassword() const;//
 		void						setPassword(const std::string& password);//
@@ -67,6 +65,7 @@ class Channel
 
 
 		Channel(const std::string& name);
+		const std::string&			getName() const;//
 		~Channel();
 
 		//broadcast message to all users in the channel

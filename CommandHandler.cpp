@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CommandHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fzuccaro <fzuccaro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 10:56:33 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/13 15:05:19 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/14 15:57:06 by fzuccaro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,7 +174,7 @@ void	splitCommand(std::vector<std::string>& splittedCommands, std::string input)
 	}
 }
 
-t_status	CommandHandler::passCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::passCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	for (size_t i = 0; i < commandArgs.size(); i++)
 	{
@@ -183,55 +183,55 @@ t_status	CommandHandler::passCommand(std::vector<std::string> commandArgs)
 	return SUCCESS;
 }
 
-t_status	CommandHandler::nickCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::nickCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::userCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::userCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::joinCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::joinCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::msgCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::msgCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::kickCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::kickCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::inviteCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::inviteCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::topicCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::topicCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::modeCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::modeCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
 }
 
-t_status	CommandHandler::pingCommand(std::vector<std::string> commandArgs)
+t_status	CommandHandler::pingCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)commandArgs;
 	return SUCCESS;
@@ -257,7 +257,7 @@ void	CommandHandler::execCommand(User* executer, std::string input)
 
 		std::string	command = *splittedArgs.begin();
 		splittedArgs.erase(splittedArgs.begin());
-		t_status exitStatus = (this->*commandMap[commandToExec])(splittedArgs);
+		t_status exitStatus = (this->*commandMap[commandToExec])(executer, splittedArgs);
 
 		if (exitStatus != SUCCESS)
 			errorHandler(exitStatus, *executer, splittedArgs[i], command);

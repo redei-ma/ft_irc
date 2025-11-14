@@ -1,5 +1,6 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
+
 //------------------EXTERN INCLUDES
 # include <sys/socket.h>
 # include <netinet/in.h>
@@ -11,6 +12,7 @@
 # include <poll.h>
 # include <vector>
 # include <map>
+
 //-----------------INTERN INCLUDES
 # include "User.hpp"
 # include "Channel.hpp"
@@ -37,19 +39,22 @@ void    handle_sigint(int);
 class Server
 {
     public :
-    /*-------------------- OCF --------------------*/
+    /*--------------------     O.C.F.     --------------------*/
                             Server();
                             Server(int _portNbr, std::string _pass);
                             Server(const Server &other);
         Server&             operator=(const Server &other);
                             ~Server();
-            bool            checkChannel();
-            bool            checkUser();
     
     /*-------------------- Public Methods --------------------*/
    
         void                initSocket();
         void                run();
+        bool                channelNameExists(const std::string &channelName);
+        bool                userNickEsists(const std::string &nickName);
+        Channel*            getChannelName(const std::string &channelName);
+        void                sendMessage(std::string target, std::string message);
+        std::string&        getPassword();
 
     private :
     /*-------------------- Core Variables --------------------*/
@@ -69,8 +74,7 @@ class Server
     bool                bindSocket();
     bool                putInListen();
     bool                acceptNewConnection();
-    void                receiveNewMessage(int i);
-
+    void                receiveNewMessage(int iterator);
 };
 
 #endif
