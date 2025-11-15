@@ -315,45 +315,50 @@ t_status	CommandHandler::modeCommand(User* executer, std::vector<std::string> co
 
 t_status	CommandHandler::topicCommand(User* executer, std::vector<std::string> commandArgs)
 {
-	// if (!executer->getIsAuthenticated())
-	// 	return ERR_NOTREGISTERED;
+	if (!executer->getIsAuthenticated())
+		return ERR_NOTREGISTERED;
 
-	// if (commandArgs.size() < 1)
-	// 	return ERR_NEEDMOREPARAMS;
-	// else if (commandArgs.size() > 2)
-	// 	return ERR_TOOMANYPARAMS;
-	// else
-	// {
-	// 	if (!_server.channelNameExists(commandArgs[0]))
-	// 		return ERR_NOSUCHCHANNEL;
-	// 	Channel tmp = _server.getChannel(commandArgs[0]);
+	if (commandArgs.size() < 1)
+		return ERR_NEEDMOREPARAMS;
+	else if (commandArgs.size() > 2)
+		return ERR_TOOMANYPARAMS;
+	else
+	{
+		Channel *channel = _server.getChannel(commandArgs[0]);
+		if (!channel)
+			return ERR_NOSUCHCHANNEL;
 
-	// 	if (!tmp.isMember)
-	// 		return ERR_NOTONCHANNEL;
+		if (!channel->isMember(executer))
+			return ERR_NOTONCHANNEL;
 		
-	// 	if (commandArgs.size() == 1)
-	// 	{
-	// 		if (!tmp.hasTopic())
-	// 			return RPL_NOTOPIC;
-	// 		else
-	// 			return RPL_TOPIC;	
-	// 	}
-	// 	else if (commandArgs.size() == 2)
-	// 	{
-	// 		if (tmp.isTopicRestricted() && !tmp.isOperator(executer))
-	// 			return ERR_CHANOPRIVSNEEDED;
-	// 		else
-	// 		{
-	// 			tmp.setTopic(commandArgs[1]);
-	// 			// std::string message = ":" + executer->getNickName() + " TOPIC " + tmp.getName() + " :" + commandArgs[1] + "\r\n";
-	// 			// tmp.broadcastMessage(message, executer);
-	// 			return RPL_TOPIC;
-	// 		}
-	// 	}
-	// }
-	(void)executer;
-	(void)commandArgs;
-
+		if (commandArgs.size() == 1)
+		{
+			if (!channel->hasTopic())
+			{
+				std::string message = ":irc.rfg.com 331 " + executer->getNickName() + " " + channel->getName() + " :No topic is set\r\n";
+				executer->sendMessage(message);
+				// return RPL_NOTOPIC;
+			}
+			else 
+			{
+				std::string message = ":irc.rfg.com 332 " + executer->getNickName() + " " + channel->getName() + " :" + channel->getTopic() + "\r\n";
+				executer->sendMessage(message);
+				// return RPL_TOPIC;
+			}
+		}
+		else if (commandArgs.size() == 2)
+		{
+			if (channel->isTopicRestricted() && !channel->isOperator(executer))
+				return ERR_CHANOPRIVSNEEDED;
+			else
+			{
+				channel->setTopic(commandArgs[1]);
+				std::string message = ":" + executer->getNickName() + " TOPIC " + channel->getName() + " :" + channel->getTopic() + "\r\n";
+				channel->broadcastMessage(message, NULL);
+				// return RPL_TOPIC;
+			}
+		}
+	}
 	return SUCCESS;
 }
 

@@ -1,3 +1,20 @@
 nc -C 127.0.0.1 6671
 
-Cerca nome canale ed utente.
+
+Francesco:
+	Cerca nome canale ed utente.
+
+
+
+
+
+
+
+
+
+Renato:
+	Capire come gestire troppi parametri ai comandi
+
+	Capire se sia meglio fare divenatare erroroHandle un replyHandler con risposte anche positive
+
+	Rimuovere i : dall'ultimo argomento
