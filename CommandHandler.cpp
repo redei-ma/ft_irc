@@ -280,8 +280,49 @@ t_status	CommandHandler::userCommand(User* executer, std::vector<std::string> co
 
 t_status	CommandHandler::joinCommand(User* executer, std::vector<std::string> commandArgs)
 {
-	(void)executer;
-	(void)commandArgs;
+	if (!executer->getIsAuthenticated())
+		return (ERR_NOTREGISTERED);
+	
+	if (commandArgs.size() < 1)
+		return (ERR_NEEDMOREPARAMS);
+	
+	//Da fare parsing del nome canale
+
+	Channel* channel = _server.getChannelByName(commandArgs[0]);
+	if (channel)
+	{
+		//controllo che l user non sia gia' nel canale
+		std::vector<User*> userVect = channel->getUsers();
+		if (std::find(userVect.begin(), userVect.end(), executer) != userVect.end())
+			return (ERR_USERONCHANNEL);
+		
+		//controllo se il canale sia pieno
+		if (channel->isFull())
+			return (ERR_CHANNELISFULL);
+
+		//se il canale e' solo su invito, controllo se l utente e' stato invitato
+		if (channel->isInviteOnly())
+		{
+			if (channel->isInvited(executer))
+			{
+				channel->addUser(executer);
+				return (SUCCESS);
+			}
+			else
+				return (ERR_INVITEONLYCHAN);
+		}
+		else
+		{
+			channel->addUser(executer);
+			return (SUCCESS);
+		}
+	}
+	else
+	{
+		//creo nuovo canale e aggiungo l user come operatore
+		Channel &newChannel = _server.createChannel(commandArgs[0]);
+		newChannel.addOperator(executer);	
+	}
 	return SUCCESS;
 }
 

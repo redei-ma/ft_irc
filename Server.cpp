@@ -171,7 +171,7 @@ bool            Server::userNickEsists(const std::string &nickName)
 	return false;
 }
 
-Channel*       Server::getChannelName(const std::string &channelName)
+Channel*       Server::getChannelByName(const std::string &channelName)
 {
 	for (size_t i = 0; i < _channelVector.size(); i++)
 	{
@@ -179,6 +179,18 @@ Channel*       Server::getChannelName(const std::string &channelName)
 			return _channelVector[i];
 	}
 	return NULL;
+}
+
+Channel&	Server::createChannel(const std::string channelName)
+{
+	Channel	*newChannel = new Channel(channelName);
+	_channelVector.push_back(newChannel);
+	return (*newChannel);
+}
+
+std::vector<Channel*>   Server::getChannelVector() const
+{
+	return (_channelVector);
 }
 
 std::string&        Server::getPassword()
