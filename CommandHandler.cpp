@@ -320,7 +320,7 @@ static std::vector<std::pair
 			channelAndKeys.push_back(std::make_pair(channelToJoin[i], keys[i]));
 		//accoppio una stringa vuota per facilitare i controlli dopo
 		else
-			channelAndKeys.push_back(std::make_pair(channelToJoin[i], ""));
+			channelAndKeys.push_back(std::make_pair(channelToJoin[i], std::string("")));
 	}
 	return (channelAndKeys);
 }
