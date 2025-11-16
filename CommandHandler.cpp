@@ -294,9 +294,12 @@ static void	SplitChannelKeys(std::vector<std::string> &channelToJoin,
 
 static bool	isValidChannelName(const std::string& channel)
 {
-	if (channel.empty() || channel.size() > 15 )
+	if (channel.empty() || channel.size() == 1 || channel.size() > 15)
 		return (false);
 	
+	if (channel[0] != '#')
+		return (false);
+		
 	// salto #
 	for (size_t i = 1; i < channel.size(); i++)
 	{
@@ -328,10 +331,9 @@ static std::vector<std::pair
 static t_status	canUserJoin(Channel* channel, User* executer)
 {
 	//controllo che l user non sia gia' nel canale
-	std::vector<User*> userVect = channel->getUsers();
-	if (std::find(userVect.begin(), userVect.end(), executer) != userVect.end())
+	if (channel->isMember(executer))
 		return (ERR_USERONCHANNEL);
-	
+
 	//controllo se il canale è pieno
 	if (channel->isFull())
 		return (ERR_CHANNELISFULL);
