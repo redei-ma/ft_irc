@@ -73,7 +73,6 @@ class Channel
 
 		const std::string&			getTopic() const;//
 
-		void addInvitedUser(User*);
 		void removeInvitedUser(User*);
 
 

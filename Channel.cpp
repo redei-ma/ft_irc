@@ -75,13 +75,6 @@ void Channel::addUser(User* user)
 	_users.push_back(user);
 	if (hasUsersLimit() && _users.size() >= _usersLimit)
 		_isFull = true;
-}
-
-void Channel::addInvitedUser(User* user)
-{
-	_users.push_back(user);
-	if (hasUsersLimit() && _users.size() >= _usersLimit)
-		_isFull = true;
 	removeInvitedUser(user);
 }
 
