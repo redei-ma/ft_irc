@@ -428,7 +428,8 @@ t_status	CommandHandler::joinCommand(User* executer, std::vector<std::string> co
 	//eseguo il comando su ogni canale e controllo esito
 	for (size_t i = 0; i < channelAndKeys.size(); i++)
 	{
-		t_status	joinStatus = execJoin(_server, executer, channelAndKeys[i].first, channelAndKeys[i].second);
+		t_status	joinStatus = execJoin(_server, executer,
+										channelAndKeys[i].first, channelAndKeys[i].second);
 		if (joinStatus != SUCCESS)
 			return(joinStatus);
 	}
