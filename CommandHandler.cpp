@@ -144,6 +144,7 @@ t_command	CommandHandler::reconizeCommand(std::string command)
 
 void	splitArgs(std::vector<std::string>& splittedArgs, std::string args)
 {
+	//Da capire se limit deve essere ' :'
 	std::string::iterator limit = std::find(args.begin(), args.end(), ':');
 
 	std::istringstream			stream(std::string(args.begin(), limit));

@@ -18,3 +18,5 @@ Renato:
 	Capire se sia meglio fare divenatare erroroHandle un replyHandler con risposte anche positive
 
 	Rimuovere i : dall'ultimo argomento
+
+	Ricontrollare parsing sopratutto SplitArgs
