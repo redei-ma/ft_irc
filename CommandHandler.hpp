@@ -89,15 +89,6 @@ class	CommandHandler
 			CommandHandler& operator=(const CommandHandler&);
 			void		execCommand(User*, std::string);
 			void		errorHandler(t_status, const User&, const std::string&, const std::string&) const;
-
-/* 			DA CAPIRE
-			class ErrorHandler: public std::exception
-			{
-				public:
-					void		errorHandler(t_error, const User&, const std::string&, const std::string&) const;
-					virtual const char* what() const throw();
-					virtual ~ErrorHandler();
-			}; */
 };
 
 #endif
