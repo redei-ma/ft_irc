@@ -17,22 +17,22 @@ t_status	CommandHandler::inviteCommand(User* executer, std::vector<std::string> 
 	Channel *channel = _server.getChannel(commandArgs[1]);
 	if (!channel)
 		return ERR_NOSUCHCHANNEL;
-	
+
 	if (!channel->isMember(executer))
 		return ERR_NOTONCHANNEL;
-	
+
 	if (channel->isMember(invitedUser))
 		return ERR_USERONCHANNEL;
-	
+
 	if (channel->isInviteOnly() && !channel->isOperator(executer))
 		return ERR_CHANOPRIVSNEEDED;
 
 	channel->addInvitedUser(invitedUser);
 	invitedUser->sendMessage(":" + executer->getNickName() + " INVITE " + invitedUser->getNickName() + " :" + channel->getName() + "\r\n");
-	
+
 	std::string message = ":irc.rfg.com 341 " + executer->getNickName() + " " + invitedUser->getNickName() + " " + channel->getName() + "\r\n";
 	executer->sendMessage(message);
 	// return RPL_INVITING;
-	
+
 	return SUCCESS;
 }
