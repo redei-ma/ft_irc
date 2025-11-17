@@ -4,7 +4,7 @@ bool isValidCharacher(char c)
 {
 	return (c=='[' || c==']' || c=='\\' || c=='`' || c=='^' || c=='{' || c=='}');
 }
-void	CommandHandler::passCommand(User* executer, std::vector<std::string> commandArgs)
+void	CommandHandler::passCommand(User* executer, std::vector<std::string>& commandArgs)
 {
 	if (executer->getIsAuthenticated())
 	{
@@ -32,7 +32,7 @@ void	CommandHandler::passCommand(User* executer, std::vector<std::string> comman
 	return ;
 }
 
-void	CommandHandler::nickCommand(User* executer, std::vector<std::string> commandArgs)
+void	CommandHandler::nickCommand(User* executer, std::vector<std::string>& commandArgs)
 {
 	if (!executer->getHasPassword())
 		return (ReplyHandler::errorHandler(ERR_NOTREGISTERED, *executer, "", "NICK"));
@@ -68,7 +68,7 @@ void	CommandHandler::nickCommand(User* executer, std::vector<std::string> comman
 	return ;
 }
 
-void	CommandHandler::userCommand(User* executer, std::vector<std::string> commandArgs)
+void	CommandHandler::userCommand(User* executer, std::vector<std::string>& commandArgs)
 {
 	if (!executer->getHasPassword())
 		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "USER"));

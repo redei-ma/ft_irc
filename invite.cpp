@@ -1,6 +1,6 @@
 #include "CommandHandler.hpp"
 
-void	CommandHandler::inviteCommand(User* executer, std::vector<std::string> commandArgs)
+void	CommandHandler::inviteCommand(User* executer, std::vector<std::string>& commandArgs)
 {
 	if (!executer->getIsAuthenticated())
 		return (ReplyHandler::errorHandler(ERR_NOTREGISTERED, *executer, "", "INVITE"));

@@ -88,18 +88,23 @@ static void	splitCommand(std::vector<std::string>& splittedCommands, std::string
 
 
 
-
-
-
-
-
-
-void	CommandHandler::pingCommand(User* executer, std::vector<std::string> commandArgs)
+void CommandHandler::modeCommand(User* executer, std::vector<std::string>& commandArgs)
 {
 	(void)executer;
 	(void)commandArgs;
 	return ;
 }
+
+
+
+
+
+// void	CommandHandler::pingCommand(User* executer, std::vector<std::string> commandArgs)
+// {
+// 	(void)executer;
+// 	(void)commandArgs;
+// 	return ;
+// }
 
 void	CommandHandler::execCommand(User* executer, std::string input)
 {

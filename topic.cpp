@@ -1,6 +1,6 @@
 #include "CommandHandler.hpp"
 
-void	CommandHandler::topicCommand(User* executer, std::vector<std::string> commandArgs)
+void	CommandHandler::topicCommand(User* executer, std::vector<std::string>& commandArgs)
 {
 	if (!executer->getIsAuthenticated())
 		return (ReplyHandler::errorHandler(ERR_NOTREGISTERED, *executer, "", "TOPIC"));

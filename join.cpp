@@ -132,7 +132,7 @@ static void	execJoin(Server& _server, User* executer,
 	return ;
 }
 
-void	CommandHandler::joinCommand(User* executer, std::vector<std::string> commandArgs)
+void	CommandHandler::joinCommand(User* executer, std::vector<std::string>& commandArgs)
 {
 	if (!executer->getIsAuthenticated())
 		return (ReplyHandler::errorHandler(ERR_NOTREGISTERED, *executer, "", "JOIN"));

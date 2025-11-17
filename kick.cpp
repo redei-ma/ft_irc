@@ -1,6 +1,6 @@
 #include "CommandHandler.hpp"
 
-void	CommandHandler::kickCommand(User* executer, std::vector<std::string> commandArgs)
+void	CommandHandler::kickCommand(User* executer, std::vector<std::string>& commandArgs)
 {
 	if (!executer->getIsAuthenticated())
 		return (ReplyHandler::errorHandler(ERR_NOTREGISTERED, *executer, "", "KICK"));
@@ -35,6 +35,6 @@ void	CommandHandler::kickCommand(User* executer, std::vector<std::string> comman
 	channel->broadcastMessage(message, NULL);
 
 	channel->removeUser(targetUser);
-	
+
 	return ;
 }
