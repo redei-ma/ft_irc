@@ -26,6 +26,7 @@ class User
 			User(int fd);
 			User(const User& other);
 			User& operator=(const User& other);
+			bool operator!=(const User& other);
 
 			void	setUserName(std::string userName);
 			void	setNickName(std::string nickName);

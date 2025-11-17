@@ -1,4 +1,5 @@
 #include "CommandHandler.hpp"
+#include "ReplyHandler.hpp"
 #include <algorithm>
 #include <iostream>
 #include <sstream>
@@ -13,98 +14,6 @@ CommandHandler::CommandHandler(Server& server) : _server(server)
 }
 
 CommandHandler::CommandHandler(const CommandHandler& other) : _server(other._server), commandMap(other.commandMap) {}
-
-/* ================ERROR HANDLING================ */
-
-void CommandHandler::errorHandler(t_status error, const User& user, const std::string& arg, const std::string& command) const
-{
-	std::string prefix(":irc.rfg.com ");
-	std::string target = user.getNickName().empty() ? "*" : user.getNickName();
-	std::string buffer;
-
-	switch (error)
-	{
-		case ERR_NOSUCHNICK:
-			buffer = prefix + "401 " + target + " " + arg + " :No such nick/channel\r\n";
-			break;
-		case ERR_NOSUCHCHANNEL:
-			buffer = prefix + "403 " + target + " " + arg + " :No such channel\r\n";
-			break;
-		case ERR_CANNOTSENDTOCHAN:
-			buffer = prefix + "404 " + target + " " + arg + " :Cannot send to channel\r\n";
-			break;
-		case ERR_TOOMANYCHANNELS:
-			buffer = prefix + "405 " + target + " " + arg + " :You have joined too many channels\r\n";
-			break;
-		case ERR_NORECIPIENT:
-			buffer = prefix + "411 " + target + " :No recipient given (" + command + ")\r\n";
-			break;
-		case ERR_NOTEXTTOSEND:
-			buffer = prefix + "412 " + target + " :No text to send\r\n";
-			break;
-		case ERR_UNKNOWNCOMMAND:
-			buffer = prefix + "421 " + target + " " + command + " :Unknown command\r\n";
-			break;
-		case ERR_NONICKNAMEGIVEN:
-			buffer = prefix + "431 " + target + " :No nickname given\r\n";
-			break;
-		case ERR_ERRONEUSNICKNAME:
-			buffer = prefix + "432 " + target + " " + arg + " :Erroneous nickname\r\n";
-			break;
-		case ERR_NICKNAMEINUSE:
-			buffer = prefix + "433 " + target + " " + arg + " :Nickname is already in use\r\n";
-			break;
-		case ERR_NICKCOLLISION:
-			buffer = prefix + "436 " + target + " " + arg + " :Nickname collision\r\n";
-			break;
-		case ERR_USERNOTINCHANNEL:
-			buffer = prefix + "441 " + target + " " + arg + " :They aren't on that channel\r\n";
-			break;
-		case ERR_NOTONCHANNEL:
-			buffer = prefix + "442 " + target + " " + arg + " :You're not on that channel\r\n";
-			break;
-		case ERR_USERONCHANNEL:
-			buffer = prefix + "443 " + target + " " + arg + " :is already on channel\r\n";
-			break;
-		case ERR_NOTREGISTERED:
-			buffer = prefix + "451 " + target + " :You have not registered\r\n";
-			break;
-		case ERR_NEEDMOREPARAMS:
-			buffer = prefix + "461 " + target + " " + arg + " :Not enough parameters\r\n";
-			break;
-		case ERR_PASSWDMISMATCH:
-			buffer = prefix + "464 " + target + " " + arg + " :Password incorrect\r\n"; //controlla messaggio vero
-			break;
-		case ERR_CHANNELISFULL:
-			buffer = prefix + "471 " + target + " " + arg + " :Cannot join channel (+l)\r\n";
-			break;
-		case ERR_INVITEONLYCHAN:
-			buffer = prefix + "473 " + target + " " + arg + " :Cannot join channel (+i)\r\n";
-			break;
-		case ERR_BANNEDFROMCHAN:
-			buffer = prefix + "474 " + target + " " + arg + " :Cannot join channel (+b)\r\n";
-			break;
-		case ERR_BADCHANNELKEY:
-			buffer = prefix + "475 " + target + " " + arg + " :Cannot join channel (+k)\r\n";
-			break;
-		case ERR_NOPRIVILEGES:
-			buffer = prefix + "481 " + target + " :Permission Denied- You're not an IRC operator\r\n";
-			break;
-		case ERR_CHANOPRIVSNEEDED:
-			buffer = prefix + "482 " + target + " " + arg + " :You're not channel operator\r\n";
-			break;
-		case ERR_CANTKILLSERVER:
-			buffer = prefix + "483 " + target + " :You can't kill a server!\r\n";
-			break;
-		case ERR_TOOMANYPARAMS: //controllare se puo' andare bene
-			buffer = prefix + "900 " + target + " :Too many args for command " + command + "\r\n";
-			break;
-		case SUCCESS:
-			break;
-	}
-	if (error != SUCCESS)
-		user.sendMessage(buffer);
-}
 
 /* ================METHODS================ */
 void CommandHandler::initCommand()
@@ -179,96 +88,95 @@ bool isValidCharacher(char c)
 	return (c=='[' || c==']' || c=='\\' || c=='`' || c=='^' || c=='{' || c=='}');
 }
 
-t_status	CommandHandler::passCommand(User* executer, std::vector<std::string> commandArgs)
+void	CommandHandler::passCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	if (executer->getIsAuthenticated())
 	{
 		executer->sendMessage("You are already authenticated, please try to execute a command");
-		return (SUCCESS);
+		return ;
 	}
 
 	if (executer->getHasPassword())
 	{
 		executer->sendMessage("Your password is already set, please try to execute USER/NICK command");
-		return (SUCCESS);
+		return ;
 	}
 
 	if (commandArgs.empty())
-		return (ERR_NEEDMOREPARAMS);
+		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "PASS"));
 
 	if (commandArgs.size() > 1)
-		return (ERR_TOOMANYPARAMS);
+		return (ReplyHandler::errorHandler(ERR_TOOMANYPARAMS, *executer, commandArgs[0], "PASS"));
 
 	if (_server.getPassword() != commandArgs[0])
-		return (ERR_PASSWDMISMATCH);
+		return (ReplyHandler::errorHandler(ERR_PASSWDMISMATCH, *executer, commandArgs[0], "PASS"));
 	else
 		executer->setPassword(commandArgs[0]);
 
-	return (SUCCESS);
+	return ;
 }
 
-t_status	CommandHandler::nickCommand(User* executer, std::vector<std::string> commandArgs)
+void	CommandHandler::nickCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	if (!executer->getHasPassword())
-		return (ERR_NOTREGISTERED);
+		return (ReplyHandler::errorHandler(ERR_NOTREGISTERED, *executer, "", "NICK"));
 
 	if (commandArgs.size() != 1)
-		return (ERR_NEEDMOREPARAMS);
+		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "NICK"));
 
 	if (commandArgs[0].empty())
-		return (ERR_NONICKNAMEGIVEN);
+		return (ReplyHandler::errorHandler(ERR_NONICKNAMEGIVEN, *executer, "", "NICK"));
 
 	if (commandArgs[0].size() > 9)
-		return (ERR_ERRONEUSNICKNAME);
+		return (ReplyHandler::errorHandler(ERR_ERRONEUSNICKNAME, *executer, commandArgs[0], "NICK"));
 
 	if (!std::isalpha(commandArgs[0][0]) || !isValidCharacher(commandArgs[0][0]))
-		return (ERR_ERRONEUSNICKNAME);
+		return (ReplyHandler::errorHandler(ERR_ERRONEUSNICKNAME, *executer, commandArgs[0], "NICK"));
 
 	for (size_t i = 0; i < commandArgs[0].size(); i++)
 	{
 		if (!std::isalnum(commandArgs[0][i]) && !isValidCharacher(commandArgs[0][i]) && commandArgs[0][i] != '-')
-			return (ERR_ERRONEUSNICKNAME);
+			return (ReplyHandler::errorHandler(ERR_ERRONEUSNICKNAME, *executer, commandArgs[0], "NICK"));
 	}
 
 	if (_server.userNickEsists(commandArgs[0]))
-		return (ERR_NICKNAMEINUSE);
+		return (ReplyHandler::errorHandler(ERR_NICKNAMEINUSE, *executer, commandArgs[0], "NICK"));
 
 	if (executer->getHasNickName() == true)
 	{
 		executer->sendMessage("NickName is already set"); // da vedere se si deve dare un errore o no
-		return (SUCCESS);
+		return ;
 	}
 
 	executer->setNickName(commandArgs[0]);
-	return SUCCESS;
+	return ;
 }
 
-t_status	CommandHandler::userCommand(User* executer, std::vector<std::string> commandArgs)
+void	CommandHandler::userCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	if (!executer->getHasPassword())
-		return (ERR_NOTREGISTERED);
-
+		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "USER"));
 		//:real name e' da fare????
 	if (commandArgs.size() != 1)
-		return (ERR_NEEDMOREPARAMS);
+		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "USER"));
 
 	if (commandArgs[0].empty() || commandArgs[0].size() > 9)
-			return (ERR_NEEDMOREPARAMS);
+		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, commandArgs[0], "USER"));
 
 	for (size_t i = 0; i < commandArgs[0].size(); i++)
 	{
 		if (!std::isprint(commandArgs[0][i]) || std::isspace(commandArgs[0][i]))
-			return (ERR_NEEDMOREPARAMS);
+			return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, commandArgs[0], "USER"));
 	}
 
 	if (executer->getHasUserName() == true)
 	{
 		executer->sendMessage("User is already set"); // da vedere se si deve dare un errore o no
-		return (SUCCESS);
+		return ;
 	}
 
 	executer->setUserName(commandArgs[0]);
-	return SUCCESS;
+	return ;
 }
 
 static bool	SplitChannelKeys(std::vector<std::string> &channelToJoin,
@@ -342,31 +250,38 @@ static t_status	canUserJoin(Channel* channel, User* executer)
 	return (SUCCESS);
 }
 
-static t_status	handleWithPassword(Channel* channel, User* executer, const std::string& key)
+static bool	handleWithPassword(Channel* channel, User* executer, const std::string& key)
 {
 	if (!key.empty() && key == channel->getPassword())
 	{
 		channel->addUser(executer);
-		return (SUCCESS);
+		return true;
 	}
-	else
-		return (ERR_BADCHANNELKEY);
+
+	ReplyHandler::errorHandler(ERR_BADCHANNELKEY, *executer, channel->getName(), "JOIN");
+	return (false);
 }
 
-static t_status	handleInviteOnly(Channel* channel, User* executer, const std::string& key)
+static void	handleInviteOnly(Channel* channel, User* executer, const std::string& key)
 {
 	if (channel->isInvited(executer))
 	{
 		if (channel->hasPassword())
-			return (handleWithPassword(channel, executer, key));
+		{
+			if (!handleWithPassword(channel, executer, key))
+				return ;
+		}
 		channel->addUser(executer);
-		return (SUCCESS);
+		if (channel->hasTopic())
+			return ReplyHandler::replyHandler(RPL_TOPIC, );
+		else
+			return ReplyHandler::replyHandler(RPL_NOTOPIC, );
 	}
 	else
-		return (ERR_INVITEONLYCHAN);
+		return (ReplyHandler::errorHandler(ERR_INVITEONLYCHAN, *executer, channel->getName(), "JOIN") );
 }
 
-static t_status	execJoin(Server& _server, User* executer, 
+static void	execJoin(Server& _server, User* executer, 
 					const std::string& inputChannel, const std::string& key)
 {
 	Channel* channel = _server.getChannelByName(inputChannel);
@@ -377,15 +292,14 @@ static t_status	execJoin(Server& _server, User* executer,
 	{
 		status = canUserJoin(channel, executer);
 		if (status != SUCCESS)
-			return (status);
+			return (ReplyHandler::errorHandler(status, *executer, inputChannel, "JOIN"));
 
 		if (channel->isInviteOnly())
-			status = handleInviteOnly(channel, executer, key);
+			handleInviteOnly(channel, executer, key);
 		else if (channel->hasPassword())
-			status = handleWithPassword(channel, executer, key);
+			handleWithPassword(channel, executer, key);
 		else
 			channel->addUser(executer);
-		return (status);
 	}
 	else
 	{
@@ -394,32 +308,32 @@ static t_status	execJoin(Server& _server, User* executer,
 		newChannel.addUser(executer);
 		newChannel.addOperator(executer);
 	}
-	return (status);
+	return ;
 }
 
-t_status	CommandHandler::joinCommand(User* executer, std::vector<std::string> commandArgs)
+void	CommandHandler::joinCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	if (!executer->getIsAuthenticated())
-		return (ERR_NOTREGISTERED);
-	
+		return (ReplyHandler::errorHandler(ERR_NOTREGISTERED, *executer, "", "JOIN"));
+
 	if (commandArgs.size() < 1 || commandArgs.size() > 15)
-		return (ERR_NEEDMOREPARAMS);
+		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "JOIN"));
 
 	std::vector<std::string>	channelToJoin;
 	std::vector<std::string>	keys;
 
 	//riempio le due strutture splittando commandArgs
 	if (!SplitChannelKeys(channelToJoin, keys, commandArgs))
-		return (ERR_NEEDMOREPARAMS);
+		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, channelToJoin[0], "JOIN"));
 
 	//La key e' opzionale quindi non potranno mai essere piu dei canali
 	if (keys.size() > channelToJoin.size())
-		return (ERR_NEEDMOREPARAMS);
+		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "JOIN"));
 
 	for (size_t i = 0; i < channelToJoin.size(); i++)
 	{
 		if (!isValidChannelName(channelToJoin[i]))
-			return (ERR_NEEDMOREPARAMS);
+			return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, channelToJoin[i], "JOIN"));
 	}
 
 	//Dopo aver splittato e controllato il nome di ogni canale accoppio canale e key(se c e)
@@ -428,27 +342,25 @@ t_status	CommandHandler::joinCommand(User* executer, std::vector<std::string> co
 
 	//eseguo il comando su ogni canale e controllo esito
 	for (size_t i = 0; i < channelAndKeys.size(); i++)
-	{
-		t_status	joinStatus = execJoin(_server, executer,
-										channelAndKeys[i].first, channelAndKeys[i].second);
-		if (joinStatus != SUCCESS)
-			return(joinStatus);
+	{	
+		execJoin(_server, executer,
+				channelAndKeys[i].first, channelAndKeys[i].second);
 	}
-	return (SUCCESS);
+	return ;
 }
 
-t_status	CommandHandler::msgCommand(User* executer, std::vector<std::string> commandArgs)
+void	CommandHandler::msgCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)executer;
 	(void)commandArgs;
-	return SUCCESS;
+	return ;
 }
 
-t_status	CommandHandler::kickCommand(User* executer, std::vector<std::string> commandArgs)
+void	CommandHandler::kickCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	if (!executer->getIsAuthenticated())
 		return ERR_NOTREGISTERED;
-	
+
 	if (commandArgs.size() < 2 || commandArgs.size() > 3)
 		return ERR_NEEDMOREPARAMS;
 	
@@ -480,10 +392,10 @@ t_status	CommandHandler::kickCommand(User* executer, std::vector<std::string> co
 	channel->removeUser(targetUser);
 	// return RPL_INVITING;
 
-	return SUCCESS;
+	return ;
 }
 
-t_status	CommandHandler::inviteCommand(User* executer, std::vector<std::string> commandArgs)
+void	CommandHandler::inviteCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	if (!executer->getIsAuthenticated())
 		return ERR_NOTREGISTERED;
@@ -515,17 +427,16 @@ t_status	CommandHandler::inviteCommand(User* executer, std::vector<std::string> 
 	executer->sendMessage(message);
 	// return RPL_INVITING;
 
-	return SUCCESS;
+	return ;
 }
 
-t_status	CommandHandler::modeCommand(User* executer, std::vector<std::string> commandArgs)
+void	CommandHandler::modeCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)executer;
 	(void)commandArgs;
-	return SUCCESS;
 }
 
-t_status	CommandHandler::topicCommand(User* executer, std::vector<std::string> commandArgs)
+void	CommandHandler::topicCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	if (!executer->getIsAuthenticated())
 		return ERR_NOTREGISTERED;
@@ -540,7 +451,7 @@ t_status	CommandHandler::topicCommand(User* executer, std::vector<std::string> c
 
 		if (!channel->isMember(executer))
 			return ERR_NOTONCHANNEL;
-		
+
 		if (commandArgs.size() == 1)
 		{
 			if (!channel->hasTopic())
@@ -569,14 +480,14 @@ t_status	CommandHandler::topicCommand(User* executer, std::vector<std::string> c
 			}
 		}
 	}
-	return SUCCESS;
+	return ;
 }
 
-t_status	CommandHandler::pingCommand(User* executer, std::vector<std::string> commandArgs)
+void	CommandHandler::pingCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	(void)executer;
 	(void)commandArgs;
-	return SUCCESS;
+	return ;
 }
 
 void	CommandHandler::execCommand(User* executer, std::string input)
@@ -593,19 +504,14 @@ void	CommandHandler::execCommand(User* executer, std::string input)
 		if (commandToExec == NOT_FOUND)
 		{
 			std::cout << splittedArgs[0] << " Comando non trovato" << std::endl;
-			errorHandler(ERR_UNKNOWNCOMMAND, *executer, splittedArgs[1], splittedArgs[0]);
+			ReplyHandler::errorHandler(ERR_UNKNOWNCOMMAND, *executer, splittedArgs[1], splittedArgs[0]);
 			continue ;
 		}
 
 		std::string	command = *splittedArgs.begin();
 		splittedArgs.erase(splittedArgs.begin());
 
-		t_status exitStatus = (this->*commandMap[commandToExec])(executer, splittedArgs);
-
-		if (exitStatus != SUCCESS)
-		{
-			errorHandler(exitStatus, *executer, splittedArgs[0], command);
-		}
+		(this->*commandMap[commandToExec])(executer, splittedArgs);
 	}
 }
 
