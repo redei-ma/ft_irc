@@ -516,7 +516,7 @@ t_status	CommandHandler::inviteCommand(User* executer, std::vector<std::string> 
 	if (channel->isInviteOnly() && !channel->isOperator(executer))
 		return ERR_CHANOPRIVSNEEDED;
 
-	channel->InviteUser(invitedUser);
+	channel->inviteUser(invitedUser);
 	invitedUser->sendMessage(":" + executer->getNickName() + " INVITE " + invitedUser->getNickName() + " :" + channel->getName() + "\r\n");
 
 	std::string message = ":irc.rfg.com 341 " + executer->getNickName() + " " + invitedUser->getNickName() + " " + channel->getName() + "\r\n";
