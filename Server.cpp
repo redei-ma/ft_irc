@@ -50,8 +50,13 @@ Server&	Server::operator=(const Server &other)
 Server::~Server()
 {
 	delete(_command);
+
 	for (size_t i = 0; i < _fdUserMap.size(); i++)
 		delete(_fdUserMap[i]);
+
+	for (size_t i = 0; i < _channelVector.size(); i++)
+		delete(_channelVector[i]);
+
 	close(this->_serverSocket);
 }
 

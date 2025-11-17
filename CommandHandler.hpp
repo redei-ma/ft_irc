@@ -4,7 +4,6 @@
 # include <vector>
 # include <string>
 # include <map>
-# include <exception>
 # define DECLERE_COMMAND(name) t_status name##Command(User*, std::vector<std::string>)
 
 #include "Server.hpp"

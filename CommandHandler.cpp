@@ -206,13 +206,16 @@ t_status	CommandHandler::passCommand(User* executer, std::vector<std::string> co
 	else
 		executer->setPassword(commandArgs[0]);
 
-	return SUCCESS;
+	return (SUCCESS);
 }
 
 t_status	CommandHandler::nickCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	if (!executer->getHasPassword())
 		return (ERR_NOTREGISTERED);
+
+	if (commandArgs.size() == 0)
+		return (ERR_NEEDMOREPARAMS);
 
 	if (commandArgs.size() > 1)
 		return (ERR_ERRONEUSNICKNAME);
@@ -256,9 +259,12 @@ t_status	CommandHandler::userCommand(User* executer, std::vector<std::string> co
 	if (commandArgs[0].empty())
 		return (ERR_NEEDMOREPARAMS);
 	//:real name e' da fare????
+	if (commandArgs.size() == 0)
+		return (ERR_NEEDMOREPARAMS);
+
 	if (commandArgs.size() > 1)
-		return (ERR_TOOMANYPARAMS);
-	
+		return (ERR_ERRONEUSNICKNAME);
+
 	if (commandArgs[0].size() > 9)
 		return (ERR_NEEDMOREPARAMS);
 
