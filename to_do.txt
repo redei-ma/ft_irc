@@ -20,3 +20,5 @@ Renato:
 	Rimuovere i : dall'ultimo argomento
 
 	Ricontrollare parsing sopratutto SplitArgs
+
+	se mi connetto e everifico subito la psw

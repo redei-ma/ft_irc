@@ -51,7 +51,7 @@ Server::~Server()
 {
 	delete(_command);
 	for (size_t i = 0; i < _fdUserMap.size(); i++)
-		delete(_fdUserMap[i]);
+		delete(_fdUserMap[i]); //ciama il distruttore del user e viene chiuso anche il socket
 	close(this->_serverSocket);
 }
 
@@ -69,6 +69,8 @@ void    Server::initSocket()
 		throw(std::runtime_error("Error: something went wrong in the call to bind()."));
 	if (!this->putInListen())
 		throw(std::runtime_error("Error: something went wrong int he call to listen()."));
+
+	// non viene mai chiuso il socket del server se lanciata l'eccezione Renato
 }
 
 void    Server::sinInit()
@@ -89,7 +91,8 @@ bool	Server::bindSocket()
 bool	Server::putInListen()
 {
 	int reuse = 1;
-	setsockopt(this->_serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
+	if (setsockopt(this->_serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0)
+		return false;
 	if (listen(this->_serverSocket, 1024) < 0)
 		return false;
 	return true;
@@ -190,6 +193,8 @@ std::string&        Server::getPassword()
 
 void	Server::run()
 {
+	std::cout << "Server running" << std::endl;
+
 	_pollVector[0].fd = this->_serverSocket;
 	_pollVector[0].events = POLLIN;
 	_pollVector[0].revents = 0;

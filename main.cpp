@@ -6,7 +6,7 @@
 /*   By: redei-ma <redei-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/11 16:42:12 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/14 16:38:47 by redei-ma         ###   ########.fr       */
+/*   Updated: 2025/11/17 09:13:48 by redei-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ int main(int argc, char **argv)
         std::cerr << "Invalid input" << std::endl;
         return (1);
     }
+
     char    *endptr;
     int portNbr = std::strtol(argv[1], &endptr,10);
     if (errno == ERANGE || *endptr != '\0' || (portNbr < 6660 || portNbr > 6699))
