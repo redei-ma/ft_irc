@@ -120,7 +120,7 @@ bool Channel::isInvited(User* user) const { return std::find(_invitedUsers.begin
 
 std::size_t Channel::getUserCount() const { return _users.size(); }
 
-void Channel::broadcastMessage(const std::string& message, User* sender)
+void Channel::broadcastMessage(const std::string& message, const User* sender)
 {
 	for (iterator it = _users.begin(); it != _users.end(); ++it)
 	{

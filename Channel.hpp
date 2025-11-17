@@ -68,7 +68,7 @@ class Channel
 		
 		
 		void						inviteUser(User* user);
-		void						broadcastMessage(const std::string& message, User* sender);
+		void						broadcastMessage(const std::string& message, const User* sender);
 		const std::string&			getName() const;
 
 		const std::string&			getTopic() const;//

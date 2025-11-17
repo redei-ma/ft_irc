@@ -46,7 +46,10 @@ User&	User::operator=(const User& other)
 	return (*this);
 }
 
-bool User::operator!=(const User& other) { return (*this != other); }
+bool User::operator!=(const User& other)
+{
+	return (_fd != other.getUserFd());
+}
 
 /* ================METHODS================ */
 void	User::updateStrBuffer(char *buffer, size_t size)

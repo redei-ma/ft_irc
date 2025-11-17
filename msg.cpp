@@ -17,13 +17,13 @@ std::vector<std::string> split(const std::string &s, char delimiter)
     return tokens;
 }
 
-t_status	CommandHandler::msgCommand(User* executer, std::vector<std::string> commandArgs)
+void	CommandHandler::msgCommand(User* executer, std::vector<std::string> commandArgs)
 {
     if (!executer->getIsAuthenticated())
-        return ERR_NOTREGISTERED;
+        return (ReplyHandler::errorHandler(ERR_NOTREGISTERED, *executer, "", "PRIVMSG"));
 
     if (commandArgs.size() != 2)
-        return ERR_NEEDMOREPARAMS;
+        return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "PRIVMSG"));
 
     if (std::find(commandArgs[0].begin(), commandArgs[0].end(), ',') != commandArgs[0].end())
     {   
@@ -34,9 +34,9 @@ t_status	CommandHandler::msgCommand(User* executer, std::vector<std::string> com
             {   
                 Channel     *tmpChannel = _server.getChannelByName(argString[i]);
                 if (!tmpChannel)
-                    return ERR_NOSUCHCHANNEL;
+                    return (ReplyHandler::errorHandler(ERR_NOSUCHCHANNEL, *executer, argString[i], "PRIVMSG"));
                 if (!tmpChannel->isMember(executer))
-                    return ERR_NOTONCHANNEL;
+                    return (ReplyHandler::errorHandler(ERR_NOTONCHANNEL, *executer, argString[i], "PRIVMSG"));
                 std::string _msg = ":" + executer->getNickName() + " PRVMSG " + tmpChannel->getName() + ": " + commandArgs[1];
                 tmpChannel->broadcastMessage(_msg, executer);
             }
@@ -44,7 +44,7 @@ t_status	CommandHandler::msgCommand(User* executer, std::vector<std::string> com
             {
                 User *tmpUser = _server.getUserByNick(argString[i]);
                 if (!tmpUser)
-                    return ERR_NOSUCHNICK;
+                    return (ReplyHandler::errorHandler(ERR_NOSUCHNICK, *executer, argString[i], "PRIVMSG"));
                 std::string _msg = ":" + executer->getNickName() + " PRVMSG " + tmpUser->getNickName() + ": " + commandArgs[1];
                 tmpUser->sendMessage(_msg);
             }
@@ -56,9 +56,9 @@ t_status	CommandHandler::msgCommand(User* executer, std::vector<std::string> com
         {
             Channel     *tmpChannel = _server.getChannelByName(commandArgs[0]);
             if (!tmpChannel)
-                return ERR_NOSUCHCHANNEL;
+                return (ReplyHandler::errorHandler(ERR_NOSUCHCHANNEL, *executer, commandArgs[0], "PRIVMSG"));
             if (!tmpChannel->isMember(executer))
-                return ERR_NOTONCHANNEL;
+                return (ReplyHandler::errorHandler(ERR_NOTONCHANNEL, *executer, commandArgs[0], "PRIVMSG"));
             std::string _msg = ":" + executer->getNickName() + " PRVMSG " + tmpChannel->getName() + ": " + commandArgs[1];
                 tmpChannel->broadcastMessage(_msg, executer);
         }
@@ -66,10 +66,10 @@ t_status	CommandHandler::msgCommand(User* executer, std::vector<std::string> com
         {
             User *tmpUser = _server.getUserByNick(commandArgs[0]);
             if (!tmpUser)
-                return ERR_NOSUCHNICK;
+                return (ReplyHandler::errorHandler(ERR_NOSUCHNICK, *executer, commandArgs[0], "PRIVMSG"));
             std::string _msg = ":" + executer->getNickName() + " PRVMSG " + tmpUser->getNickName() + ": " + commandArgs[1];
             tmpUser->sendMessage(_msg);
         }
     }
-	return SUCCESS;
+	return ;
 }
