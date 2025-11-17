@@ -37,11 +37,11 @@ typedef enum	s_status
 	ERR_USERONCHANNEL = 443,	//is already on channel	L’utente è già nel canale.
 	ERR_NOTREGISTERED = 451,	//You have not registered	Il client non ha completato la registrazione.
 	ERR_NEEDMOREPARAMS = 461,	//Not enough parameters	Parametri insufficienti per il comando.
-	//ERR_ALREADYREGISTRED = 462, // ":You may not reregister"	//Il client ha già completato la registrazione.
+	ERR_ALREADYREGISTRED = 462, // ":You may not reregister"	//Il client ha già completato la registrazione.
 	ERR_PASSWDMISMATCH = 464,	//Password incorrect	Password errata.
 	//ERR_KEYSET = 467,           // "<channel> :Channel key already set"
 	ERR_CHANNELISFULL = 471,	//Cannot join channel (+l)	Canale pieno.
-	//ERR_UNKNOWNMODE = 472,      // "<char> :is unknown mode char to me"
+	ERR_UNKNOWNMODE = 472,      // "<char> :is unknown mode char to me"
 	ERR_INVITEONLYCHAN = 473,	//Cannot join channel (+i)	Canale solo su invito.
 	ERR_BANNEDFROMCHAN = 474,	//Cannot join channel (+b)	L’utente è bannato dal canale.
 	ERR_BADCHANNELKEY = 475,	//Cannot join channel (+k)	Password del canale errata.
