@@ -5,7 +5,7 @@
 # include <string>
 # include "ReplyHandler.hpp"
 # include <map>
-# define DECLERE_COMMAND(name) void name##Command(User*, std::vector<std::string>)
+# define DECLERE_COMMAND(name) void name##Command(User*, std::vector<std::string>&)
 
 #include "Server.hpp"
 
@@ -27,7 +27,7 @@ class	CommandHandler
 {
 	private:
 			Server&		_server;
-			std::map<t_command, void (CommandHandler::*)(User*, std::vector<std::string>)> commandMap;
+			std::map<t_command, void (CommandHandler::*)(User*, std::vector<std::string>&)> commandMap;
 
 			void		initCommand();
 

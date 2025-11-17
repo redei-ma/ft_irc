@@ -432,11 +432,6 @@ void	CommandHandler::inviteCommand(User* executer, std::vector<std::string> comm
 	return ;
 }
 
-void	CommandHandler::modeCommand(User* executer, std::vector<std::string> commandArgs)
-{
-	(void)executer;
-	(void)commandArgs;
-}
 
 void	CommandHandler::topicCommand(User* executer, std::vector<std::string> commandArgs)
 {
