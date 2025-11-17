@@ -120,7 +120,7 @@ void CommandHandler::initCommand()
 	REGISTERED_CMD(MODE, mode);
 }
 
-t_command	CommandHandler::reconizeCommand(std::string command)
+t_command	CommandHandler::recognizeCommand(std::string command)
 {
 	const char  *commands[10] = {
 		"PASS",
@@ -156,6 +156,8 @@ void	splitArgs(std::vector<std::string>& splittedArgs, std::string args)
 	}
 	if (limit != args.end())
 	{
+		//da vedere se esplode
+		limit++;
 		splittedArgs.push_back(std::string(limit, args.end()));
 	}
 }
@@ -215,11 +217,8 @@ t_status	CommandHandler::nickCommand(User* executer, std::vector<std::string> co
 	if (!executer->getHasPassword())
 		return (ERR_NOTREGISTERED);
 
-	if (commandArgs.size() == 0)
+	if (commandArgs.size() != 1)
 		return (ERR_NEEDMOREPARAMS);
-
-	if (commandArgs.size() > 1)
-		return (ERR_ERRONEUSNICKNAME);
 
 	if (commandArgs[0].empty())
 		return (ERR_NONICKNAMEGIVEN);
@@ -257,21 +256,16 @@ t_status	CommandHandler::userCommand(User* executer, std::vector<std::string> co
 	if (!executer->getHasPassword())
 		return (ERR_NOTREGISTERED);
 
-	if (commandArgs[0].empty())
-		return (ERR_NEEDMOREPARAMS);
-	//:real name e' da fare????
-	if (commandArgs.size() == 0)
+		//:real name e' da fare????
+	if (commandArgs.size() != 1)
 		return (ERR_NEEDMOREPARAMS);
 
-	if (commandArgs.size() > 1)
-		return (ERR_ERRONEUSNICKNAME);
-
-	if (commandArgs[0].size() > 9)
-		return (ERR_NEEDMOREPARAMS);
+	if (commandArgs[0].empty() || commandArgs[0].size() > 9)
+			return (ERR_NEEDMOREPARAMS);
 
 	for (size_t i = 0; i < commandArgs[0].size(); i++)
 	{
-		if (!std::isprint(commandArgs[0][i]) && std::isspace(commandArgs[0][i]))
+		if (!std::isprint(commandArgs[0][i]) || std::isspace(commandArgs[0][i]))
 			return (ERR_NEEDMOREPARAMS);
 	}
 
@@ -285,18 +279,27 @@ t_status	CommandHandler::userCommand(User* executer, std::vector<std::string> co
 	return SUCCESS;
 }
 
-static void	SplitChannelKeys(std::vector<std::string> &channelToJoin,
+static bool	SplitChannelKeys(std::vector<std::string> &channelToJoin,
 							std::vector<std::string> &keys,
 							const std::vector<std::string>& commandArgs)
 {
+	bool	finishedChannels = false;
 	for (size_t i = 0; i < commandArgs.size(); i++)
 	{
 		//prendo channel con # seguendo IRC
-		if (commandArgs[i][0] == '#')
+		if (commandArgs[i][0] == '#' && !finishedChannels)
+		{
 			channelToJoin.push_back(commandArgs[i]);
+		}
 		else
+		{
+			finishedChannels = true;
+			if (commandArgs[i][0] == '#')
+				return (false);
 			keys.push_back(commandArgs[i]);
+		}
 	}
+	return (true);
 }
 
 static bool	isValidChannelName(const std::string& channel)
@@ -310,7 +313,6 @@ static bool	isValidChannelName(const std::string& channel)
 	// salto #
 	for (size_t i = 1; i < channel.size(); i++)
 	{
-		//da aggiungere altro? togliere isprint?
 		if (std::isspace(channel[i]) || channel[i] == '#' ||
 			channel[i] == ',' || channel[i] == ':' || !std::isprint(channel[i]))
 				return (false);
@@ -376,7 +378,9 @@ static t_status	execJoin(Server& _server, User* executer,
 					const std::string& inputChannel, const std::string& key)
 {
 	Channel* channel = _server.getChannelByName(inputChannel);
+
 	t_status	status = SUCCESS;
+
 	if (channel != NULL)
 	{
 		status = canUserJoin(channel, executer);
@@ -398,7 +402,7 @@ static t_status	execJoin(Server& _server, User* executer,
 		newChannel.addUser(executer);
 		newChannel.addOperator(executer);
 	}
-	return status;
+	return (status);
 }
 
 t_status	CommandHandler::joinCommand(User* executer, std::vector<std::string> commandArgs)
@@ -413,7 +417,8 @@ t_status	CommandHandler::joinCommand(User* executer, std::vector<std::string> co
 	std::vector<std::string>	keys;
 
 	//riempio le due strutture splittando commandArgs
-	SplitChannelKeys(channelToJoin, keys, commandArgs);
+	if (!SplitChannelKeys(channelToJoin, keys, commandArgs))
+		return (ERR_NEEDMOREPARAMS);
 
 	//La key e' opzionale quindi non potranno mai essere piu dei canali
 	if (keys.size() > channelToJoin.size())
@@ -449,15 +454,75 @@ t_status	CommandHandler::msgCommand(User* executer, std::vector<std::string> com
 
 t_status	CommandHandler::kickCommand(User* executer, std::vector<std::string> commandArgs)
 {
-	(void)executer;
-	(void)commandArgs;
+	if (!executer->getIsAuthenticated())
+		return ERR_NOTREGISTERED;
+	
+	if (commandArgs.size() < 2 || commandArgs.size() > 3)
+		return ERR_NEEDMOREPARAMS;
+	
+	Channel *channel = _server.getChannelByName(commandArgs[0]);
+	if (!channel)
+		return ERR_NOSUCHCHANNEL;
+
+	if (!channel->isMember(executer))
+		return ERR_NOTONCHANNEL;
+	
+	if (!channel->isOperator(executer))
+		return ERR_CHANOPRIVSNEEDED;
+	
+	User* targetUser = _server.getUserByNick(commandArgs[1]);
+	if (!targetUser)
+		return ERR_NOSUCHNICK;
+	
+	if (!channel->isMember(targetUser))
+		return ERR_USERNOTINCHANNEL;
+
+	std::string reason;
+	if (commandArgs.size() == 3)
+		reason = " :" + commandArgs[2];
+	else
+		reason = "";
+	std::string message = ":" + executer->getNickName() + " KICK " + channel->getName() + " " + targetUser->getNickName() + reason + "\r\n";
+	channel->broadcastMessage(message, NULL);
+
+	channel->removeUser(targetUser);
+	// return RPL_INVITING;
+
 	return SUCCESS;
 }
 
 t_status	CommandHandler::inviteCommand(User* executer, std::vector<std::string> commandArgs)
 {
-	(void)executer;
-	(void)commandArgs;
+	if (!executer->getIsAuthenticated())
+		return ERR_NOTREGISTERED;
+
+	if (commandArgs.size() != 2)
+		return ERR_NEEDMOREPARAMS;
+
+	User* invitedUser = _server.getUserByNick(commandArgs[0]);
+	if (!invitedUser)
+		return ERR_NOSUCHNICK;
+
+	Channel *channel = _server.getChannelByName(commandArgs[1]);
+	if (!channel)
+		return ERR_NOSUCHCHANNEL;
+
+	if (!channel->isMember(executer))
+		return ERR_NOTONCHANNEL;
+
+	if (channel->isMember(invitedUser))
+		return ERR_USERONCHANNEL;
+
+	if (channel->isInviteOnly() && !channel->isOperator(executer))
+		return ERR_CHANOPRIVSNEEDED;
+
+	channel->addUser(invitedUser);
+	invitedUser->sendMessage(":" + executer->getNickName() + " INVITE " + invitedUser->getNickName() + " :" + channel->getName() + "\r\n");
+
+	std::string message = ":irc.rfg.com 341 " + executer->getNickName() + " " + invitedUser->getNickName() + " " + channel->getName() + "\r\n";
+	executer->sendMessage(message);
+	// return RPL_INVITING;
+
 	return SUCCESS;
 }
 
@@ -470,53 +535,48 @@ t_status	CommandHandler::modeCommand(User* executer, std::vector<std::string> co
 
 t_status	CommandHandler::topicCommand(User* executer, std::vector<std::string> commandArgs)
 {
-	// if (!executer->getIsAuthenticated())
-	// 	return ERR_NOTREGISTERED;
+	if (!executer->getIsAuthenticated())
+		return ERR_NOTREGISTERED;
 
-	// if (commandArgs.size() < 1)
-	// 	return ERR_NEEDMOREPARAMS;
-	// else if (commandArgs.size() > 2)
-	// 	return ERR_TOOMANYPARAMS;
-	// else
-	// {
-	// 	Channel *channel = _server.getChannel(commandArgs[0]);
-	// 	if (!channel)
-	// 		return ERR_NOSUCHCHANNEL;
+	if (commandArgs.size() > 2)
+		return ERR_NEEDMOREPARAMS;
+	else
+	{
+		Channel *channel = _server.getChannelByName(commandArgs[0]);
+		if (!channel)
+			return ERR_NOSUCHCHANNEL;
 
-	// 	if (!channel->isMember(executer))
-	// 		return ERR_NOTONCHANNEL;
+		if (!channel->isMember(executer))
+			return ERR_NOTONCHANNEL;
 		
-	// 	if (commandArgs.size() == 1)
-	// 	{
-	// 		if (!channel->hasTopic())
-	// 		{
-	// 			std::string message = ":irc.rfg.com 331 " + executer->getNickName() + " " + channel->getName() + " :No topic is set\r\n";
-	// 			executer->sendMessage(message);
-	// 			// return RPL_NOTOPIC;
-	// 		}
-	// 		else 
-	// 		{
-	// 			std::string message = ":irc.rfg.com 332 " + executer->getNickName() + " " + channel->getName() + " :" + channel->getTopic() + "\r\n";
-	// 			executer->sendMessage(message);
-	// 			// return RPL_TOPIC;
-	// 		}
-	// 	}
-	// 	else if (commandArgs.size() == 2)
-	// 	{
-	// 		if (channel->isTopicRestricted() && !channel->isOperator(executer))
-	// 			return ERR_CHANOPRIVSNEEDED;
-	// 		else
-	// 		{
-	// 			channel->setTopic(commandArgs[1]);
-	// 			std::string message = ":" + executer->getNickName() + " TOPIC " + channel->getName() + " :" + channel->getTopic() + "\r\n";
-	// 			channel->broadcastMessage(message, NULL);
-	// 			// return RPL_TOPIC;
-	// 		}
-	// 	}
-	// }
-
-	(void)executer;
-	(void)commandArgs;
+		if (commandArgs.size() == 0)
+		{
+			if (!channel->hasTopic())
+			{
+				std::string message = ":irc.rfg.com 331 " + executer->getNickName() + " " + channel->getName() + " :No topic is set\r\n";
+				executer->sendMessage(message);
+				// return RPL_NOTOPIC;
+			}
+			else 
+			{
+				std::string message = ":irc.rfg.com 332 " + executer->getNickName() + " " + channel->getName() + " :" + channel->getTopic() + "\r\n";
+				executer->sendMessage(message);
+				// return RPL_TOPIC;
+			}
+		}
+		else if (commandArgs.size() == 1)
+		{
+			if (channel->isTopicRestricted() && !channel->isOperator(executer))
+				return ERR_CHANOPRIVSNEEDED;
+			else
+			{
+				channel->setTopic(commandArgs[1]);
+				std::string message = ":" + executer->getNickName() + " TOPIC " + channel->getName() + " :" + channel->getTopic() + "\r\n";
+				channel->broadcastMessage(message, NULL);
+				// return RPL_TOPIC;
+			}
+		}
+	}
 	return SUCCESS;
 }
 
@@ -537,7 +597,7 @@ void	CommandHandler::execCommand(User* executer, std::string input)
 		std::vector<std::string> splittedArgs;
 		splitArgs(splittedArgs, splittedCommands[i]);
 
-		t_command	commandToExec = reconizeCommand(splittedArgs[0]);
+		t_command	commandToExec = recognizeCommand(splittedArgs[0]);
 		if (commandToExec == NOT_FOUND)
 		{
 			std::cout << splittedArgs[0] << " Comando non trovato" << std::endl;
@@ -557,7 +617,14 @@ void	CommandHandler::execCommand(User* executer, std::string input)
 		t_status exitStatus = (this->*commandMap[commandToExec])(executer, splittedArgs);
 
 		if (exitStatus != SUCCESS)
-			errorHandler(exitStatus, *executer, splittedArgs[i], command);
+		{
+			std::string arg("");
+
+			if (!splittedArgs[i].empty())
+				arg = splittedArgs[i];
+
+			errorHandler(exitStatus, *executer, arg, command);
+		}
 	}
 }
 

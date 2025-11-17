@@ -78,7 +78,7 @@ class	CommandHandler
 			DECLERE_COMMAND(mode);
 			DECLERE_COMMAND(ping);
 
-			t_command	reconizeCommand(std::string);
+			t_command	recognizeCommand(std::string);
 			void		parseCommandArgs(std::string);
 			public:
 			CommandHandler(Server&);

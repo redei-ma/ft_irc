@@ -189,6 +189,16 @@ Channel*       Server::getChannelByName(const std::string &channelName)
 	return NULL;
 }
 
+User*               Server::getUserByNick(const std::string &nickName)
+{
+	for (size_t i = 0; i < _fdUserMap.size(); i++)
+	{
+		if (_fdUserMap[_pollVector[i].fd]->getUserName() == nickName)
+			return _fdUserMap[_pollVector[i].fd];
+	}
+	return NULL;
+}
+
 Channel&	Server::createChannel(const std::string channelName)
 {
 	Channel	*newChannel = new Channel(channelName);
