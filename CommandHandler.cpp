@@ -130,7 +130,7 @@ void	CommandHandler::nickCommand(User* executer, std::vector<std::string> comman
 	if (commandArgs[0].size() > 9)
 		return (ReplyHandler::errorHandler(ERR_ERRONEUSNICKNAME, *executer, commandArgs[0], "NICK"));
 
-	if (!std::isalpha(commandArgs[0][0]) || !isValidCharacher(commandArgs[0][0]))
+	if (!std::isalpha(commandArgs[0][0]) && !isValidCharacher(commandArgs[0][0]))
 		return (ReplyHandler::errorHandler(ERR_ERRONEUSNICKNAME, *executer, commandArgs[0], "NICK"));
 
 	for (size_t i = 0; i < commandArgs[0].size(); i++)
@@ -156,7 +156,9 @@ void	CommandHandler::userCommand(User* executer, std::vector<std::string> comman
 {
 	if (!executer->getHasPassword())
 		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "USER"));
-		//:real name e' da fare????
+
+	//:real name e' da fare????
+
 	if (commandArgs.size() != 1)
 		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "USER"));
 
@@ -209,7 +211,7 @@ static bool	isValidChannelName(const std::string& channel)
 	
 	if (channel[0] != '#')
 		return (false);
-		
+
 	// salto #
 	for (size_t i = 1; i < channel.size(); i++)
 	{
@@ -340,7 +342,7 @@ void	CommandHandler::joinCommand(User* executer, std::vector<std::string> comman
 	std::vector<std::pair<std::string, std::string> >	channelAndKeys;
 	channelAndKeys = pairChannelAndKeys(channelToJoin, keys);
 
-	//eseguo il comando su ogni canale e controllo esito
+	//eseguo il comando su ogni canale
 	for (size_t i = 0; i < channelAndKeys.size(); i++)
 	{	
 		execJoin(_server, executer,
