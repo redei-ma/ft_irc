@@ -207,13 +207,16 @@ t_status	CommandHandler::passCommand(User* executer, std::vector<std::string> co
 	else
 		executer->setPassword(commandArgs[0]);
 
-	return SUCCESS;
+	return (SUCCESS);
 }
 
 t_status	CommandHandler::nickCommand(User* executer, std::vector<std::string> commandArgs)
 {
 	if (!executer->getHasPassword())
 		return (ERR_NOTREGISTERED);
+
+	if (commandArgs.size() == 0)
+		return (ERR_NEEDMOREPARAMS);
 
 	if (commandArgs.size() > 1)
 		return (ERR_ERRONEUSNICKNAME);
@@ -257,9 +260,12 @@ t_status	CommandHandler::userCommand(User* executer, std::vector<std::string> co
 	if (commandArgs[0].empty())
 		return (ERR_NEEDMOREPARAMS);
 	//:real name e' da fare????
+	if (commandArgs.size() == 0)
+		return (ERR_NEEDMOREPARAMS);
+
 	if (commandArgs.size() > 1)
-		return (ERR_TOOMANYPARAMS);
-	
+		return (ERR_ERRONEUSNICKNAME);
+
 	if (commandArgs[0].size() > 9)
 		return (ERR_NEEDMOREPARAMS);
 
@@ -279,11 +285,159 @@ t_status	CommandHandler::userCommand(User* executer, std::vector<std::string> co
 	return SUCCESS;
 }
 
+static void	SplitChannelKeys(std::vector<std::string> &channelToJoin,
+							std::vector<std::string> &keys,
+							const std::vector<std::string>& commandArgs)
+{
+	for (size_t i = 0; i < commandArgs.size(); i++)
+	{
+		//prendo channel con # seguendo IRC
+		if (commandArgs[i][0] == '#')
+			channelToJoin.push_back(commandArgs[i]);
+		else
+			keys.push_back(commandArgs[i]);
+	}
+}
+
+static bool	isValidChannelName(const std::string& channel)
+{
+	if (channel.empty() || channel.size() == 1 || channel.size() > 15)
+		return (false);
+	
+	if (channel[0] != '#')
+		return (false);
+		
+	// salto #
+	for (size_t i = 1; i < channel.size(); i++)
+	{
+		//da aggiungere altro? togliere isprint?
+		if (std::isspace(channel[i]) || channel[i] == '#' ||
+			channel[i] == ',' || channel[i] == ':' || !std::isprint(channel[i]))
+				return (false);
+	}
+	return (true);
+}
+
+static std::vector<std::pair
+	<std::string, std::string> > pairChannelAndKeys(const std::vector<std::string>& channelToJoin,
+													const std::vector<std::string>& keys)
+{
+	std::vector<std::pair<std::string, std::string> > channelAndKeys;
+
+	for (size_t i = 0; i < channelToJoin.size(); i++)
+	{
+		if (!keys.empty())
+			channelAndKeys.push_back(std::make_pair(channelToJoin[i], keys[i]));
+		//accoppio una stringa vuota per facilitare i controlli dopo
+		else
+			channelAndKeys.push_back(std::make_pair(channelToJoin[i], std::string("")));
+	}
+	return (channelAndKeys);
+}
+
+static t_status	canUserJoin(Channel* channel, User* executer)
+{
+	//controllo che l user non sia gia' nel canale
+	if (channel->isMember(executer))
+		return (ERR_USERONCHANNEL);
+
+	//controllo se il canale è pieno
+	if (channel->isFull())
+		return (ERR_CHANNELISFULL);
+	
+	return (SUCCESS);
+}
+
+static t_status	handleWithPassword(Channel* channel, User* executer, const std::string& key)
+{
+	if (!key.empty() && key == channel->getPassword())
+	{
+		channel->addUser(executer);
+		return (SUCCESS);
+	}
+	else
+		return (ERR_BADCHANNELKEY);
+}
+
+static t_status	handleInviteOnly(Channel* channel, User* executer, const std::string& key)
+{
+	if (channel->isInvited(executer))
+	{
+		if (channel->hasPassword())
+			return (handleWithPassword(channel, executer, key));
+		channel->addUser(executer);
+		return (SUCCESS);
+	}
+	else
+		return (ERR_INVITEONLYCHAN);
+}
+
+static t_status	execJoin(Server& _server, User* executer, 
+					const std::string& inputChannel, const std::string& key)
+{
+	Channel* channel = _server.getChannelByName(inputChannel);
+	t_status	status = SUCCESS;
+	if (channel != NULL)
+	{
+		status = canUserJoin(channel, executer);
+		if (status != SUCCESS)
+			return (status);
+
+		if (channel->isInviteOnly())
+			status = handleInviteOnly(channel, executer, key);
+		else if (channel->hasPassword())
+			status = handleWithPassword(channel, executer, key);
+		else
+			channel->addUser(executer);
+		return (status);
+	}
+	else
+	{
+		//creo nuovo canale e aggiungo l user come operatore
+		Channel &newChannel = _server.createChannel(inputChannel);
+		newChannel.addUser(executer);
+		newChannel.addOperator(executer);
+	}
+	return status;
+}
+
 t_status	CommandHandler::joinCommand(User* executer, std::vector<std::string> commandArgs)
 {
-	(void)executer;
-	(void)commandArgs;
-	return SUCCESS;
+	if (!executer->getIsAuthenticated())
+		return (ERR_NOTREGISTERED);
+	
+	if (commandArgs.size() < 1 || commandArgs.size() > 15)
+		return (ERR_NEEDMOREPARAMS);
+
+	std::vector<std::string>	channelToJoin;
+	std::vector<std::string>	keys;
+
+	//riempio le due strutture splittando commandArgs
+	SplitChannelKeys(channelToJoin, keys, commandArgs);
+
+	//La key e' opzionale quindi non potranno mai essere piu dei canali
+	if (keys.size() > channelToJoin.size())
+		return (ERR_NEEDMOREPARAMS);
+
+	for (size_t i = 0; i < channelToJoin.size(); i++)
+	{
+		if (!isValidChannelName(channelToJoin[i]))
+			return (ERR_NEEDMOREPARAMS);
+	}
+
+	//Dopo aver splittato e controllato il nome di ogni canale accoppio canale e key(se c e)
+	std::vector<std::pair<std::string, std::string> >	channelAndKeys;
+	channelAndKeys = pairChannelAndKeys(channelToJoin, keys);
+
+	//eseguo il comando su ogni canale e controllo esito
+	for (size_t i = 0; i < channelAndKeys.size(); i++)
+	{
+		t_status	joinStatus = execJoin(_server, executer,
+										channelAndKeys[i].first, channelAndKeys[i].second);
+		if (joinStatus != SUCCESS)
+			return(joinStatus);
+	}
+	return (SUCCESS);
 }
 
 t_status	CommandHandler::msgCommand(User* executer, std::vector<std::string> commandArgs)
@@ -393,6 +547,13 @@ void	CommandHandler::execCommand(User* executer, std::string input)
 
 		std::string	command = *splittedArgs.begin();
 		splittedArgs.erase(splittedArgs.begin());
+
+		if (splittedArgs.size() > 15)
+		{
+			errorHandler(ERR_NEEDMOREPARAMS, *executer, splittedArgs[0], command);
+			return ;
+		}
+
 		t_status exitStatus = (this->*commandMap[commandToExec])(executer, splittedArgs);
 
 		if (exitStatus != SUCCESS)

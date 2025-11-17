@@ -48,7 +48,9 @@ class Server
         void                run();
         bool                channelNameExists(const std::string &channelName);
         bool                userNickEsists(const std::string &nickName);
-        Channel*            getChannelName(const std::string &channelName);
+        Channel*            getChannelByName(const std::string &channelName);
+        std::vector<Channel*>   getChannelVector() const;
+        Channel&                createChannel(const std::string channelName);
         void                sendMessage(std::string target, std::string message);
         std::string&        getPassword();
 
