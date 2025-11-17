@@ -175,10 +175,9 @@ bool            Server::channelNameExists(const std::string &channelName)
 
 bool            Server::userNickEsists(const std::string &nickName)
 {
-	//parte da 1 perche' pollvector[0]=>server socket
-	for (size_t i = 1; i < _fdUserMap.size(); i++)
+	for (std::map<int, User*>::iterator it = _fdUserMap.begin(); it != _fdUserMap.end(); ++it)
 	{
-		if (_fdUserMap[_pollVector[i].fd]->getNickName() == nickName)
+		if (it->second->getNickName() == nickName)
 			return true;
 	}
 	return false;
@@ -196,11 +195,12 @@ Channel*       Server::getChannelByName(const std::string &channelName)
 
 User*               Server::getUserByNick(const std::string &nickName)
 {
-	for (size_t i = 0; i < _fdUserMap.size(); i++)
+	for (std::map<int, User*>::iterator it = _fdUserMap.begin(); it != _fdUserMap.end(); ++it)
 	{
-		if (_fdUserMap[_pollVector[i].fd]->getUserName() == nickName)
-			return _fdUserMap[_pollVector[i].fd];
+		if (it->second->getUserName() == nickName)
+			return it->second;
 	}
+
 	return NULL;
 }
 

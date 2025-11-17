@@ -16,7 +16,7 @@ std::vector<std::string> split(const std::string &s, char delimiter)
     return tokens;
 }
 
-void	CommandHandler::msgCommand(User* executer, std::vector<std::string>& commandArgs)
+void	CommandHandler::prvmsgCommand(User* executer, std::vector<std::string>& commandArgs)
 {
     if (!executer->getIsAuthenticated())
         return (ReplyHandler::errorHandler(ERR_NOTREGISTERED, *executer, "", "PRIVMSG"));

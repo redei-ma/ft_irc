@@ -5,7 +5,7 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g
 VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --track-fds=yes --log-file=log_valgrind.txt
 
 SRCS =	main.cpp Server.cpp User.cpp Channel.cpp CommandHandler.cpp \
-		authentication.cpp invite.cpp join.cpp kick.cpp msg.cpp topic.cpp ReplyHandler.cpp
+		authentication.cpp invite.cpp join.cpp kick.cpp prvmsg.cpp topic.cpp ReplyHandler.cpp
 HEADERS = Server.hpp User.hpp Channel.hpp CommandHandler.hpp ReplyHandler.hpp
 
 all: $(NAME)

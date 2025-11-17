@@ -22,7 +22,7 @@ void CommandHandler::initCommand()
 	REGISTERED_CMD(PASS, pass);
 	REGISTERED_CMD(NICK, nick);
 	REGISTERED_CMD(USER, user);
-	REGISTERED_CMD(PRVMSG, msg);
+	REGISTERED_CMD(PRVMSG, prvmsg);
 	REGISTERED_CMD(KICK, kick);
 	REGISTERED_CMD(INVITE, invite);
 	REGISTERED_CMD(TOPIC, topic);
