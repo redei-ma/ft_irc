@@ -65,17 +65,20 @@ Server::~Server()
 void    Server::initSocket()
 {
 	this->_serverSocket = socket(AF_INET, SOCK_STREAM, 0); // AF_INET gestisce 127.0.0.1 che utilizza IPv4
+	fcntl(_serverSocket, F_SETFL, O_NONBLOCK);
 	if (this->_serverSocket == -1)
 		throw(std::runtime_error("Error: something went wrong in the call to socket()."));
-
 	this->sinInit();
-
 	if (!this->bindSocket())
+	{
+		close(_serverSocket);
 		throw(std::runtime_error("Error: something went wrong in the call to bind()."));
+	}
 	if (!this->putInListen())
+	{
+		close(_serverSocket);
 		throw(std::runtime_error("Error: something went wrong int he call to listen()."));
-
-	// non viene mai chiuso il socket del server se lanciata l'eccezione Renato
+	}
 }
 
 void    Server::sinInit()
@@ -108,7 +111,8 @@ bool	Server::acceptNewConnection()
 	int tmpFd = accept(_serverSocket, NULL, NULL);
 	if (tmpFd == -1)
 	{
-		std::cerr << "Error: something went wrong in the call to accept()." << std::endl;
+    	perror("accept");
+    	return false;
 	}
 	fcntl(tmpFd, F_SETFL, O_NONBLOCK);
 	struct pollfd tmpPoll;
@@ -141,6 +145,7 @@ void	Server::receiveNewMessage(int iterator)
 	{
 		std::cout << "connesione chiusa" << std::endl;
 		std::map<int, User*>::iterator it = _fdUserMap.find(_pollVector[iterator].fd);
+		close(_pollVector[iterator].fd);
 		delete (_fdUserMap[_pollVector[iterator].fd]);
 		_pollVector.erase(_pollVector.begin() + iterator);
 		_fdUserMap.erase(it);
@@ -230,7 +235,6 @@ void	Server::run()
 		int ret = poll(_pollVector.data(), _pollVector.size(), -1); //Non sono convinto (Renato non e' convinto e Giovanni e' un po scemo)
 		if (ret == -1)
 			break;
-		fcntl(_serverSocket, F_SETFL, O_NONBLOCK);
 		for (size_t i = 0; i < _pollVector.size(); i++)
 		{
 			if (_pollVector[i].revents & POLLIN)
