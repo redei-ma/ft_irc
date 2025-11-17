@@ -174,14 +174,9 @@ void	splitCommand(std::vector<std::string>& splittedCommands, std::string input)
 	}
 }
 
-static bool	isInvalidCharacher(char c)
+bool isValidCharacher(char c)
 {
-	return (c == '-' || c == '_' || c == '.' || c == '#');
-}
-
-static bool isValidCharacher(char c)
-{
-	return (c == '[' || c == ']' || c == '\'' || c == '`' || c == '^' || c == '{' || c == '}');
+	return (c=='[' || c==']' || c=='\\' || c=='`' || c=='^' || c=='{' || c=='}');
 }
 
 t_status	CommandHandler::passCommand(User* executer, std::vector<std::string> commandArgs)
@@ -226,15 +221,12 @@ t_status	CommandHandler::nickCommand(User* executer, std::vector<std::string> co
 	if (commandArgs[0].size() > 9)
 		return (ERR_ERRONEUSNICKNAME);
 
-	if ((std::isdigit(commandArgs[0][0]) || isInvalidCharacher(commandArgs[0][0])) &&
-			!isValidCharacher(commandArgs[0][0]))
+	if (!std::isalpha(commandArgs[0][0]) || !isValidCharacher(commandArgs[0][0]))
 		return (ERR_ERRONEUSNICKNAME);
 
 	for (size_t i = 0; i < commandArgs[0].size(); i++)
 	{
-		if (!std::isalnum(commandArgs[0][i])
-			&& !isValidCharacher(commandArgs[0][i])
-			&& commandArgs[0][i] != '-')
+		if (!std::isalnum(commandArgs[0][i]) && !isValidCharacher(commandArgs[0][i]) && commandArgs[0][i] != '-')
 			return (ERR_ERRONEUSNICKNAME);
 	}
 
@@ -473,7 +465,7 @@ t_status	CommandHandler::kickCommand(User* executer, std::vector<std::string> co
 	User* targetUser = _server.getUserByNick(commandArgs[1]);
 	if (!targetUser)
 		return ERR_NOSUCHNICK;
-	
+
 	if (!channel->isMember(targetUser))
 		return ERR_USERNOTINCHANNEL;
 
