@@ -608,22 +608,11 @@ void	CommandHandler::execCommand(User* executer, std::string input)
 		std::string	command = *splittedArgs.begin();
 		splittedArgs.erase(splittedArgs.begin());
 
-		if (splittedArgs.size() > 15)
-		{
-			errorHandler(ERR_NEEDMOREPARAMS, *executer, splittedArgs[0], command);
-			return ;
-		}
-
 		t_status exitStatus = (this->*commandMap[commandToExec])(executer, splittedArgs);
 
 		if (exitStatus != SUCCESS)
 		{
-			std::string arg("");
-
-			if (!splittedArgs[i].empty())
-				arg = splittedArgs[i];
-
-			errorHandler(exitStatus, *executer, arg, command);
+			errorHandler(exitStatus, *executer, splittedArgs[0], command);
 		}
 	}
 }
