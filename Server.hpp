@@ -44,16 +44,16 @@ class Server
     
     /*-------------------- Public Methods --------------------*/
    
-        void                initSocket();
-        void                run();
-        bool                channelNameExists(const std::string &channelName);
-        bool                userNickEsists(const std::string &nickName);
-        User*               getUserByNick(const std::string &nickName);
-        Channel*            getChannelByName(const std::string &channelName);
+        void                    initSocket();
+        void                    run();
+        bool                    channelNameExists(const std::string &channelName);
+        bool                    userNickEsists(const std::string &nickName);
+        User*                   getUserByNick(const std::string &nickName);
+        Channel*                getChannelByName(const std::string &channelName);
         std::vector<Channel*>   getChannelVector() const;
         Channel&                createChannel(const std::string channelName);
-        void                sendMessage(std::string target, std::string message);
-        std::string&        getPassword();
+        void                    sendMessage(std::string target, std::string message);
+        std::string&            getPassword();
 
     private :
     /*-------------------- Core Variables --------------------*/
