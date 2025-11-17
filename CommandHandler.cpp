@@ -516,7 +516,7 @@ t_status	CommandHandler::inviteCommand(User* executer, std::vector<std::string> 
 	if (channel->isInviteOnly() && !channel->isOperator(executer))
 		return ERR_CHANOPRIVSNEEDED;
 
-	channel->addUser(invitedUser);
+	channel->InviteUser(invitedUser);
 	invitedUser->sendMessage(":" + executer->getNickName() + " INVITE " + invitedUser->getNickName() + " :" + channel->getName() + "\r\n");
 
 	std::string message = ":irc.rfg.com 341 " + executer->getNickName() + " " + invitedUser->getNickName() + " " + channel->getName() + "\r\n";
@@ -538,7 +538,7 @@ t_status	CommandHandler::topicCommand(User* executer, std::vector<std::string> c
 	if (!executer->getIsAuthenticated())
 		return ERR_NOTREGISTERED;
 
-	if (commandArgs.size() > 2)
+	if (commandArgs.size() < 1 || commandArgs.size() > 2)
 		return ERR_NEEDMOREPARAMS;
 	else
 	{
@@ -549,7 +549,7 @@ t_status	CommandHandler::topicCommand(User* executer, std::vector<std::string> c
 		if (!channel->isMember(executer))
 			return ERR_NOTONCHANNEL;
 		
-		if (commandArgs.size() == 0)
+		if (commandArgs.size() == 1)
 		{
 			if (!channel->hasTopic())
 			{
@@ -564,7 +564,7 @@ t_status	CommandHandler::topicCommand(User* executer, std::vector<std::string> c
 				// return RPL_TOPIC;
 			}
 		}
-		else if (commandArgs.size() == 1)
+		else if (commandArgs.size() == 2)
 		{
 			if (channel->isTopicRestricted() && !channel->isOperator(executer))
 				return ERR_CHANOPRIVSNEEDED;

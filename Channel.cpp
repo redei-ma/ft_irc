@@ -60,6 +60,11 @@ void Channel::setUsersLimit(std::size_t limit)
 		_isFull = true;
 }
 
+void	Channel::inviteUser(User* user)
+{
+	_invitedUsers.push_back(user);
+}
+
 void Channel::removeUsersLimit()
 {
 	_usersLimit = 0;
