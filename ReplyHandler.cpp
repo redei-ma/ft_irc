@@ -61,12 +61,18 @@ void ReplyHandler::errorHandler(t_status error, const User& user, const std::str
 		case ERR_NEEDMOREPARAMS:
 			buffer = _prefix + " 461 " + target + " " + arg + " :Not enough parameters";
 			break;
+		case ERR_ALREADYREGISTRED:
+			break; // da fare
 		case ERR_PASSWDMISMATCH:
 			buffer = _prefix + " 464 " + target + " " + arg + " :Password incorrect"; //controlla messaggio vero
 			break;
 		case ERR_CHANNELISFULL:
 			buffer = _prefix + " 471 " + target + " " + arg + " :Cannot join channel (+l)";
 			break;
+		// case ERR_UMODEUNKNOWNFLAG:
+		// 	break; DA AGGIUNGERE
+		case ERR_UNKNOWNMODE:
+			break;//da fare
 		case ERR_INVITEONLYCHAN:
 			buffer = _prefix + " 473 " + target + " " + arg + " :Cannot join channel (+i)";
 			break;
