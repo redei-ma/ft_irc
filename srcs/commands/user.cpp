@@ -1,4 +1,5 @@
 #include "CommandHandler.hpp"
+#include "User.hpp"
 
 void	CommandHandler::userCommand(User* executer, std::vector<std::string>& commandArgs)
 {

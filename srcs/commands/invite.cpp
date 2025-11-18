@@ -1,4 +1,8 @@
 #include "CommandHandler.hpp"
+#include "Server.hpp"
+#include "User.hpp"
+#include "Channel.hpp"
+
 
 void	CommandHandler::inviteCommand(User* executer, std::vector<std::string>& commandArgs)
 {

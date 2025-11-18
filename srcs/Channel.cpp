@@ -1,8 +1,6 @@
 #include "Channel.hpp"
 
 #include "User.hpp"
-#include <vector>
-#include <string>
 #include <algorithm>
 
 Channel::Channel(const std::string& name)

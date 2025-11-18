@@ -1,6 +1,4 @@
 #include "CommandHandler.hpp"
-#include "Server.hpp"
-
 #include <algorithm>
 #include <sstream>
 

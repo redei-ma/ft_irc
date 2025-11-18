@@ -2,18 +2,13 @@
 # define SERVER_HPP
 
 //------------------EXTERN INCLUDES
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <sys/types.h>
-# include <arpa/inet.h>
-# include <unistd.h>
+
 # include <csignal>
-# include <stdlib.h>
 # include <poll.h>
+# include <arpa/inet.h>
+# include <string>
 # include <vector>
 # include <map>
-
-
 
 # define MAX_USR_NBR 5 // Max user capacity.
 

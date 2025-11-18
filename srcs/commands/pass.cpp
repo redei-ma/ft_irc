@@ -1,4 +1,6 @@
-#include "ReplyHandler.hpp"
+#include "CommandHandler.hpp"
+#include "Server.hpp"
+#include "User.hpp"
 
 void	CommandHandler::passCommand(User* executer, std::vector<std::string>& commandArgs)
 {

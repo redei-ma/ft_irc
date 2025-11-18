@@ -1,14 +1,15 @@
 #ifndef COMMANDHANDLER_HPP
 # define COMMANDHANDLER_HPP
 
+# include "ReplyHandler.hpp"
 # include <vector>
 # include <string>
-# include "ReplyHandler.hpp"
 # include <map>
 
 # define DECLERE_COMMAND(name) void name##Command(User*, std::vector<std::string>&)
 
 class Server;
+class User;
 
 typedef enum	s_command
 {

@@ -1,4 +1,7 @@
 #include "CommandHandler.hpp"
+#include "Server.hpp"
+#include "User.hpp"
+#include "Channel.hpp"
 
 void	CommandHandler::topicCommand(User* executer, std::vector<std::string>& commandArgs)
 {

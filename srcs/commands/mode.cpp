@@ -1,9 +1,10 @@
 #include "CommandHandler.hpp"
-#include "ReplyHandler.hpp"
+#include "Server.hpp"
 #include "User.hpp"
+#include "Channel.hpp"
+#include <cstdlib>
+#include <cerrno>
 #include <algorithm>
-#include <climits>
-#include <cstddef>
 
 //struttura per ogni flag
 typedef struct s_flag
@@ -29,7 +30,7 @@ bool	checkFlags(std::vector<t_flag>& flags)
 }
 
 void	getFlags(std::string& flagsToSplit,
-						std::vector<t_flag>& flags, int& needParams)
+						std::vector<t_flag>& flags, size_t& needParams)
 {
 	bool modeFlag = true;
 
@@ -92,7 +93,7 @@ bool	flagsNeedArgs(std::string& c, bool& modeFlag)
 	return (false);
 }
 
-void	iFlag(Channel* channel, User* executer, t_flag& flag)
+void	iFlag(Channel* channel, t_flag& flag)
 {
 	if (flag.modeFlag)
 		channel->setInviteOnly(true);
@@ -100,7 +101,7 @@ void	iFlag(Channel* channel, User* executer, t_flag& flag)
 		channel->setInviteOnly(false);
 }
 
-void	tFlag(Channel* channel, User* executer, t_flag& flag)
+void	tFlag(Channel* channel, t_flag& flag)
 {
 	if (flag.modeFlag)
 		channel->setTopicRestriction(true);
@@ -163,9 +164,9 @@ void	lFlag(Channel* channel, User* executer, t_flag& flag)
 void	execMode(Server& _server, Channel* channel, User* executer, t_flag& flag)
 {
 	if (flag.flag == "i")
-		iFlag(channel, executer, flag);
+		iFlag(channel, flag);
 	else if (flag.flag == "t")
-		tFlag(channel, executer, flag);
+		tFlag(channel, flag);
 	else if (flag.flag == "k")
 		kFlag(channel, executer, flag);
 	else if (flag.flag == "o")
@@ -226,7 +227,7 @@ void	CommandHandler::modeCommand(User* executer, std::vector<std::string>& comma
 
 	//crep vettore di t_flag e controllo che ci siano solo flag valide
 	std::vector<t_flag> flags;
-	int	needParams = 0;
+	size_t	needParams = 0;
 	getFlags(commandArgs[1], flags, needParams);
 	if (!checkFlags(flags))
 		return (ReplyHandler::errorHandler(ERR_UNKNOWNMODE, *executer, "", "MODE"));

@@ -1,4 +1,6 @@
 #include "CommandHandler.hpp"
+#include "Server.hpp"
+#include "User.hpp"
 
 static bool isValidCharacher(char c)
 {

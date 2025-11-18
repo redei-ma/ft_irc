@@ -1,8 +1,8 @@
 #include "CommandHandler.hpp"
-#include "Channel.hpp"
 #include "Server.hpp"
+#include "User.hpp"
+#include "Channel.hpp"
 #include <algorithm>
-#include <iostream>
 #include <sstream>
 
 std::vector<std::string> split(const std::string &s, char delimiter)
