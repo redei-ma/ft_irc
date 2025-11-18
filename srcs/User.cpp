@@ -1,8 +1,8 @@
 #include "User.hpp"
 #include <cstring>
 #include <unistd.h>
-#include <iostream>
 # include <sys/socket.h>
+# include "Channel.hpp"
 
 /* ================CONSTRUCTORS================ */
 User::User():
@@ -88,6 +88,22 @@ void	User::closeConnection()
 		close(_fd);
 		_fd = -1;
 	}
+}
+
+void	User::addChannel(Channel* channel)
+{
+	if (channel != NULL)
+		vectorChannel.push_back(channel);
+}
+
+void	User::removeChannel(Channel* channel)
+{
+	std::vector<Channel*>::iterator it = std::find(vectorChannel.begin(), vectorChannel.end(), channel);
+
+	channel->broadcastMessage(_nickName + " has left the channel", this);
+
+	if (it != vectorChannel.end())
+		vectorChannel.erase(it);
 }
 
 /* ================SETTERS================ */

@@ -3,6 +3,9 @@
 
 # include <string>
 # include <time.h>
+# include <vector>
+
+class Channel;
 
 class User
 {
@@ -13,6 +16,7 @@ class User
 				std::string	_nickName;
 				std::string	_password;
 				std::string	_bufferStr;
+				std::vector<Channel*>	vectorChannel;
 
 				bool	_isAuthenticated;
 				bool	_hasNickName;
@@ -47,6 +51,8 @@ class User
 			std::string	getPassword() const;
 			std::string	getStrBuffer() const;
 
+			void		addChannel(Channel*);
+			void		removeChannel(Channel*);
 			void		updateStrBuffer(char *buffer, size_t size);
 			void		updateAuthenticationStatus();
 			void		sendMessage(std::string message) const;
