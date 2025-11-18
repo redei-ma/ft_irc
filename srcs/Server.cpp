@@ -1,4 +1,6 @@
 #include "Server.hpp"
+#include "User.hpp"
+#include "Channel.hpp"
 #include "CommandHandler.hpp"
 
 # include <cstring>

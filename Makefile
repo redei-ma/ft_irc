@@ -5,11 +5,12 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g
 VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --track-fds=yes --log-file=log_valgrind.txt
 
 SRCS_DIR = ./srcs/
+COMMANDS_DIR = $(SRCS_DIR)commands/
 HEADERS_DIR = ./includes/
 
 SRCS =	main.cpp \
-		$(addprefix $(SRCS_DIR), Server.cpp User.cpp Channel.cpp CommandHandler.cpp \
-		authentication.cpp invite.cpp join.cpp kick.cpp prvmsg.cpp topic.cpp ReplyHandler.cpp)
+		$(addprefix $(SRCS_DIR), Server.cpp User.cpp Channel.cpp CommandHandler.cpp ReplyHandler.cpp) \
+		$(addprefix $(COMMANDS_DIR), pass.cpp nick.cpp user.cpp invite.cpp join.cpp kick.cpp prvmsg.cpp topic.cpp mode.cpp)
 HEADERS = $(addprefix $(HEADERS_DIR), Server.hpp User.hpp Channel.hpp CommandHandler.hpp ReplyHandler.hpp)
 
 all: $(NAME)
@@ -27,8 +28,7 @@ fclean: clean
 
 re: fclean all
 
-# make val port='' pass=''
-# valgrind ./IRC <port> <password>
+# make val port='1234' pass='xxxx' --> valgrind ./IRC 1234 xxxx
 val: $(NAME)
 	@echo "Running Valgrind..."
 	@$(VALGRIND) ./$(NAME) $(port) $(pass)

@@ -1,7 +1,7 @@
 #include "CommandHandler.hpp"
-#include "ReplyHandler.hpp"
+#include "Server.hpp"
+
 #include <algorithm>
-#include <iostream>
 #include <sstream>
 
 /* ================MACRO================ */
@@ -103,7 +103,6 @@ void	CommandHandler::execCommand(User* executer, std::string input)
 		t_command	commandToExec = recognizeCommand(splittedArgs[0]);
 		if (commandToExec == NOT_FOUND)
 		{
-			std::cout << splittedArgs[0] << " Comando non trovato" << std::endl;
 			ReplyHandler::errorHandler(ERR_UNKNOWNCOMMAND, *executer, splittedArgs[1], splittedArgs[0]);
 			continue ;
 		}

@@ -13,9 +13,7 @@
 # include <vector>
 # include <map>
 
-//-----------------INTERN INCLUDES
-# include "User.hpp"
-# include "Channel.hpp"
+
 
 # define MAX_USR_NBR 5 // Max user capacity.
 
@@ -24,7 +22,6 @@
 class Channel;
 class User;
 class CommandHandler;
-
 //--------------------------------SIGNAL HANDLING--------------------------------
 
 extern volatile sig_atomic_t _serverRunning;

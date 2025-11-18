@@ -43,11 +43,7 @@ typedef enum	s_status
 	ERR_PASSWDMISMATCH = 464,	//Password incorrect	Password errata.
 	ERR_KEYSET = 467,           // "<channel> :Channel key already set"
 	ERR_CHANNELISFULL = 471,	//Cannot join channel (+l)	Canale pieno.
-<<<<<<< HEAD:ReplyHandler.hpp
-	ERR_UNKNOWNMODE = 472,      // "<char> :is unknown mode char to me"
-=======
 	ERR_UNKNOWNMODE = 472,		//"<char> :is unknown mode char to me"	Modalità sconosciuta.
->>>>>>> origin/renato:includes/ReplyHandler.hpp
 	ERR_INVITEONLYCHAN = 473,	//Cannot join channel (+i)	Canale solo su invito.
 	ERR_BANNEDFROMCHAN = 474,	//Cannot join channel (+b)	L’utente è bannato dal canale.
 	ERR_BADCHANNELKEY = 475,	//Cannot join channel (+k)	Password del canale errata.

@@ -5,9 +5,10 @@
 # include <string>
 # include "ReplyHandler.hpp"
 # include <map>
+
 # define DECLERE_COMMAND(name) void name##Command(User*, std::vector<std::string>&)
 
-#include "Server.hpp"
+class Server;
 
 typedef enum	s_command
 {
