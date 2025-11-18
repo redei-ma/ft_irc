@@ -58,6 +58,7 @@ class User
 			void		sendMessage(std::string message) const;
 			void		closeConnection();
 			void		resetBuffer();
+			void		exitAllChannel();
 
 			~User();
 };

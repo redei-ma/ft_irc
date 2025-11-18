@@ -100,10 +100,17 @@ void	User::removeChannel(Channel* channel)
 {
 	std::vector<Channel*>::iterator it = std::find(vectorChannel.begin(), vectorChannel.end(), channel);
 
-	channel->broadcastMessage(_nickName + " has left the channel", this);
-
 	if (it != vectorChannel.end())
+	{
+		channel->broadcastMessage(_nickName + " has left the channel", this);
 		vectorChannel.erase(it);
+	}
+}
+
+void	User::exitAllChannel()
+{
+	for (size_t i = 0; i < vectorChannel.size(); i++)
+		vectorChannel[i]->removeUser(this);
 }
 
 /* ================SETTERS================ */
@@ -157,5 +164,6 @@ std::string	User::getStrBuffer() const { return (_bufferStr); };
 /* ================DESTRUCTOR================ */
 User::~User()
 {
+	exitAllChannel();
 	closeConnection();
 }
