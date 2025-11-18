@@ -103,10 +103,7 @@ void	User::exitChannel(Channel* channel)
 	std::vector<Channel*>::iterator it = std::find(_channelVector.begin(), _channelVector.end(), channel);
 
 	if (it != _channelVector.end())
-	{
-		channel->broadcastMessage(_nickName + " has left the channel", this);
 		_channelVector.erase(it);
-	}
 }
 
 void	User::exitAllChannel()

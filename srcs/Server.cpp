@@ -161,7 +161,7 @@ void	Server::receiveNewMessage(int iterator)
 		std::cout << "connesione chiusa" << std::endl;
 		std::map<int, User*>::iterator it = _fdUserMap.find(_pollVector[iterator].fd);
 		/* close(_pollVector[iterator].fd); */
-		std::vector<Channel *> tmpVect = _fdUserMap[_pollVector[iterator].fd].getChannelVector(); 
+		std::vector<Channel *> tmpVect = _fdUserMap[_pollVector[iterator].fd]->getChannelVector(); 
 		for (size_t i = 0; i < tmpVect.size(); i++)
 		{
 			if (tmpVect[i]->getUserCount() == 1)												  // Check if the user is alone in every channel he is in
@@ -178,6 +178,7 @@ void	Server::receiveNewMessage(int iterator)
 	_fdUserMap[_pollVector[iterator].fd]->updateStrBuffer(buffer, std::strlen(buffer));
 	if (_fdUserMap[_pollVector[iterator].fd]->getStrBuffer().find("\r\n") != std::string::npos) // Reached the end of message. (delimited by : \r\n) 
 	{
+		std::cout << "Received message from user " << _fdUserMap[_pollVector[iterator].fd]->getNickName() << ": " << _fdUserMap[_pollVector[iterator].fd]->getStrBuffer();
 		_command->execCommand(_fdUserMap[_pollVector[iterator].fd], _fdUserMap[_pollVector[iterator].fd]->getStrBuffer());
 		_fdUserMap[_pollVector[iterator].fd]->resetBuffer();
 	}

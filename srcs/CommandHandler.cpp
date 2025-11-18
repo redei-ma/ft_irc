@@ -20,7 +20,7 @@ void CommandHandler::initCommand()
 	REGISTERED_CMD(PASS, pass);
 	REGISTERED_CMD(NICK, nick);
 	REGISTERED_CMD(USER, user);
-	REGISTERED_CMD(PRVMSG, prvmsg);
+	REGISTERED_CMD(PRIVMSG, privmsg);
 	REGISTERED_CMD(KICK, kick);
 	REGISTERED_CMD(INVITE, invite);
 	REGISTERED_CMD(TOPIC, topic);
@@ -36,7 +36,7 @@ t_command	CommandHandler::recognizeCommand(std::string command)
 		"NICK",
 		"USER",
 		"JOIN",
-		"PRVMSG",
+		"PRIVMSG",
 		"KICK",
 		"INVITE",
 		"TOPIC",

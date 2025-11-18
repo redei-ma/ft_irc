@@ -2,6 +2,7 @@
 #include "Server.hpp"
 #include "User.hpp"
 #include "Channel.hpp"
+#include <iostream>
 
 void	CommandHandler::topicCommand(User* executer, std::vector<std::string>& commandArgs)
 {
@@ -35,9 +36,9 @@ void	CommandHandler::topicCommand(User* executer, std::vector<std::string>& comm
 				channel->setTopic(commandArgs[1]);
 				std::string message = ":" + executer->getNickName() + " TOPIC " + channel->getName() + " :" + channel->getTopic();
 				channel->broadcastMessage(message, NULL);
-				// non posso usare RPL_TOPIC perche' lo manda solo ha chi ha fatt il comando
 			}
 		}
 	}
+	std::cout << "TOPIC command executed: " << executer->getNickName() << " set topic for " << commandArgs[0] << std::endl;
 	return ;
 }

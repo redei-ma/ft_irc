@@ -66,7 +66,7 @@ void        sendSingleMessage(Server &_server, User *executer, std::vector<std::
     return ;
 }
 
-void	CommandHandler::prvmsgCommand(User* executer, std::vector<std::string>& commandArgs)
+void	CommandHandler::privmsgCommand(User* executer, std::vector<std::string>& commandArgs)
 {
     if (!executer->getIsAuthenticated())
         return (ReplyHandler::errorHandler(ERR_NOTREGISTERED, *executer, "", "PRVMSG"));

@@ -1,14 +1,15 @@
 #include "CommandHandler.hpp"
 #include "User.hpp"
+#include <iostream>
 
 void	CommandHandler::userCommand(User* executer, std::vector<std::string>& commandArgs)
 {
 	if (!executer->getHasPassword())
-		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "USER"));
+		return (ReplyHandler::errorHandler(ERR_NOTREGISTERED, *executer, "", "USER"));
 
 	//:real name e' da fare????
 
-	if (commandArgs.size() != 1)
+	if (commandArgs.size() > 4)
 		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "USER"));
 
 	if (commandArgs[0].empty() || commandArgs[0].size() > 9)
@@ -27,5 +28,7 @@ void	CommandHandler::userCommand(User* executer, std::vector<std::string>& comma
 	}
 
 	executer->setUserName(commandArgs[0]);
+
+	std::cout << "USER command executed: " << executer->getNickName() << " set username" << std::endl;
 	return ;
 }

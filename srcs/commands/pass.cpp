@@ -1,6 +1,7 @@
 #include "CommandHandler.hpp"
 #include "Server.hpp"
 #include "User.hpp"
+#include <iostream>
 
 void	CommandHandler::passCommand(User* executer, std::vector<std::string>& commandArgs)
 {
@@ -27,5 +28,6 @@ void	CommandHandler::passCommand(User* executer, std::vector<std::string>& comma
 	else
 		executer->setPassword(commandArgs[0]);
 
+	std::cout << "PASS command executed: " << executer->getNickName() << " provided correct password" << std::endl;
 	return ;
 }

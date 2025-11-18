@@ -2,6 +2,7 @@
 #include "Server.hpp"
 #include "User.hpp"
 #include "Channel.hpp"
+#include <iostream>
 
 static void addUserToChannel(User* executer, Channel* channel)
 {
@@ -14,6 +15,9 @@ static void addUserToChannel(User* executer, Channel* channel)
 	
 	ReplyHandler::replyHandler(RPL_NAMREPLY, *executer, *channel, NULL);
 	ReplyHandler::replyHandler(RPL_ENDOFNAMES, *executer, *channel, NULL);
+
+	std::cout << "JOIN command executed: " << executer->getNickName() << " joined " << channel->getName() << std::endl;
+	return ;
 }
 
 static bool	SplitChannelKeys(std::vector<std::string> &channelToJoin,
@@ -87,16 +91,13 @@ static t_status	canUserJoin(Channel* channel, User* executer)
 	return (SUCCESS);
 }
 
-static bool	handleWithPassword(Channel* channel, User* executer, const std::string& key)
+static void	handleWithPassword(Channel* channel, User* executer, const std::string& key)
 {
 	if (!key.empty() && key == channel->getPassword())
-	{
 		addUserToChannel(executer, channel);
-		return true;
-	}
-
-	ReplyHandler::errorHandler(ERR_BADCHANNELKEY, *executer, channel->getName(), "JOIN");
-	return (false);
+	else
+		ReplyHandler::errorHandler(ERR_BADCHANNELKEY, *executer, channel->getName(), "JOIN");
+	return;
 }
 
 static void	handleInviteOnly(Channel* channel, User* executer, const std::string& key)
@@ -104,10 +105,7 @@ static void	handleInviteOnly(Channel* channel, User* executer, const std::string
 	if (channel->isInvited(executer))
 	{
 		if (channel->hasPassword())
-		{
-			if (!handleWithPassword(channel, executer, key))
-				return ;
-		}
+			handleWithPassword(channel, executer, key);
 		else
 			addUserToChannel(executer, channel);
 	}
@@ -134,6 +132,7 @@ static void	execJoin(Server& _server, User* executer,
 			handleWithPassword(channel, executer, key);
 		else
 			addUserToChannel(executer, channel);
+		
 	}
 	else
 	{

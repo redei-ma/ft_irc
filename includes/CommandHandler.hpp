@@ -17,7 +17,7 @@ typedef enum	s_command
 	NICK,
 	USER,
 	JOIN,
-	PRVMSG,
+	PRIVMSG,
 	KICK,
 	INVITE,
 	TOPIC,
@@ -39,7 +39,7 @@ class	CommandHandler
 			DECLERE_COMMAND(pass);
 			DECLERE_COMMAND(nick);
 			DECLERE_COMMAND(user);
-			DECLERE_COMMAND(prvmsg);
+			DECLERE_COMMAND(privmsg);
 			DECLERE_COMMAND(kick);
 			DECLERE_COMMAND(invite);
 			DECLERE_COMMAND(topic);

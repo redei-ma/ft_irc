@@ -2,6 +2,7 @@
 #include "Server.hpp"
 #include "User.hpp"
 #include "Channel.hpp"
+#include <iostream>
 
 void	CommandHandler::kickCommand(User* executer, std::vector<std::string>& commandArgs)
 {
@@ -38,6 +39,8 @@ void	CommandHandler::kickCommand(User* executer, std::vector<std::string>& comma
 	channel->broadcastMessage(message, NULL);
 
 	channel->removeUser(targetUser);
+
+	std::cout << "KICK command executed: " << executer->getNickName() << " kicked " << targetUser->getNickName() << " from " << channel->getName() << std::endl;
 
 	// if (channel->getUsers().empty())
 	// 	_server.deleteChannel(channel);

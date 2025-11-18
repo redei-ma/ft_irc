@@ -1,6 +1,7 @@
 #include "CommandHandler.hpp"
 #include "Server.hpp"
 #include "User.hpp"
+#include <iostream>
 
 static bool isValidCharacher(char c)
 {
@@ -40,5 +41,7 @@ void	CommandHandler::nickCommand(User* executer, std::vector<std::string>& comma
 	}
 
 	executer->setNickName(commandArgs[0]);
+
+	std::cout << "NICK command executed: " << executer->getNickName() << std::endl;
 	return ;
 }
