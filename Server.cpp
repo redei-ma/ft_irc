@@ -8,11 +8,11 @@
 
 /*-------------------------------------- SIGNAL --------------------------------------*/
 
-volatile sig_atomic_t _serverRunning = 1;
+volatile sig_atomic_t _serverRunning = 1;                                                  // Server is normally running
 
 void	handle_sigint(int)
 {
-	_serverRunning = 0;
+	_serverRunning = 0;																	   // If a CTRL+C(SIGINT) arrives, the core loop is interrupted and close() and delete() are called 
 	std::cerr << "\nClosing server al cleaning datas." << std::endl;
 }
 
@@ -64,17 +64,17 @@ Server::~Server()
 
 void    Server::initSocket()
 {
-	this->_serverSocket = socket(AF_INET, SOCK_STREAM, 0); // AF_INET gestisce 127.0.0.1 che utilizza IPv4
-	fcntl(_serverSocket, F_SETFL, O_NONBLOCK);
+	this->_serverSocket = socket(AF_INET, SOCK_STREAM, 0); 								   // AF_INET handles 127.0.0.1(Localhost) which uses IPv4
+	fcntl(_serverSocket, F_SETFL, O_NONBLOCK);                                             // O_NONBLOCK make the server NON-BLOCKING. 
 	if (this->_serverSocket == -1)
 		throw(std::runtime_error("Error: something went wrong in the call to socket()."));
-	this->sinInit();
-	if (!this->bindSocket())
+	this->sinInit();																	   // Initializes the sin struct with 0 and then fills it.
+	if (!this->bindSocket())															   // bind() on socket, associate the port with the socket server fd.
 	{
 		close(_serverSocket);
 		throw(std::runtime_error("Error: something went wrong in the call to bind()."));
 	}
-	if (!this->putInListen())
+	if (!this->putInListen())                                                              // Call listen() which make the server in listen-mode (waiting for a new connection request)
 	{
 		close(_serverSocket);
 		throw(std::runtime_error("Error: something went wrong int he call to listen()."));
@@ -114,21 +114,21 @@ bool	Server::acceptNewConnection()
     	perror("accept");
     	return false;
 	}
-	fcntl(tmpFd, F_SETFL, O_NONBLOCK);
+	fcntl(tmpFd, F_SETFL, O_NONBLOCK);       // make it NON-BLOCKING, same as the server.
 	struct pollfd tmpPoll;
 	tmpPoll.fd = tmpFd;
 	tmpPoll.events = POLLIN;
 	tmpPoll.revents = 0;
 	if (_userNbr >= MAX_USR_NBR)
 	{
-		const char *errorMsg = "Error: max capacity of user has been reached. Connection will be interrupted now.";
+		const char *errorMsg = "Error: max capacity of user has been reached. Connection will be interrupted now."; // Max 1024 Users, please. 
 		send(tmpFd, errorMsg, 81, 0);
 		close(tmpFd);
 		return false ;
 	}
 	else
 	{
-		std::cout << "Nuovo utente connesso" << std::endl;
+		std::cout << "Nuovo utente connesso" << std::endl;                  // Notify sended and new User added to the vector of poll.
 		_pollVector.push_back(tmpPoll);
 		User *tmpUser = new User(tmpFd);
 		this->_fdUserMap[tmpFd] = tmpUser;
@@ -139,9 +139,9 @@ bool	Server::acceptNewConnection()
 
 void	Server::receiveNewMessage(int iterator)
 {
-	char buffer[513];
+	char buffer[513]; 														      // Max 512 characters per buffer, + 1 for terminal.
 	ssize_t size = recv(_pollVector[iterator].fd, buffer, sizeof(buffer) - 1, 0);
-	if (size <= 0)
+	if (size <= 0)                                                                // A client disconnected.
 	{
 		std::cout << "connesione chiusa" << std::endl;
 		std::map<int, User*>::iterator it = _fdUserMap.find(_pollVector[iterator].fd);
@@ -155,7 +155,7 @@ void	Server::receiveNewMessage(int iterator)
 	}
 	buffer[size] = '\0';
 	_fdUserMap[_pollVector[iterator].fd]->updateStrBuffer(buffer, std::strlen(buffer));
-	if (_fdUserMap[_pollVector[iterator].fd]->getStrBuffer().find("\r\n") != std::string::npos)
+	if (_fdUserMap[_pollVector[iterator].fd]->getStrBuffer().find("\r\n") != std::string::npos) // Reached the end of message. (delimited by : \r\n) 
 	{
 		_command->execCommand(_fdUserMap[_pollVector[iterator].fd], _fdUserMap[_pollVector[iterator].fd]->getStrBuffer());
 		_fdUserMap[_pollVector[iterator].fd]->resetBuffer();
@@ -225,27 +225,27 @@ std::string&        Server::getPassword()
 
 void	Server::run()
 {
-	std::cout << "Server running" << std::endl;
+	std::cout << "Server running" << std::endl;                     // The Server is prepared to run in the constructor
 
 	_pollVector[0].fd = this->_serverSocket;
 	_pollVector[0].events = POLLIN;
 	_pollVector[0].revents = 0;
 	while (_serverRunning)
 	{
-		int ret = poll(_pollVector.data(), _pollVector.size(), -1); //Non sono convinto (Renato non e' convinto e Giovanni e' un po scemo)
+		int ret = poll(_pollVector.data(), _pollVector.size(), -1); // poll() 
 		if (ret == -1)
 			break;
 		for (size_t i = 0; i < _pollVector.size(); i++)
 		{
 			if (_pollVector[i].revents & POLLIN)
 			{
-				if (_pollVector[i].fd == this->_serverSocket)
+				if (_pollVector[i].fd == this->_serverSocket)       // If poll receive something on the server socket, it'll be a new connection request.
 				{
-					if (!acceptNewConnection())
+					if (!acceptNewConnection())                     // Accept new connection, listened by listen().
 						continue ;
 				}
-				else
-					receiveNewMessage(i);
+				else											    // else, it only can be a message.
+					receiveNewMessage(i);                           // receive the message by recv() and handles the buffers.
 			}
 		}
 	}

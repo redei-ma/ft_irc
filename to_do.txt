@@ -1,23 +1,4 @@
 nc -C 127.0.0.1 6671
-Francesco:
-Uso non sicuro di _fdUserMap e _pollVector:
-
-Nei metodi getUserByNick o userNickEsists faccio:
-
-for (size_t i = 0; i < _fdUserMap.size(); i++)
-    if (_fdUserMap[_pollVector[i].fd]->getUserName() == nickName)
-
-
-Problema: _fdUserMap è una map<int, User*>, quindi usare size() non garantisce che _pollVector[i].fd sia presente nella mappa. Potrei dereferenziare una chiave inesistente → crash.
-
-Soluzione: usare iteratore sicuro:
-
-for (std::map<int, User*>::iterator it = _fdUserMap.begin(); it != _fdUserMap.end(); ++it) {
-    if (it->second->getUserName() == nickName)
-        return it->second;
-}
-return nullptr;
-
 
 Renato:
 	Capire come gestire troppi parametri ai comandi
