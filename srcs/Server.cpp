@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <fcntl.h>
+#include <algorithm>
 // #include <sys/socket.h>
 
 // #include <stdlib.h>
@@ -135,7 +136,7 @@ bool	Server::acceptNewConnection()
 		const char *errorMsg = "Error: max capacity of user has been reached. Connection will be interrupted now."; // Max 1024 Users, please. 
 		send(tmpFd, errorMsg, 81, 0);
 		close(tmpFd);
-		return false ;
+		return false;
 	}
 	else
 	{
@@ -148,6 +149,9 @@ bool	Server::acceptNewConnection()
 	return true;
 }
 
+
+
+
 void	Server::receiveNewMessage(int iterator)
 {
 	char buffer[513]; 														      // Max 512 characters per buffer, + 1 for terminal.
@@ -156,7 +160,13 @@ void	Server::receiveNewMessage(int iterator)
 	{
 		std::cout << "connesione chiusa" << std::endl;
 		std::map<int, User*>::iterator it = _fdUserMap.find(_pollVector[iterator].fd);
-		close(_pollVector[iterator].fd);
+		/* close(_pollVector[iterator].fd); */
+		std::vector<Channel *> tmpVect = _fdUserMap[_pollVector[iterator].fd].getChannelVector(); 
+		for (size_t i = 0; i < tmpVect.size(); i++)
+		{
+			if (tmpVect[i]->getUserCount() == 1)												  // Check if the user is alone in every channel he is in
+				deleteChannel(tmpVect[i]);
+		}
 		delete (_fdUserMap[_pollVector[iterator].fd]);
 		_pollVector.erase(_pollVector.begin() + iterator);
 		_fdUserMap.erase(it);
@@ -230,6 +240,14 @@ std::vector<Channel*>   Server::getChannelVector() const
 std::string&        Server::getPassword()
 {
 	return this->_password;
+}
+
+void		Server::deleteChannel(Channel *toDelete)
+{
+	std::vector<Channel *>::iterator i = std::find(this->_channelVector.begin(), this->_channelVector.end(), toDelete);
+	if (i != this->_channelVector.end())
+		delete(*i);
+	return;
 }
 
 /*------------------------------------------------CORE LOOP----------------------------------------------------------*/
