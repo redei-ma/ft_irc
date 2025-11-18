@@ -22,10 +22,4 @@ return nullptr;
 Renato:
 	Capire come gestire troppi parametri ai comandi
 
-	Capire se sia meglio fare divenatare erroroHandle un replyHandler con risposte anche positive
-
-	Rimuovere i : dall'ultimo argomento
-
 	Ricontrollare parsing sopratutto SplitArgs
-
-	se mi connetto e everifico subito la psw

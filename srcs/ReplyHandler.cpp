@@ -2,6 +2,8 @@
 #include "User.hpp"
 #include "Channel.hpp"
 
+#include <sstream>
+
 const std::string ReplyHandler::_prefix = ":irc.rfg.com";
 
 /* ================ERROR HANDLING================ */
@@ -62,17 +64,20 @@ void ReplyHandler::errorHandler(t_status error, const User& user, const std::str
 			buffer = _prefix + " 461 " + target + " " + arg + " :Not enough parameters";
 			break;
 		case ERR_ALREADYREGISTRED:
-			break; // da fare
+			buffer = _prefix + " 462 " + target + " :You may not reregister";
+			break;
 		case ERR_PASSWDMISMATCH:
-			buffer = _prefix + " 464 " + target + " " + arg + " :Password incorrect"; //controlla messaggio vero
+			buffer = _prefix + " 464 " + target + " :Password incorrect";
+			break;
+		case ERR_KEYSET:
+			buffer = _prefix + " 467 " + target + " " + arg + " :Channel key already set";
 			break;
 		case ERR_CHANNELISFULL:
 			buffer = _prefix + " 471 " + target + " " + arg + " :Cannot join channel (+l)";
 			break;
-		// case ERR_UMODEUNKNOWNFLAG:
-		// 	break; DA AGGIUNGERE
 		case ERR_UNKNOWNMODE:
-			break;//da fare
+			buffer = _prefix + " 472 " + target + " " + arg + " :is unknown mode char to me";
+			break;
 		case ERR_INVITEONLYCHAN:
 			buffer = _prefix + " 473 " + target + " " + arg + " :Cannot join channel (+i)";
 			break;
@@ -90,6 +95,9 @@ void ReplyHandler::errorHandler(t_status error, const User& user, const std::str
 			break;
 		case ERR_CANTKILLSERVER:
 			buffer = _prefix + " 483 " + target + " :You can't kill a server!";
+			break;
+		case ERR_UMODEUNKNOWNFLAG:
+			buffer = _prefix + " 501 " + target + " :Unknown MODE flag";
 			break;
 		default:
 			return;
@@ -134,7 +142,7 @@ void ReplyHandler::replyHandler(t_status status, const User& user, const Channel
 			buffer = _prefix + " 003 " + user.getNickName() + " :This server was created Today"; //mettere data reale
 			break;
 		case RPL_MYINFO:
-			buffer = _prefix + " 004 " + user.getNickName() + " irc.rfg.com 1.0 o itkol"; //da rivedere
+			buffer = _prefix + " 004 " + user.getNickName() + " irc.rfg.com 1.0 - itkol";
 			break;
 		case RPL_CHANNELMODEIS:
 		{
@@ -142,6 +150,18 @@ void ReplyHandler::replyHandler(t_status status, const User& user, const Channel
 			buffer = _prefix + " 324 " + user.getNickName() + " " + channel.getName() + " " + modes;
 			break;
 		}
+		case RPL_LIST:
+		{
+			size_t userCount = channel.getUserCount();
+			std::stringstream ss;
+			ss << userCount;
+			std::string userCountStr = ss.str();
+			buffer = _prefix + " 322 " + user.getNickName() + " " + channel.getName() + " " + userCountStr + " :" + channel.getTopic();
+			break;
+		}
+		case RPL_LISTEND:
+			buffer = _prefix + " 323 " + user.getNickName() + " :End of /LIST";
+			break;
 		case RPL_NOTOPIC:
 			buffer = _prefix + " 331 " + user.getNickName() + " " + channel.getName() + " :No topic is set";
 			break;

@@ -14,6 +14,8 @@ typedef enum	s_status
 	RPL_YOURHOST = 002,			//Your host is <servername>	Info sul server.
 	RPL_CREATED = 003,			//This server was created <date>	Data di creazione server.
 	RPL_MYINFO = 004,			//<servername> <version> <available user modes> <available channel modes>	Info sul server e modalità
+	RPL_LIST = 322,				//<channel> <# visible> :<topic>	Elenco canali.
+	RPL_LISTEND = 323,			//:End of /LIST	Termine
 	RPL_CHANNELMODEIS = 324,    // "<channel> <modes> [params]"
 	RPL_NOTOPIC = 331,			//<channel> :No topic is set	Canale senza topic.
 	RPL_TOPIC = 332,			//<channel> :<topic>	Visual
@@ -39,16 +41,20 @@ typedef enum	s_status
 	ERR_NEEDMOREPARAMS = 461,	//Not enough parameters	Parametri insufficienti per il comando.
 	ERR_ALREADYREGISTRED = 462, // ":You may not reregister"	//Il client ha già completato la registrazione.
 	ERR_PASSWDMISMATCH = 464,	//Password incorrect	Password errata.
-	//ERR_KEYSET = 467,           // "<channel> :Channel key already set"
+	ERR_KEYSET = 467,           // "<channel> :Channel key already set"
 	ERR_CHANNELISFULL = 471,	//Cannot join channel (+l)	Canale pieno.
+<<<<<<< HEAD:ReplyHandler.hpp
 	ERR_UNKNOWNMODE = 472,      // "<char> :is unknown mode char to me"
+=======
+	ERR_UNKNOWNMODE = 472,		//"<char> :is unknown mode char to me"	Modalità sconosciuta.
+>>>>>>> origin/renato:includes/ReplyHandler.hpp
 	ERR_INVITEONLYCHAN = 473,	//Cannot join channel (+i)	Canale solo su invito.
 	ERR_BANNEDFROMCHAN = 474,	//Cannot join channel (+b)	L’utente è bannato dal canale.
 	ERR_BADCHANNELKEY = 475,	//Cannot join channel (+k)	Password del canale errata.
 	ERR_NOPRIVILEGES = 481,		//Permission Denied- You're not an IRC operator	Comando riservato agli operatori.
 	ERR_CHANOPRIVSNEEDED = 482,	//You're not channel operator	L’utente non è operatore del canale.
 	ERR_CANTKILLSERVER = 483,	//You can't kill a server!	Comando KILL verso un server.
-
+	ERR_UMODEUNKNOWNFLAG = 501, //Unknown MODE flag	Modalità utente sconosciuta.
 }	t_status;
 
 
