@@ -46,6 +46,7 @@ class Server
         Channel&                createChannel(const std::string channelName);
         void                    sendMessage(std::string target, std::string message);
         std::string&            getPassword();
+        void		            deleteChannel(Channel *toDelete);
 
     private :
     /*-------------------- Core Variables --------------------*/
