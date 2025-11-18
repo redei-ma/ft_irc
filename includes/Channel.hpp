@@ -65,8 +65,6 @@ class Channel
 		bool						isInvited(User* user) const;//
 		std::size_t					getUserCount() const;//
 
-		
-		
 		void						inviteUser(User* user);
 		void						broadcastMessage(const std::string& message, const User* sender);
 		const std::string&			getName() const;

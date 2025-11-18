@@ -1,8 +1,10 @@
 #include "User.hpp"
+#include "Channel.hpp"
+#include <iostream>
 #include <cstring>
 #include <unistd.h>
-# include <sys/socket.h>
-# include "Channel.hpp"
+#include <sys/socket.h>
+#include <algorithm>
 
 /* ================CONSTRUCTORS================ */
 User::User():
@@ -90,27 +92,27 @@ void	User::closeConnection()
 	}
 }
 
-void	User::addChannel(Channel* channel)
+void	User::joinChannel(Channel* channel)
 {
 	if (channel != NULL)
-		vectorChannel.push_back(channel);
+		_channelVector.push_back(channel);
 }
 
-void	User::removeChannel(Channel* channel)
+void	User::exitChannel(Channel* channel)
 {
-	std::vector<Channel*>::iterator it = std::find(vectorChannel.begin(), vectorChannel.end(), channel);
+	std::vector<Channel*>::iterator it = std::find(_channelVector.begin(), _channelVector.end(), channel);
 
-	if (it != vectorChannel.end())
+	if (it != _channelVector.end())
 	{
 		channel->broadcastMessage(_nickName + " has left the channel", this);
-		vectorChannel.erase(it);
+		_channelVector.erase(it);
 	}
 }
 
 void	User::exitAllChannel()
 {
-	for (size_t i = 0; i < vectorChannel.size(); i++)
-		vectorChannel[i]->removeUser(this);
+	for (size_t i = 0; i < _channelVector.size(); i++)
+		_channelVector[i]->removeUser(this);
 }
 
 /* ================SETTERS================ */
@@ -160,6 +162,8 @@ int	User::getUserFd() const { return (_fd); }
 time_t	User::getLastPongTime() const { return (_lastPongTime); }
 
 std::string	User::getStrBuffer() const { return (_bufferStr); };
+
+std::vector<Channel*>&	User::getChannelVector() { return (_channelVector);}
 
 /* ================DESTRUCTOR================ */
 User::~User()

@@ -10,7 +10,7 @@
 typedef struct s_flag
 {
 	std::string	flag;
-	bool			modeFlag; //puo' essere '+' = true '-' = false
+	bool		modeFlag; //puo' essere '+' = true '-' = false
 	std::string	arg;
 }	t_flag;
 
@@ -19,12 +19,17 @@ bool	isValidFlag(std::string& c)
 	return (c == "k" || c == "i" || c == "o" || c == "t" || c == "l");
 }
 
+#include <iostream>
 bool	checkFlags(std::vector<t_flag>& flags)
 {
+	if (flags.size() < 1)
+		return (false);
 	for (size_t i = 0; i < flags.size(); i++)
 	{
 		if (!isValidFlag(flags[i].flag))
+		{
 			return (false);
+		}
 	}
 	return (true);
 }
@@ -60,7 +65,7 @@ void	getFlags(std::string& flagsToSplit,
 		//e la flag corrente (anche una flag sbagliata per ora e' accettata, lo controllo dopo)
 		t_flag	tmp;
 		tmp.modeFlag = modeFlag;
-		tmp.arg = std::string(1, flagsToSplit[i]);
+		tmp.flag = std::string(1, flagsToSplit[i]);
 		flags.push_back(tmp);
 	}
 }
@@ -96,17 +101,29 @@ bool	flagsNeedArgs(std::string& c, bool& modeFlag)
 void	iFlag(Channel* channel, t_flag& flag)
 {
 	if (flag.modeFlag)
+	{
 		channel->setInviteOnly(true);
+		std::cout << "In channel " << channel->getName() << "invite mode is changed in invite only" << std::endl;
+	}
 	else
+	{
 		channel->setInviteOnly(false);
+		std::cout << "In channel " << channel->getName() << "invite mode is changed in free mode" << std::endl;
+	}
 }
 
 void	tFlag(Channel* channel, t_flag& flag)
 {
 	if (flag.modeFlag)
+	{
 		channel->setTopicRestriction(true);
+		std::cout << "In channel " << channel->getName() << "topic mode is changed in restricted" << std::endl;
+	}
 	else
+	{
 		channel->setTopicRestriction(false);
+		std::cout << "In channel " << channel->getName() << "topic mode is changed in no-restricted" << std::endl;
+	}
 }
 
 void	kFlag(Channel* channel, User* executer, t_flag& flag)
@@ -116,12 +133,16 @@ void	kFlag(Channel* channel, User* executer, t_flag& flag)
 		if (!channel->getPassword().empty())
 			return (ReplyHandler::errorHandler(ERR_KEYSET, *executer, flag.arg, "MODE"));
 		channel->setPassword(flag.arg);
+		std::cout << "In channel " << channel->getName() << "password mode is active" << std::endl;
 	}
 	else
 		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, flag.arg, "MODE"));
 
 	if (!flag.modeFlag)
+	{
 		channel->removePassword();
+		std::cout << "In channel " << channel->getName() << "password mode has been removed" << std::endl;
+	}
 }
 
 void	oFlag(Server& _server, Channel* channel, User* executer, t_flag& flag)
@@ -137,9 +158,15 @@ void	oFlag(Server& _server, Channel* channel, User* executer, t_flag& flag)
 		return (ReplyHandler::errorHandler(ERR_USERNOTINCHANNEL, *executer, flag.arg, "MODE"));
 
 	if (flag.modeFlag)
+	{
 		channel->addOperator(user);
+		std::cout << "Operator mode of " << user->getNickName() << " is changed in operator in channel" << channel->getName() << std::endl;
+	}
 	else
+	{
 		channel->removeOperator(user);
+		std::cout << "Operator mode of " << user->getNickName() << " is changed in non-operator in channel" << channel->getName() << std::endl;
+	}
 }
 
 void	lFlag(Channel* channel, User* executer, t_flag& flag)
@@ -152,13 +179,19 @@ void	lFlag(Channel* channel, User* executer, t_flag& flag)
 		if (*endptr != '\0' || errno == ERANGE || result > MAX_USR_NBR || result <= 0)
 			return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "MODE"));
 		else
+		{
 			channel->setUsersLimit(result);
+			std::cout << "In channel " << channel->getName() << " user limit mode is active with max " << result << std::endl;
+		}
 	}
 	else
 		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "MODE"));
 
 	if (!flag.modeFlag)
+	{
 		channel->removeUsersLimit();
+		std::cout << "In channel " << channel->getName() << "user limit mode has been removed" << std::endl;
+	}
 }
 
 void	execMode(Server& _server, Channel* channel, User* executer, t_flag& flag)
@@ -189,7 +222,7 @@ size_t	getArgsNumber(std::vector<t_flag>& flags)
 void	CommandHandler::modeCommand(User* executer, std::vector<std::string>& commandArgs)
 {
 	//controllo che ci executer sia autenticato
-	if (executer->getIsAuthenticated())
+	if (!executer->getIsAuthenticated())
 		return (ReplyHandler::errorHandler(ERR_NOTREGISTERED, *executer, "", "MODE"));
 
 	//controllo che ci sia almeno un argomento e non sia vuoto

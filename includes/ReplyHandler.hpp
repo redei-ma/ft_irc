@@ -58,7 +58,6 @@ class ReplyHandler
 {
 	private:
 			const static std::string _prefix;
-
 	public:
 			static void	errorHandler(t_status, const User&, const std::string&, const std::string&);
 			static void	replyHandler(t_status, const User&, const Channel&, const User&);

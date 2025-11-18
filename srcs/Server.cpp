@@ -208,10 +208,9 @@ User*               Server::getUserByNick(const std::string &nickName)
 {
 	for (std::map<int, User*>::iterator it = _fdUserMap.begin(); it != _fdUserMap.end(); ++it)
 	{
-		if (it->second->getUserName() == nickName)
+		if (it->second->getNickName() == nickName)
 			return it->second;
 	}
-
 	return NULL;
 }
 

@@ -16,7 +16,8 @@ class User
 				std::string	_nickName;
 				std::string	_password;
 				std::string	_bufferStr;
-				std::vector<Channel*>	vectorChannel;
+
+				std::vector<Channel*>	_channelVector;
 
 				bool	_isAuthenticated;
 				bool	_hasNickName;
@@ -41,6 +42,7 @@ class User
 			bool	getHasUserName() const;
 			bool	getHasNickName() const;
 			bool	getHasPassword() const;
+			std::vector<Channel*>&	getChannelVector();
 
 			int getUserFd() const;
 
@@ -51,8 +53,8 @@ class User
 			std::string	getPassword() const;
 			std::string	getStrBuffer() const;
 
-			void		addChannel(Channel*);
-			void		removeChannel(Channel*);
+			void		joinChannel(Channel*);
+			void		exitChannel(Channel*);
 			void		updateStrBuffer(char *buffer, size_t size);
 			void		updateAuthenticationStatus();
 			void		sendMessage(std::string message) const;
