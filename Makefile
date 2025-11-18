@@ -4,15 +4,19 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g
 
 VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --track-fds=yes --log-file=log_valgrind.txt
 
-SRCS =	main.cpp Server.cpp User.cpp Channel.cpp CommandHandler.cpp \
-		authentication.cpp invite.cpp join.cpp kick.cpp prvmsg.cpp topic.cpp ReplyHandler.cpp
-HEADERS = Server.hpp User.hpp Channel.hpp CommandHandler.hpp ReplyHandler.hpp
+SRCS_DIR = ./srcs/
+HEADERS_DIR = ./includes/
+
+SRCS =	main.cpp \
+		$(addprefix $(SRCS_DIR), Server.cpp User.cpp Channel.cpp CommandHandler.cpp \
+		authentication.cpp invite.cpp join.cpp kick.cpp prvmsg.cpp topic.cpp ReplyHandler.cpp)
+HEADERS = $(addprefix $(HEADERS_DIR), Server.hpp User.hpp Channel.hpp CommandHandler.hpp ReplyHandler.hpp)
 
 all: $(NAME)
 
 $(NAME): $(SRCS) $(HEADERS)
 	@echo "Compiling executable..."
-	@$(CXX) $(CXXFLAGS) $(SRCS) -o $(NAME)
+	@$(CXX) $(CXXFLAGS) $(SRCS) -I$(HEADERS_DIR) -o $(NAME)
 
 clean:
 	@echo "Nothing to clean..."

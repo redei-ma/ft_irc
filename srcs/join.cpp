@@ -1,5 +1,18 @@
 #include "CommandHandler.hpp"
 
+static void addUserToChannel(User* executer, Channel* channel)
+{
+	channel->addUser(executer);
+	std::string welcomeMsg = ":" + executer->getNickName() + "!" + executer->getUserName() + "@irc.rfg.com" + " JOIN " + channel->getName();
+	channel->broadcastMessage(welcomeMsg, executer);
+
+	if (channel->hasTopic())
+		ReplyHandler::replyHandler(RPL_TOPIC, *executer, *channel, NULL);
+	
+	ReplyHandler::replyHandler(RPL_NAMREPLY, *executer, *channel, NULL);
+	ReplyHandler::replyHandler(RPL_ENDOFNAMES, *executer, *channel, NULL);
+}
+
 static bool	SplitChannelKeys(std::vector<std::string> &channelToJoin,
 							std::vector<std::string> &keys,
 							const std::vector<std::string>& commandArgs)
@@ -75,7 +88,7 @@ static bool	handleWithPassword(Channel* channel, User* executer, const std::stri
 {
 	if (!key.empty() && key == channel->getPassword())
 	{
-		channel->addUser(executer);
+		addUserToChannel(executer, channel);
 		return true;
 	}
 
@@ -92,14 +105,11 @@ static void	handleInviteOnly(Channel* channel, User* executer, const std::string
 			if (!handleWithPassword(channel, executer, key))
 				return ;
 		}
-		channel->addUser(executer);
-		if (channel->hasTopic())
-			return ReplyHandler::replyHandler(RPL_TOPIC, *executer, *channel, NULL);
 		else
-			return ReplyHandler::replyHandler(RPL_NOTOPIC, *executer, *channel, NULL);
+			addUserToChannel(executer, channel);
 	}
 	else
-		return (ReplyHandler::errorHandler(ERR_INVITEONLYCHAN, *executer, channel->getName(), "JOIN") );
+		return (ReplyHandler::errorHandler(ERR_INVITEONLYCHAN, *executer, channel->getName(), "JOIN"));
 }
 
 static void	execJoin(Server& _server, User* executer, 
@@ -120,14 +130,14 @@ static void	execJoin(Server& _server, User* executer,
 		else if (channel->hasPassword())
 			handleWithPassword(channel, executer, key);
 		else
-			channel->addUser(executer);
+			addUserToChannel(executer, channel);
 	}
 	else
 	{
 		//creo nuovo canale e aggiungo l user come operatore
 		Channel &newChannel = _server.createChannel(inputChannel);
-		newChannel.addUser(executer);
 		newChannel.addOperator(executer);
+		addUserToChannel(executer, &newChannel);
 	}
 	return ;
 }
