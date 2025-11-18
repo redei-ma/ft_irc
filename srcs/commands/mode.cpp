@@ -5,46 +5,79 @@
 #include <climits>
 #include <cstddef>
 
+//struttura per ogni flag
+typedef struct s_flag
+{
+	std::string	flag;
+	bool			modeFlag; //puo' essere '+' = true '-' = false
+	std::string	arg;
+}	t_flag;
+
 bool	isValidFlag(std::string& c)
 {
 	return (c == "k" || c == "i" || c == "o" || c == "t" || c == "l");
 }
 
-bool	checkFlags(std::vector<std::string>& flags)
+bool	checkFlags(std::vector<t_flag>& flags)
 {
 	for (size_t i = 0; i < flags.size(); i++)
 	{
-		if (!isValidFlag(flags[i]))
+		if (!isValidFlag(flags[i].flag))
 			return (false);
 	}
 	return (true);
 }
 
 void	getFlags(std::string& flagsToSplit,
-						std::vector<std::string>& flags, int& needParams, bool& modeFlag)
+						std::vector<t_flag>& flags, int& needParams)
 {
+	bool modeFlag = true;
+
+	//parto da 1 perche':
+	//[0] = canale su cui applicare le flag
 	for (size_t i = 1; i < flagsToSplit.size(); i++)
 	{
+		//salvo la modalita' della flag
 		if (flagsToSplit[i] == '+' || flagsToSplit[i] == '-')
+		{
+			if (flagsToSplit[i] == '+')
+				modeFlag = true;
+			else
+				modeFlag = false;
 			continue;
+		}
 
 		//+k +l +o devono avere argomento
 		if ((flagsToSplit[i] == 'k' || flagsToSplit[i] == 'l' || flagsToSplit[i] == 'o') && modeFlag)
 			needParams++;
 
 		//-o e' l unica flag che e' con argomento obbligatorio
-		else if (flagsToSplit[i] == 'o' && !modeFlag)
+		else if (flagsToSplit[i] == 'o')
 			needParams++;
-		flags.push_back(std::string(1, flagsToSplit[i]));
+
+		//creo una struttura flag con all interno modeFlag per la flag corrente
+		//e la flag corrente (anche una flag sbagliata per ora e' accettata, lo controllo dopo)
+		t_flag	tmp;
+		tmp.modeFlag = modeFlag;
+		tmp.arg = std::string(1, flagsToSplit[i]);
+		flags.push_back(tmp);
 	}
 }
 
 void	getArgs(std::vector<std::string>& commandArgs,
-						std::vector<std::string>& args)
+						std::vector<t_flag>& flag)
 {
-	for (size_t i = 2; i < commandArgs.size(); i++)
+	//parto da due perche 
+	//[0] = canale
+	//[1] = flags
+	size_t argsIndex = 2;
+
+	for (size_t i = 0; i < flag.size(); i++)
 	{
-		args.push_back(commandArgs[i]);
+		if (argsIndex < commandArgs.size() && !commandArgs[argsIndex].empty())
+			flag[i].arg = commandArgs[argsIndex++];
+		else
+			flag[i].arg = std::string("");
 	}
 }
 
@@ -56,84 +89,64 @@ bool	flagsNeedArgs(std::string& c, bool& modeFlag)
 	else if (!modeFlag)
 		return (c == "o");
 
-	return false;
+	return (false);
 }
 
-bool	pairFlagsAndArgs(std::vector<std::string>& flags, std::vector<std::string>& args,
-						std::vector<std::pair<std::string, std::string> >& flagsAndArgs, bool& modeFlag)
+void	iFlag(Channel* channel, User* executer, t_flag& flag)
 {
-	int	argsIndex = 0;
-
-	for (size_t i = 0; i < flags.size(); i++)
-	{
-		if (flagsNeedArgs(flags[i], modeFlag))
-		{
-			if (argsIndex < args.size())
-				flagsAndArgs.push_back(std::make_pair(flags[i], args[argsIndex++]));
-			else
-				return (false);
-		}
-		else
-			flagsAndArgs.push_back(std::make_pair(flags[i], std::string("")));
-	}
-	return (true);
-}
-
-void	iFlag(Channel* channel, User* executer, std::string arg, bool modeFlag)
-{
-	if (modeFlag)
+	if (flag.modeFlag)
 		channel->setInviteOnly(true);
 	else
 		channel->setInviteOnly(false);
 }
 
-void	tFlag(Channel* channel, User* executer, std::string arg, bool modeFlag)
+void	tFlag(Channel* channel, User* executer, t_flag& flag)
 {
-	if (modeFlag)
+	if (flag.modeFlag)
 		channel->setTopicRestriction(true);
 	else
 		channel->setTopicRestriction(false);
 }
 
-void	kFlag(Channel* channel, User* executer, std::string arg, bool modeFlag)
+void	kFlag(Channel* channel, User* executer, t_flag& flag)
 {
-	if (modeFlag && !arg.empty())
+	if (flag.modeFlag && !flag.arg.empty())
 	{
 		if (!channel->getPassword().empty())
-			return (ReplyHandler::errorHandler(ERR_KEYSET, *executer, arg, "MODE"));
-		channel->setPassword(arg);
+			return (ReplyHandler::errorHandler(ERR_KEYSET, *executer, flag.arg, "MODE"));
+		channel->setPassword(flag.arg);
 	}
 	else
-		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, arg, "MODE"));
+		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, flag.arg, "MODE"));
 
-	if (!modeFlag)
+	if (!flag.modeFlag)
 		channel->removePassword();
 }
 
-void	oFlag(Server& _server, Channel* channel, User* executer, std::string arg, bool modeFlag)
+void	oFlag(Server& _server, Channel* channel, User* executer, t_flag& flag)
 {
-	if (arg.empty())
+	if (flag.arg.empty())
 		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "MODE"));
 
-	User* user = _server.getUserByNick(arg);
+	User* user = _server.getUserByNick(flag.arg);
 	if (!user)
-		return (ReplyHandler::errorHandler(ERR_NOSUCHNICK, *executer, arg, "MODE"));
+		return (ReplyHandler::errorHandler(ERR_NOSUCHNICK, *executer, flag.arg, "MODE"));
 
 	if (!channel->isMember(user))
-		return (ReplyHandler::errorHandler(ERR_USERNOTINCHANNEL, *executer, arg, "MODE"));
+		return (ReplyHandler::errorHandler(ERR_USERNOTINCHANNEL, *executer, flag.arg, "MODE"));
 
-	if (modeFlag)
+	if (flag.modeFlag)
 		channel->addOperator(user);
 	else
 		channel->removeOperator(user);
 }
 
-void	lFlag(Channel* channel, User* executer, std::string arg, bool modeFlag)
+void	lFlag(Channel* channel, User* executer, t_flag& flag)
 {
-	if (modeFlag && !arg.empty())
+	if (flag.modeFlag && !flag.arg.empty())
 	{
 		char* endptr;
-		long result = std::strtol(arg.c_str(), &endptr, 10);
+		long result = std::strtol(flag.arg.c_str(), &endptr, 10);
 		
 		if (*endptr != '\0' || errno == ERANGE || result > MAX_USR_NBR || result <= 0)
 			return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "MODE"));
@@ -143,86 +156,92 @@ void	lFlag(Channel* channel, User* executer, std::string arg, bool modeFlag)
 	else
 		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "MODE"));
 
-	if (!modeFlag)
+	if (!flag.modeFlag)
 		channel->removeUsersLimit();
 }
 
-void	execMode(Server& _server, Channel* channel, User* executer, std::string flag, std::string arg, bool modeFlag)
+void	execMode(Server& _server, Channel* channel, User* executer, t_flag& flag)
 {
-	if (flag == "i")
-		iFlag(channel, executer, arg, modeFlag);
-	else if (flag == "t")
-		tFlag(channel, executer, arg, modeFlag);
-	else if (flag == "k")
-		kFlag(channel, executer, arg, modeFlag);
-	else if (flag == "o")
-		oFlag(_server, channel, executer, arg, modeFlag);
-	else if (flag == "l")
-		lFlag(channel, executer, arg, modeFlag);
-	else
-		ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, flag, "MODE"); // da vedere che errore sostituire
+	if (flag.flag == "i")
+		iFlag(channel, executer, flag);
+	else if (flag.flag == "t")
+		tFlag(channel, executer, flag);
+	else if (flag.flag == "k")
+		kFlag(channel, executer, flag);
+	else if (flag.flag == "o")
+		oFlag(_server, channel, executer, flag);
+	else if (flag.flag == "l")
+		lFlag(channel, executer, flag);
+}
+
+size_t	getArgsNumber(std::vector<t_flag>& flags)
+{
+	size_t count = 0;
+	for (size_t i = 0; i < flags.size(); i++)
+	{
+		if (flagsNeedArgs(flags[i].flag, flags[i].modeFlag) && !flags[i].arg.empty())
+			count++;
+	}
+	return (count);
 }
 
 void	CommandHandler::modeCommand(User* executer, std::vector<std::string>& commandArgs)
 {
+	//controllo che ci executer sia autenticato
 	if (executer->getIsAuthenticated())
 		return (ReplyHandler::errorHandler(ERR_NOTREGISTERED, *executer, "", "MODE"));
-	
-	if (commandArgs.empty())
+
+	//controllo che ci sia almeno un argomento e non sia vuoto
+	if (commandArgs.empty() || commandArgs[0].empty())
 		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "MODE"));
 
-	if (commandArgs[0].empty())
-		return (ReplyHandler::errorHandler(ERR_NOSUCHCHANNEL, *executer, "", "MODE")); // ridondante con controllo sotto?
-
-	int	countChannel = std::count(commandArgs.begin(), commandArgs.end(), '#');
+	//controllo che ci sia solo un canale in input
+	int	countChannel = 0;
+	for (size_t i = 0; i < commandArgs.size(); i++)
+	{
+		countChannel += std::count(commandArgs[i].begin(), commandArgs[i].end(), '#');
+	}
 	if (countChannel == 0 || countChannel > 1)
 		return (ReplyHandler::errorHandler(ERR_NOSUCHCHANNEL, *executer, "", "MODE"));
 
+	//controllo s il canale esiste
 	Channel* channel = _server.getChannelByName(commandArgs[0]);
 	if (!channel)
 		return (ReplyHandler::errorHandler(ERR_NOSUCHCHANNEL, *executer, commandArgs[0], "MODE"));
 
+	//controllo se executer e' membro del canale
 	if (!channel->isMember(executer))
 		return (ReplyHandler::errorHandler(ERR_NOTONCHANNEL, *executer, commandArgs[0], "MODE"));
 
+	//controllo se executer e' operatore del canale
 	if (!channel->isOperator(executer))
 		return (ReplyHandler::errorHandler(ERR_CHANOPRIVSNEEDED, *executer, commandArgs[0], "MODE"));
 
+	//controllo che il vettore di input se ho solo un argomento, do in risposta le mode del canale
 	if (commandArgs.size() == 1 || commandArgs[1].empty())
 	{
 		ReplyHandler::replyHandler(RPL_CHANNELMODEIS, *executer, *channel, NULL);
 		return ;
 	}
 
-	int	positiveSign = std::count(commandArgs[1].begin(), commandArgs[1].end(), '+');
-	int	negativeSign = std::count(commandArgs[1].begin(), commandArgs[1].end(), '-');
-
-	bool	modeFlag = false;
-
-	if ((positiveSign > 0 && negativeSign > 0) || (positiveSign == 0 && negativeSign == 0))
-		return (ReplyHandler::errorHandler(ERR_UNKNOWNMODE, *executer, commandArgs[0], "MODE"));
-	else if (positiveSign > 0)
-		modeFlag = true;
-
-	std::vector<std::string> flags;
+	//crep vettore di t_flag e controllo che ci siano solo flag valide
+	std::vector<t_flag> flags;
 	int	needParams = 0;
-	getFlags(commandArgs[1], flags, needParams, modeFlag);
+	getFlags(commandArgs[1], flags, needParams);
 	if (!checkFlags(flags))
 		return (ReplyHandler::errorHandler(ERR_UNKNOWNMODE, *executer, "", "MODE"));
 
-	std::vector<std::string> args;
+	//aggiungo ad ogni struttura(flag) il suo argomento dove serve
 	if (commandArgs.size() > 2)
-		getArgs(commandArgs, args);
+		getArgs(commandArgs, flags);
 
-	if (needParams > args.size())
+	//se il numero di argomenti obbligatori e' > del numero degli argomenti che ho, errore
+	if (needParams > getArgsNumber(flags))
 		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "MODE"));
 
-	std::vector<std::pair<std::string, std::string> > flagsAndArgs;
-	if (!pairFlagsAndArgs(flags, args, flagsAndArgs, modeFlag))
-		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "MODE"));
-
-	for (size_t i = 0; i < flagsAndArgs.size(); i++)
+	//eseguo una flag alla volta
+	for (size_t i = 0; i < flags.size(); i++)
 	{
-		execMode(_server, channel, executer, flagsAndArgs[i].first, flagsAndArgs[i].second, modeFlag);
+		execMode(_server, channel, executer, flags[i]);
 	}
 }
