@@ -4,6 +4,7 @@ bool isValidCharacher(char c)
 {
 	return (c=='[' || c==']' || c=='\\' || c=='`' || c=='^' || c=='{' || c=='}');
 }
+
 void	CommandHandler::passCommand(User* executer, std::vector<std::string>& commandArgs)
 {
 	if (executer->getIsAuthenticated())
