@@ -39,5 +39,8 @@ void	CommandHandler::kickCommand(User* executer, std::vector<std::string>& comma
 
 	channel->removeUser(targetUser);
 
+	// if (channel->getUsers().empty())
+	// 	_server.deleteChannel(channel);
+
 	return ;
 }

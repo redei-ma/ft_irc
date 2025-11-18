@@ -79,6 +79,7 @@ void Channel::addUser(User* user)
 	if (hasUsersLimit() && _users.size() >= _usersLimit)
 		_isFull = true;
 	removeInvitedUser(user);
+	user->joinChannel(this);
 }
 
 void Channel::removeInvitedUser(User* user)
@@ -91,12 +92,13 @@ void Channel::removeInvitedUser(User* user)
 void Channel::removeUser(User* user)
 {
 	removeOperator(user);
-	removeInvitedUser(user);
+	// removeInvitedUser(user);// on cdovrebbe eservire perche l'utente e gia dentro al canale
 	iterator it = std::find(_users.begin(), _users.end(), user);
 	if (it != _users.end())
 		_users.erase(it);
 	if (hasUsersLimit() && _users.size() < _usersLimit)
 		_isFull = false;
+	user->exitChannel(this);
 }
 
 const std::vector<User*>& Channel::getOperators() const { return _operators; }
@@ -108,6 +110,8 @@ void Channel::removeOperator(User* user)
 	iterator it = std::find(_operators.begin(), _operators.end(), user);
 	if (it != _operators.end())
 		_operators.erase(it);
+	if (_operators.empty() && !_users.empty())
+		addOperator(_users.front());
 }
 
 bool Channel::isMember(User* user) const { return std::find(_users.begin(), _users.end(), user) != _users.end(); }

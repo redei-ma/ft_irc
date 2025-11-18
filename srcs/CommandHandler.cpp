@@ -25,6 +25,8 @@ void CommandHandler::initCommand()
 	REGISTERED_CMD(INVITE, invite);
 	REGISTERED_CMD(TOPIC, topic);
 	REGISTERED_CMD(MODE, mode);
+	REGISTERED_CMD(EXIT, exit);
+	// REGISTERED_CMD(PING, ping);
 }
 
 t_command	CommandHandler::recognizeCommand(std::string command)
@@ -39,7 +41,8 @@ t_command	CommandHandler::recognizeCommand(std::string command)
 		"INVITE",
 		"TOPIC",
 		"MODE",
-		"PING"
+		"EXIT",
+		// "PING"
 	};
 	for (int i = 0; i < 10; i++)
 	{

@@ -22,6 +22,8 @@ typedef enum	s_command
 	INVITE,
 	TOPIC,
 	MODE,
+	EXIT,
+	// PING,
 	NOT_FOUND,
 }	t_command;
 
@@ -42,7 +44,8 @@ class	CommandHandler
 			DECLERE_COMMAND(invite);
 			DECLERE_COMMAND(topic);
 			DECLERE_COMMAND(mode);
-			DECLERE_COMMAND(ping);
+			DECLERE_COMMAND(exit);
+			// DECLERE_COMMAND(ping);
 
 			t_command	recognizeCommand(std::string);
 			void		parseCommandArgs(std::string);
