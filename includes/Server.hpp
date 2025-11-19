@@ -47,6 +47,7 @@ class Server
         void                    sendMessage(std::string target, std::string message);
         std::string&            getPassword();
         void		            deleteChannel(Channel *toDelete);
+		void                    disconnectUser(User* user);
 
     private :
     /*-------------------- Core Variables --------------------*/

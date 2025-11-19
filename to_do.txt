@@ -1,14 +1,15 @@
 nc -C 127.0.0.1 6671
 
-Renato:
+Genarali:
 	Capire come gestire troppi parametri ai comandi
 
-	Ricontrollare parsing sopratutto SplitArgs
+
+Giovanni:
 	capire se si puo modificare user e nick
 	risposta quando ti autentichi
 	capire se ce un ordine con cui fare nick e user
-
-	se faaccio invite ma non e invite onluy il canale lo devo lo stesso mettere nella lista di invitati?
-	posso auto kickacarm dal canale? per ora si
-
 	hexchat manda autenticazione cosi USER redei 0 * :realname
+
+
+Renato:
+	Ricontrollare parsing sopratutto SplitArgs

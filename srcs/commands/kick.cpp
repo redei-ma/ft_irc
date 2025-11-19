@@ -21,14 +21,21 @@ void	CommandHandler::kickCommand(User* executer, std::vector<std::string>& comma
 	
 	if (!channel->isOperator(executer))
 		return (ReplyHandler::errorHandler(ERR_CHANOPRIVSNEEDED, *executer, commandArgs[0], "KICK"));
-	
+
 	User* targetUser = _server.getUserByNick(commandArgs[1]);
 	if (!targetUser)
 		return (ReplyHandler::errorHandler(ERR_NOSUCHNICK, *executer, commandArgs[1], "KICK"));
-	
+
+	if (targetUser == executer)
+	{
+		std::string message = ":" + executer->getNickName() + " KICK " + channel->getName() + " " + targetUser->getNickName() + " :You can't kick yourself";;
+		executer->sendMessage(message);
+		return ;
+	}
+
 	if (!channel->isMember(targetUser))
 		return (ReplyHandler::errorHandler(ERR_USERNOTINCHANNEL, *executer, commandArgs[1], "KICK"));
-
+	
 	std::string reason;
 	if (commandArgs.size() == 3)
 		reason = " :" + commandArgs[2];

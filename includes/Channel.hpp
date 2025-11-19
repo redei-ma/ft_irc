@@ -66,7 +66,7 @@ class Channel
 		std::size_t					getUserCount() const;//
 
 		void						inviteUser(User* user);
-		void						broadcastMessage(const std::string& message, const User* sender);
+		void						broadcastMessage(const std::string&, const User* = NULL);//
 		const std::string&			getName() const;
 
 		const std::string&			getTopic() const;//

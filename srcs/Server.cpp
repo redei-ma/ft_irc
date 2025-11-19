@@ -77,9 +77,19 @@ Server::~Server()
 void    Server::initSocket()
 {
 	this->_serverSocket = socket(AF_INET, SOCK_STREAM, 0); 								   // AF_INET handles 127.0.0.1(Localhost) which uses IPv4
-	fcntl(_serverSocket, F_SETFL, O_NONBLOCK);                                             // O_NONBLOCK make the server NON-BLOCKING. 
 	if (this->_serverSocket == -1)
 		throw(std::runtime_error("Error: something went wrong in the call to socket()."));
+	int reuse = 1;
+	if (setsockopt(this->_serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0)
+	{
+		close(_serverSocket);
+		throw(std::runtime_error("Error: something went wrong in the call to setsockopt()."));
+	}
+	if (fcntl(_serverSocket, F_SETFL, O_NONBLOCK) < 0)                                     // O_NONBLOCK make the server NON-BLOCKING. 
+	{
+		close(_serverSocket);
+		throw(std::runtime_error("Error: something went wrong in the call to fcntl()."));
+	}
 	this->sinInit();																	   // Initializes the sin struct with 0 and then fills it.
 	if (!this->bindSocket())															   // bind() on socket, associate the port with the socket server fd.
 	{
@@ -110,9 +120,6 @@ bool	Server::bindSocket()
 
 bool	Server::putInListen()
 {
-	int reuse = 1;
-	if (setsockopt(this->_serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0)
-		return false;
 	if (listen(this->_serverSocket, 1024) < 0)
 		return false;
 	return true;
@@ -154,13 +161,13 @@ bool	Server::acceptNewConnection()
 
 void	Server::receiveNewMessage(int iterator)
 {
+	std::cout << "Receiving new message..." << std::endl;
 	char buffer[513]; 														      // Max 512 characters per buffer, + 1 for terminal.
 	ssize_t size = recv(_pollVector[iterator].fd, buffer, sizeof(buffer) - 1, 0);
 	if (size <= 0)                                                                // A client disconnected.
 	{
 		std::cout << "connesione chiusa" << std::endl;
 		std::map<int, User*>::iterator it = _fdUserMap.find(_pollVector[iterator].fd);
-		/* close(_pollVector[iterator].fd); */
 		std::vector<Channel *> tmpVect = _fdUserMap[_pollVector[iterator].fd]->getChannelVector(); 
 		for (size_t i = 0; i < tmpVect.size(); i++)
 		{
@@ -178,9 +185,12 @@ void	Server::receiveNewMessage(int iterator)
 	_fdUserMap[_pollVector[iterator].fd]->updateStrBuffer(buffer, std::strlen(buffer));
 	if (_fdUserMap[_pollVector[iterator].fd]->getStrBuffer().find("\r\n") != std::string::npos) // Reached the end of message. (delimited by : \r\n) 
 	{
-		std::cout << "Received message from user " << _fdUserMap[_pollVector[iterator].fd]->getNickName() << ": " << _fdUserMap[_pollVector[iterator].fd]->getStrBuffer();
-		_command->execCommand(_fdUserMap[_pollVector[iterator].fd], _fdUserMap[_pollVector[iterator].fd]->getStrBuffer());
+		std::string commandToExec = _fdUserMap[_pollVector[iterator].fd]->getStrBuffer();
 		_fdUserMap[_pollVector[iterator].fd]->resetBuffer();
+		std::cout << "Received message from user " << _fdUserMap[_pollVector[iterator].fd]->getNickName() << ": " << commandToExec << std::endl;
+		_command->execCommand(_fdUserMap[_pollVector[iterator].fd], commandToExec);
+		if (commandToExec.substr(0, 4) == "QUIT")
+			iterator--;
 	}
 	return ;
 }
@@ -250,6 +260,31 @@ void		Server::deleteChannel(Channel *toDelete)
 	return;
 }
 
+void 	  Server::disconnectUser(User* user)
+{
+	int userFd = user->getUserFd();
+	std::map<int, User*>::iterator it = _fdUserMap.find(userFd);
+
+	std::vector<Channel *> tmpVect = user->getChannelVector(); 
+	for (size_t i = 0; i < tmpVect.size(); i++)
+	{
+		if (tmpVect[i]->getUserCount() == 1)												  // Check if the user is alone in every channel he is in
+			deleteChannel(tmpVect[i]);
+	}
+	delete (_fdUserMap[userFd]);
+	for (std::vector<pollfd>::iterator pit = _pollVector.begin(); pit != _pollVector.end(); ++pit)
+	{
+		if (pit->fd == userFd)
+		{
+			_pollVector.erase(pit);
+			break;
+		}
+	}
+	_fdUserMap.erase(it);
+	_userNbr--;
+	return;
+}
+
 /*------------------------------------------------CORE LOOP----------------------------------------------------------*/
 
 void	Server::run()
@@ -261,7 +296,7 @@ void	Server::run()
 	_pollVector[0].revents = 0;
 	while (_serverRunning)
 	{
-		int ret = poll(_pollVector.data(), _pollVector.size(), -1); // poll() 
+		int ret = poll(_pollVector.data(), _pollVector.size(), -1); // poll()
 		if (ret == -1)
 			break;
 		for (size_t i = 0; i < _pollVector.size(); i++)

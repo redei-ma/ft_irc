@@ -25,13 +25,14 @@ void CommandHandler::initCommand()
 	REGISTERED_CMD(INVITE, invite);
 	REGISTERED_CMD(TOPIC, topic);
 	REGISTERED_CMD(MODE, mode);
-	REGISTERED_CMD(EXIT, exit);
+	REGISTERED_CMD(PART, part);
+	REGISTERED_CMD(QUIT, quit);
 	// REGISTERED_CMD(PING, ping);
 }
 
 t_command	CommandHandler::recognizeCommand(std::string command)
 {
-	const char  *commands[10] = {
+	const char  *commands[] = {
 		"PASS",
 		"NICK",
 		"USER",
@@ -41,10 +42,13 @@ t_command	CommandHandler::recognizeCommand(std::string command)
 		"INVITE",
 		"TOPIC",
 		"MODE",
-		"EXIT",
+		"PART",
+		"QUIT",
+		"CAP",
+		"WHO",
 		// "PING"
 	};
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 13; i++)
 	{
 		if (command == commands[i])
 			return static_cast<t_command>(i);
@@ -102,7 +106,10 @@ void	CommandHandler::execCommand(User* executer, std::string input)
 		splitArgs(splittedArgs, splittedCommands[i]);
 
 		t_command	commandToExec = recognizeCommand(splittedArgs[0]);
-		if (commandToExec == NOT_FOUND)
+
+		if (commandToExec == CAP || commandToExec == WHO)
+			continue ;
+		else if (commandToExec == NOT_FOUND)
 		{
 			ReplyHandler::errorHandler(ERR_UNKNOWNCOMMAND, *executer, splittedArgs[1], splittedArgs[0]);
 			continue ;
