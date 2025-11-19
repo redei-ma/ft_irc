@@ -1,4 +1,5 @@
 #include "CommandHandler.hpp"
+#include "utils.hpp"
 #include <algorithm>
 #include <sstream>
 
@@ -56,25 +57,20 @@ t_command	CommandHandler::recognizeCommand(std::string command)
 	return NOT_FOUND;
 }
 
-static void	splitArgs(std::vector<std::string>& splittedArgs, std::string args)
+static std::vector<std::string>	splitArgs(std::string args)
 {
-	//Da capire se limit deve essere ' :'
-	std::string::iterator limit = std::find(args.begin(), args.end(), ':');
-
-	std::istringstream			stream(std::string(args.begin(), limit));
-	std::string					buffer;
-
-	// while (std::getline(stream, buffer, ' '))
-	// {
-	// 	splittedArgs.push_back(buffer);
-	// }
+	std::vector<std::string> splittedArgs;
+	size_t	pos = args.find(" :");
 	
-	if (limit != args.end())
+	if (pos != std::string::npos)
 	{
-		//da vedere se esplode
-		limit++;
-		splittedArgs.push_back(std::string(limit, args.end()));
+		splittedArgs = split(args.substr(0, pos), ' ');
+		splittedArgs.push_back(args.substr(pos + 2));
 	}
+	else
+		splittedArgs = split(args, ' ');
+
+	return splittedArgs;
 }
 
 static void	splitCommand(std::vector<std::string>& splittedCommands, std::string input)
@@ -103,8 +99,7 @@ void	CommandHandler::execCommand(User* executer, std::string input)
 
 	for (size_t i = 0; i < splittedCommands.size(); i++)
 	{
-		std::vector<std::string> splittedArgs;
-		splitArgs(splittedArgs, splittedCommands[i]);
+		std::vector<std::string> splittedArgs = splitArgs(splittedCommands[i]);
 
 		t_command	commandToExec = recognizeCommand(splittedArgs[0]);
 

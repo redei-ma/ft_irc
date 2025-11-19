@@ -23,9 +23,9 @@ void	CommandHandler::topicCommand(User* executer, std::vector<std::string>& comm
 		if (commandArgs.size() == 1)
 		{
 			if (!channel->hasTopic())
-				return (ReplyHandler::replyHandler(RPL_NOTOPIC, *executer, *channel, NULL));
+				return (ReplyHandler::replyHandler(RPL_NOTOPIC, *executer, channel, NULL));
 			else 
-				return (ReplyHandler::replyHandler(RPL_TOPIC, *executer, *channel, NULL));
+				return (ReplyHandler::replyHandler(RPL_TOPIC, *executer, channel, NULL));
 		}
 		else if (commandArgs.size() == 2)
 		{
@@ -34,7 +34,7 @@ void	CommandHandler::topicCommand(User* executer, std::vector<std::string>& comm
 			else
 			{
 				channel->setTopic(commandArgs[1]);
-				std::string message = ":" + executer->getNickName() + " TOPIC " + channel->getName() + " :" + channel->getTopic();
+				std::string message = ":" + executer->getNickName() + "!" + executer->getUserName() + "@irc.rfg.com" + " TOPIC " + channel->getName() + " :" + commandArgs[1];
 				channel->broadcastMessage(message);
 			}
 		}

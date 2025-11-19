@@ -17,12 +17,12 @@ void CommandHandler::quitCommand(User* executer, std::vector<std::string>& comma
 	std::string quitMessage = (commandArgs.empty()) ? "Client exiting" : commandArgs[0];
 
 	// Notifica a tutti i Canali
-	std::vector<Channel *> userChannels = executer->getChannelVector();
-	std::string notificationMsg = ":" + executer->getNickName() + " QUIT :" + quitMessage;
+	std::vector<Channel *>& userChannels = executer->getChannelVector();
+	std::string message = ":" + executer->getNickName() + "!" + executer->getUserName() + "@irc.rfg.com" + " QUIT :" + quitMessage;
 	for (size_t i = 0; i < userChannels.size(); i++)
 	{
 		Channel *channel = userChannels[i];
-		channel->broadcastMessage(notificationMsg);
+		channel->broadcastMessage(message);
 		channel->removeUser(executer);
 		if (channel->getUserCount() == 0)
 			_server.deleteChannel(channel);

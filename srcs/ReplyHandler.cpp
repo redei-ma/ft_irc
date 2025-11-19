@@ -134,7 +134,7 @@ static std::string findModes(const Channel& channel)
 	return modes;
 }
 
-void ReplyHandler::replyHandler(t_status status, const User& user, const Channel& channel, const User& targetUser)
+void ReplyHandler::replyHandler(t_status status, const User& user, const Channel* channel, const User* targetUser)
 {
 	std::string buffer;
 
@@ -154,46 +154,46 @@ void ReplyHandler::replyHandler(t_status status, const User& user, const Channel
 			break;
 		case RPL_CHANNELMODEIS:
 		{
-			std::string modes = findModes(channel);	
-			buffer = _prefix + " 324 " + user.getNickName() + " " + channel.getName() + " " + modes;
+			std::string modes = findModes(*channel);	
+			buffer = _prefix + " 324 " + user.getNickName() + " " + channel->getName() + " " + modes;
 			break;
 		}
 		case RPL_LIST:
 		{
-			size_t userCount = channel.getUserCount();
+			size_t userCount = channel->getUserCount();
 			std::stringstream ss;
 			ss << userCount;
 			std::string userCountStr = ss.str();
-			buffer = _prefix + " 322 " + user.getNickName() + " " + channel.getName() + " " + userCountStr + " :" + channel.getTopic();
+			buffer = _prefix + " 322 " + user.getNickName() + " " + channel->getName() + " " + userCountStr + " :" + channel->getTopic();
 			break;
 		}
 		case RPL_LISTEND:
 			buffer = _prefix + " 323 " + user.getNickName() + " :End of /LIST";
 			break;
 		case RPL_NOTOPIC:
-			buffer = _prefix + " 331 " + user.getNickName() + " " + channel.getName() + " :No topic is set";
+			buffer = _prefix + " 331 " + user.getNickName() + " " + channel->getName() + " :No topic is set";
 			break;
 		case RPL_TOPIC:
-			buffer = _prefix + " 332 " + user.getNickName() + " " + channel.getName() + " :" + channel.getTopic();
+			buffer = _prefix + " 332 " + user.getNickName() + " " + channel->getName() + " :" + channel->getTopic();
 			break;
 		case RPL_INVITEING:
-			buffer = _prefix + " 341 " + user.getNickName() + " " + targetUser.getNickName() + " " + channel.getName();
+			buffer = _prefix + " 341 " + user.getNickName() + " " + targetUser->getNickName() + " " + channel->getName();
 			break;
 		case RPL_NAMREPLY:
 		{
 			std::string namesList = "";
-			const std::vector<User*>& users = channel.getUsers();
+			const std::vector<User*>& users = channel->getUsers();
 			for (std::vector<User*>::const_iterator it = users.begin(); it != users.end(); ++it)
 			{
-				if (channel.isOperator(*it))
+				if (channel->isOperator(*it))
 					namesList += "@";
 				namesList += (*it)->getNickName() + " ";
 			}
-			buffer = _prefix + " 353 " + user.getNickName() + " = " + channel.getName() + " :" + namesList;
+			buffer = _prefix + " 353 " + user.getNickName() + " = " + channel->getName() + " :" + namesList;
 			break;
 		}
 		case RPL_ENDOFNAMES:
-			buffer = _prefix + " 366 " + user.getNickName() + " " + channel.getName() + " :End of /NAMES list";
+			buffer = _prefix + " 366 " + user.getNickName() + " " + channel->getName() + " :End of /NAMES list";
 			break;
 		default:
 			return;

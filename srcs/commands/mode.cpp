@@ -254,7 +254,7 @@ void	CommandHandler::modeCommand(User* executer, std::vector<std::string>& comma
 	//controllo che il vettore di input se ho solo un argomento, do in risposta le mode del canale
 	if (commandArgs.size() == 1 || commandArgs[1].empty())
 	{
-		ReplyHandler::replyHandler(RPL_CHANNELMODEIS, *executer, *channel, NULL);
+		ReplyHandler::replyHandler(RPL_CHANNELMODEIS, *executer, channel, NULL);
 		return ;
 	}
 

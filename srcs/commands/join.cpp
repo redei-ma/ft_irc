@@ -7,14 +7,14 @@
 static void addUserToChannel(User* executer, Channel* channel)
 {
 	channel->addUser(executer);
-	std::string welcomeMsg = ":" + executer->getNickName() + "!" + executer->getUserName() + "@irc.rfg.com" + " JOIN " + channel->getName();
-	channel->broadcastMessage(welcomeMsg);
+	std::string message = ":" + executer->getNickName() + "!" + executer->getUserName() + "@irc.rfg.com" + " JOIN " + channel->getName();
+	channel->broadcastMessage(message);
 
 	if (channel->hasTopic())
-		ReplyHandler::replyHandler(RPL_TOPIC, *executer, *channel, NULL);
+		ReplyHandler::replyHandler(RPL_TOPIC, *executer, channel, NULL);
 	
-	ReplyHandler::replyHandler(RPL_NAMREPLY, *executer, *channel, NULL);
-	ReplyHandler::replyHandler(RPL_ENDOFNAMES, *executer, *channel, NULL);
+	ReplyHandler::replyHandler(RPL_NAMREPLY, *executer, channel, NULL);
+	ReplyHandler::replyHandler(RPL_ENDOFNAMES, *executer, channel, NULL);
 
 	std::cout << "JOIN command executed: " << executer->getNickName() << " joined " << channel->getName() << std::endl;
 	return ;

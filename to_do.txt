@@ -2,15 +2,17 @@ nc -C 127.0.0.1 6671
 
 Genarali:
 	Capire come gestire troppi parametri ai comandi
-	PRIVMSG funziona ma non si vede nella ui del canale
+	Quando il seerver legge un ctrl + c devovrebbe mandare il comando quit per notificarlo a tutti
+	cambiare @irc.rfg.com in host 127.0.0.1 o quello che decideremo
+	Testare file transfer
+	Fare BOT
+	Tesytare tutto a fondo
 	PING PONG lo facciamo?
 
 Giovanni:
 	capire se si puo modificare user e nick
 	hexchat manda autenticazione cosi USER redei 0 * :realname
-
+	Controlalre i valori accettati per un cananle e la massima lunghezza (https://claude.ai/share/11d3aea1-eb2e-4438-93aa-3a11230e2368)
 
 Renato:
-	Ricontrollare parsing sopratutto SplitArgs e inserire la funzione split 
 	Sisitemare KICK
-	RPL_WELCOME
