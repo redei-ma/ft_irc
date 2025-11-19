@@ -4,6 +4,8 @@
 #include "Channel.hpp"
 #include <iostream>
 
+// mon so se controllo due volete i canali e ci esco due volte
+
 void CommandHandler::quitCommand(User* executer, std::vector<std::string>& commandArgs)
 {
 	if (commandArgs.size() > 1)

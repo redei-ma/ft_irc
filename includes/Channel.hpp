@@ -29,7 +29,7 @@ class Channel
 		Channel&	operator=(const Channel& other);
 
 	public:
-		Channel(const std::string& name);
+		Channel(const std::string name);
 		~Channel();
 
 		bool						hasPassword() const;//

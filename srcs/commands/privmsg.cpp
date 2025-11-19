@@ -36,8 +36,8 @@ void        sendMessages(Server &_server, User* executer, std::vector<std::strin
 				ReplyHandler::errorHandler(ERR_NOTONCHANNEL, *executer, argString[i], "PRVMSG");
 				continue ;
 			}
-			std::string msg = ":" + executer->getNickName() + " PRVMSG " + tmpChannel->getName() + ": " + commandArgs[1];
-			tmpChannel->broadcastMessage(msg);
+			std::string msg = ":" + executer->getNickName() + "!" + executer->getUserName() + "@" + "irc.rfg.com" + " PRIVMSG " + tmpChannel->getName() + " :" + commandArgs[1];
+			tmpChannel->broadcastMessage(msg, executer); // lo devo mandare anche a me??
 		}
 		else
 		{
@@ -47,7 +47,7 @@ void        sendMessages(Server &_server, User* executer, std::vector<std::strin
 				ReplyHandler::errorHandler(ERR_NOSUCHNICK, *executer, argString[i], "PRVMSG");
 				continue ;
 			}
-			std::string msg = ":" + executer->getNickName() + " PRVMSG " + tmpUser->getNickName() + ": " + commandArgs[1];
+			std::string msg = ":" + executer->getNickName() + "!" + executer->getUserName() + "@" + "irc.rfg.com" + " PRIVMSG " + tmpUser->getNickName() + " :" + commandArgs[1];
 			tmpUser->sendMessage(msg);
 		}
 	}

@@ -4,7 +4,7 @@
 
 #include <sstream>
 
-const std::string ReplyHandler::_prefix = ":irc.rfg.com";
+const std::string ReplyHandler::_prefix = ":irc.rfg.com"; // capire se serve l'host name completo
 
 /* ================ERROR HANDLING================ */
 

@@ -3,7 +3,7 @@
 #include "User.hpp"
 #include <algorithm>
 
-Channel::Channel(const std::string& name)
+Channel::Channel(const std::string name)
 	: _name(name),
 	  _hasKey(false), _key(""),
 	  _isTopicRestricted(false), _topic(""),
