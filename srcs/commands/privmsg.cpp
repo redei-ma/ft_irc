@@ -2,21 +2,9 @@
 #include "Server.hpp"
 #include "User.hpp"
 #include "Channel.hpp"
+#include "utils.hpp"
 #include <algorithm>
-#include <sstream>
 
-static std::vector<std::string> split(const std::string &s, char delimiter)
-{
-	std::vector<std::string> tokens;
-	std::stringstream ss(s);
-	std::string token;
-
-	while (std::getline(ss, token, delimiter))
-		tokens.push_back(token);
-	if (tokens.empty())
-		tokens.push_back(s);
-	return tokens;
-}
 
 void        sendMessages(Server &_server, User* executer, std::vector<std::string>& commandArgs)
 {

@@ -3,6 +3,7 @@ nc -C 127.0.0.1 6671
 Genarali:
 	Capire come gestire troppi parametri ai comandi
 	PRIVMSG funziona ma non si vede nella ui del canale
+	PING PONG lo facciamo?
 
 Giovanni:
 	capire se si puo modificare user e nick
@@ -10,4 +11,6 @@ Giovanni:
 
 
 Renato:
-	Ricontrollare parsing sopratutto SplitArgs
+	Ricontrollare parsing sopratutto SplitArgs e inserire la funzione split 
+	Sisitemare KICK
+	RPL_WELCOME

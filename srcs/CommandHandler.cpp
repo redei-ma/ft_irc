@@ -64,10 +64,11 @@ static void	splitArgs(std::vector<std::string>& splittedArgs, std::string args)
 	std::istringstream			stream(std::string(args.begin(), limit));
 	std::string					buffer;
 
-	while (std::getline(stream, buffer, ' '))
-	{
-		splittedArgs.push_back(buffer);
-	}
+	// while (std::getline(stream, buffer, ' '))
+	// {
+	// 	splittedArgs.push_back(buffer);
+	// }
+	
 	if (limit != args.end())
 	{
 		//da vedere se esplode
