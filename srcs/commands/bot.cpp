@@ -5,7 +5,7 @@
 #include "ReplyHandler.hpp"
 #include <iostream>
 
-const std::string _BOTprefix = ":irc.rfg.com BOT:";
+const std::string _BOTprefix = ":irc.rfg.com BOT:\n";
 
 #define REGISTERED_BOT_CMD(enum, name) botMapExecuter[enum] = name##Command
 
@@ -35,12 +35,11 @@ t_bot	findCommandToExec(const std::string& input)
 
 static void	sendBotCommands(User* executer)
 {
-	std::string msg = _BOTprefix +
-	"Use the command BOT whit arg:\n" +
+	std::string msg = ":" + executer->getNickName() + "!" + executer->getUserName() + "@" + executer->getHostNameAsString() +
+	" Use the command BOT with arg:\n" +
 	"/help\n" + 
 	"/users\n" +
-	"/channels\n"
-	"/game";
+	"/channels";
 	executer->sendMessage(msg);
 }
 
@@ -81,6 +80,13 @@ void	channelsCommand(User* executer, const Server& _server)
 	std::vector<Channel*>	channelVector = _server.getChannelVector();
 	std::string	msg = _BOTprefix;
 
+	if (channelVector.empty())
+	{
+		msg += "No channels created";
+		executer->sendMessage(msg);
+		return ;
+	}
+
 	for (size_t i = 0; i < channelVector.size(); i++)
 	{
 		msg += channelVector[i]->getName();
@@ -114,7 +120,7 @@ void	CommandHandler::botCommand(User* executer, std::vector<std::string>& comman
 	t_bot	command = findCommandToExec(commandArgs[1]);
 	if (command == ERROR)
 	{
-		std::string msg = ":" + executer->getNickName() + "!" +
+		std::string msg = _BOTprefix + executer->getNickName() + "!" +
 		executer->getUserName() + "@" + executer->getHostNameAsString() + " BOT " + " :" + "Invalid command";
 		executer->sendMessage(msg);
 		return ;
