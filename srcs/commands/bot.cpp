@@ -2,7 +2,10 @@
 #include "Server.hpp"
 #include "User.hpp"
 #include "Channel.hpp"
+#include "ReplyHandler.hpp"
 #include <iostream>
+
+const std::string _BOTprefix = ":irc.rfg.com BOT:";
 
 #define REGISTERED_BOT_CMD(enum, name) botMapExecuter[enum] = name##Command
 
@@ -11,7 +14,6 @@ typedef enum s_bot
 	HELP,
 	USERS,
 	CHANNELS,
-	GAME,
 	ERROR,
 }	t_bot;
 
@@ -20,7 +22,7 @@ t_bot	findCommandToExec(const std::string& input)
 	const char* botCommands[3] = {
 		"/help",
 		"/users",
-		"/channels",
+		"/channels"
 	};
 
 	for (size_t i = 0; i < 3; i++)
@@ -33,9 +35,8 @@ t_bot	findCommandToExec(const std::string& input)
 
 static void	sendBotCommands(User* executer)
 {
-	std::string msg = ":" + executer->getNickName() + "!" +
-	executer->getUserName() + "@" + executer->getHostNameAsString() + " BOT " + " :"
-	+ "Use the command BOT whit arg:\n" +
+	std::string msg = _BOTprefix +
+	"Use the command BOT whit arg:\n" +
 	"/help\n" + 
 	"/users\n" +
 	"/channels\n"
@@ -43,29 +44,52 @@ static void	sendBotCommands(User* executer)
 	executer->sendMessage(msg);
 }
 
-void	helpCommand(User* executer)
+void	helpCommand(User* executer, const Server& server)
 {
-	std::string msg = ":" + executer->getNickName() + "!" +
-	executer->getUserName() + "@" + executer->getHostNameAsString() + " BOT " + " :"
-	+ "Use the command BOT whit arg:\n" +
-	"/help\n" + 
-	"/users\n" +
-	"/channels\n"
-	"/game";
+	(void)server;
+
+	std::string msg = _BOTprefix +
+	"NICK with something for change your nickname\n" +
+	"INVITE with nickName and #nameChannel for invite a user to a channel\n" +
+	"JOIN with #nameChannel for join/create a channel\n" +
+	"KICK with nickName and #nameChannel for kick a user from a channel\n" +
+	"MODE with #nameChannel and modes(+/- i t k o l) for set modes to a channel\n" +
+	"TOPIC with #nameChannel and topic for set a topic to a channel\n"
+	"PRIVMSG with nickName/#nameChannel and message for send a message to a user/channel\n" +
+	"PART with #nameChannel for leave a channel\n" +
+	"QUIT for disconnect from server\n" +
+	"BOT with arg: /help | /users | /channels\n";
+	executer->sendMessage(msg);
 }
 
-void	usersCommand(User* executer)
+void	usersCommand(User* executer, const Server& _server)
 {
-	(void)executer;
+	std::vector<User*>	userVector = _server.getUserVector();
+	std::string	msg = _BOTprefix;
+
+	for (size_t i = 0; i < userVector.size(); i++)
+	{
+		msg += userVector[i]->getNickName();
+		if (i < userVector.size() - 1)
+			msg += "\n";
+	}
+	executer->sendMessage(msg);
 }
 
-void	channelsCommand(User* executer)
+void	channelsCommand(User* executer, const Server& _server)
 {
-	(void)executer;
+	std::vector<Channel*>	channelVector = _server.getChannelVector();
+	std::string	msg = _BOTprefix;
+
+	for (size_t i = 0; i < channelVector.size(); i++)
+	{
+		msg += channelVector[i]->getName();
+		if (i < channelVector.size() - 1)
+			msg += "\n";
+	}
 }
 
-
-static void	setBotMapExecuter(std::map<t_bot, void(*)(User*)>& botMapExecuter)
+static void	setBotMapExecuter(std::map<t_bot, void(*)(User*, const Server&)>& botMapExecuter)
 {
 	REGISTERED_BOT_CMD(HELP, help);
 	REGISTERED_BOT_CMD(USERS, users);
@@ -95,8 +119,8 @@ void	CommandHandler::botCommand(User* executer, std::vector<std::string>& comman
 		return ;
 	}
 
-	std::map<t_bot, void(*)(User*)> botMapExecuter;
+	std::map<t_bot, void(*)(User*, const Server&)> botMapExecuter;
 	setBotMapExecuter(botMapExecuter);
 
-	botMapExecuter[command](executer);
+	botMapExecuter[command](executer, _server);
 }

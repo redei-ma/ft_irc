@@ -43,6 +43,7 @@ class Server
         User*                   getUserByNick(const std::string &nickName);
         Channel*                getChannelByName(const std::string &channelName);
         std::vector<Channel*>   getChannelVector() const;
+        std::vector<User*>      getUserVector() const;
         Channel&                createChannel(const std::string channelName);
         void                    sendMessage(std::string target, std::string message);
         std::string&            getPassword();
