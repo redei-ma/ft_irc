@@ -6,7 +6,7 @@
 /*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/11 16:42:12 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/20 12:02:10 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/20 16:33:21 by gpirozzi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 int main(int argc, char **argv)
 {
 	signal(SIGINT, handle_sigint);
-	
+
 	if (argc != 3)
 	{
 		std::cerr << "Invalid input" << std::endl;

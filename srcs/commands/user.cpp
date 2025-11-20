@@ -34,8 +34,8 @@ void	CommandHandler::userCommand(User* executer, std::vector<std::string>& comma
 
 	executer->setUserName(commandArgs[0]);
 
-	if (!commandArgs[4].empty())
-		executer->setRealName(commandArgs[4]);
+	if (commandArgs.size() == 4 && !commandArgs[3].empty())
+		executer->setRealName(commandArgs[3]);
 
 	ReplyHandler::replyHandler(RPL_WELCOME, *executer, NULL, NULL);
 	ReplyHandler::replyHandler(RPL_YOURHOST, *executer, NULL, NULL);

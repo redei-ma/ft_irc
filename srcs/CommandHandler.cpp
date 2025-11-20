@@ -2,6 +2,7 @@
 #include "utils.hpp"
 #include <algorithm>
 #include <sstream>
+#include <iostream>
 
 /* ================MACRO================ */
 #define REGISTERED_CMD(enum, name) commandMap[enum] = &CommandHandler::name##Command
@@ -17,9 +18,9 @@ CommandHandler::CommandHandler(const CommandHandler& other) : _server(other._ser
 /* ================METHODS================ */
 void CommandHandler::initCommand()
 {
-	REGISTERED_CMD(JOIN, join);
 	REGISTERED_CMD(PASS, pass);
 	REGISTERED_CMD(NICK, nick);
+	REGISTERED_CMD(JOIN, join);
 	REGISTERED_CMD(USER, user);
 	REGISTERED_CMD(PRIVMSG, privmsg);
 	REGISTERED_CMD(KICK, kick);
@@ -49,9 +50,9 @@ t_command	CommandHandler::recognizeCommand(std::string command)
 		"CAP",
 		"WHO",
 		"BOT",
-		// "PING"
+		"PING",
 	};
-	for (int i = 0; i < 15; i++)
+	for (int i = 0; i < 14; i++)
 	{
 		if (command == commands[i])
 			return static_cast<t_command>(i);
@@ -87,18 +88,11 @@ static void	splitCommand(std::vector<std::string>& splittedCommands, std::string
 	}
 }
 
-// void	CommandHandler::pingCommand(User* executer, std::vector<std::string> commandArgs)
-// {
-// 	(void)executer;
-// 	(void)commandArgs;
-// 	return ;
-// }
-
 void	CommandHandler::execCommand(User* executer, std::string input)
 {
 	std::vector<std::string>	splittedCommands;
+	std::cout << input << std::endl;
 	splitCommand(splittedCommands, input);
-
 	for (size_t i = 0; i < splittedCommands.size(); i++)
 	{
 		std::vector<std::string> splittedArgs = splitArgs(splittedCommands[i]);

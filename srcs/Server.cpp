@@ -199,7 +199,7 @@ void	Server::receiveNewMessage(int iterator)
 	ssize_t size = recv(_pollVector[iterator].fd, buffer, sizeof(buffer) - 1, 0);
 	if (size <= 0)                                                                // A client disconnected.
 	{
-		_command->execCommand(_fdUserMap[_pollVector[iterator].fd], "QUIT");
+		_command->execCommand(_fdUserMap[_pollVector[iterator].fd], "QUIT\r\n");
 		iterator--;
 		return ;
 	}
@@ -290,7 +290,11 @@ void		Server::deleteChannel(Channel *toDelete)
 {
 	std::vector<Channel *>::iterator i = std::find(this->_channelVector.begin(), this->_channelVector.end(), toDelete);
 	if (i != this->_channelVector.end())
+	{
+		this->_channelVector.erase(i);
 		delete(*i);
+	}
+	if (i != this->_channelVector.end())
 	return;
 }
 

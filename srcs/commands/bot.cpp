@@ -87,6 +87,7 @@ void	channelsCommand(User* executer, const Server& _server)
 		if (i < channelVector.size() - 1)
 			msg += "\n";
 	}
+	executer->sendMessage(msg);
 }
 
 static void	setBotMapExecuter(std::map<t_bot, void(*)(User*, const Server&)>& botMapExecuter)

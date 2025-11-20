@@ -8,6 +8,7 @@
 
 void CommandHandler::quitCommand(User* executer, std::vector<std::string>& commandArgs)
 {
+	std::cout << "222222222222222222222222222222222222222222222222222222222222222222222222222222222222222" << std::endl;
 	if (commandArgs.size() > 1)
 	{
 		ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "QUIT", "");
