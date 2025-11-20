@@ -2,12 +2,13 @@ nc -C 127.0.0.1 6671
 
 Genarali:
 	Capire come gestire troppi parametri ai comandi
-	Quando il seerver legge un ctrl + c devovrebbe mandare il comando quit per notificarlo a tutti
-	cambiare @irc.rfg.com in host 127.0.0.1 o quello che decideremo
 	Testare file transfer
 	Fare BOT
-	Tesytare tutto a fondo
+	Testare tutto a fondo
 	PING PONG lo facciamo?
+
+Francesco:
+	prendere indirizzo di connesione degli utenti e salvarlo come host (prenderlo in accept)
 
 Giovanni:
 	capire se si puo modificare user e nick
@@ -16,3 +17,4 @@ Giovanni:
 
 Renato:
 	Sisitemare KICK
+	cambiare host in tutte le reply tra client
