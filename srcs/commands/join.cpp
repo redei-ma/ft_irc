@@ -3,6 +3,7 @@
 #include "User.hpp"
 #include "Channel.hpp"
 #include <iostream>
+#include "utils.hpp"
 
 static void addUserToChannel(User* executer, Channel* channel)
 {
@@ -27,17 +28,21 @@ static bool	SplitChannelKeys(std::vector<std::string> &channelToJoin,
 	bool	finishedChannels = false;
 	for (size_t i = 0; i < commandArgs.size(); i++)
 	{
-		//prendo channel con # seguendo IRC
-		if (commandArgs[i][0] == '#' && !finishedChannels)
+		std::vector<std::string>	splittedByComma = split(commandArgs[i], ',');
+		for (size_t j = 0; j < splittedByComma.size(); j++)
 		{
-			channelToJoin.push_back(commandArgs[i]);
-		}
-		else
-		{
-			finishedChannels = true;
-			if (commandArgs[i][0] == '#')
-				return (false);
-			keys.push_back(commandArgs[i]);
+			//prendo channel con # seguendo IRC
+			if (splittedByComma[j][0] == '#' && !finishedChannels)
+			{
+				channelToJoin.push_back(commandArgs[j]);
+			}
+			else
+			{
+				finishedChannels = true;
+				if (commandArgs[j][0] == '#')
+					return (false);
+				keys.push_back(commandArgs[j]);
+			}
 		}
 	}
 	return (true);
@@ -55,7 +60,7 @@ static bool	isValidChannelName(const std::string& channel)
 	for (size_t i = 1; i < channel.size(); i++)
 	{
 		if (std::isspace(channel[i]) || channel[i] == '#' ||
-			channel[i] == ',' || channel[i] == ':' || !std::isprint(channel[i]))
+			channel[i] == ',' || !std::isprint(channel[i]))
 				return (false);
 	}
 	return (true);
@@ -149,7 +154,7 @@ void	CommandHandler::joinCommand(User* executer, std::vector<std::string>& comma
 	if (!executer->getIsAuthenticated())
 		return (ReplyHandler::errorHandler(ERR_NOTREGISTERED, *executer, "", "JOIN"));
 
-	if (commandArgs.size() < 1 || commandArgs.size() > 15)
+	if (commandArgs.size() < 1 || commandArgs.size() > 2)
 		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "JOIN"));
 
 	std::vector<std::string>	channelToJoin;
@@ -165,7 +170,7 @@ void	CommandHandler::joinCommand(User* executer, std::vector<std::string>& comma
 
 	for (size_t i = 0; i < channelToJoin.size(); i++)
 	{
-		if (!isValidChannelName(channelToJoin[i]))
+		if (!isValidChannelName(channelToJoin[i]) || channelToJoin[i].size() > 200)
 			return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, channelToJoin[i], "JOIN"));
 	}
 

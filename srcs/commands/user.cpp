@@ -11,8 +11,6 @@ void	CommandHandler::userCommand(User* executer, std::vector<std::string>& comma
 	if (!executer->getHasNickName())
 		return (ReplyHandler::errorHandler(ERR_NOTREGISTERED, *executer, "", "USER"));
 
-	//:real name e' da fare????
-
 	if (commandArgs.size() > 4)
 		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "USER"));
 
@@ -27,11 +25,17 @@ void	CommandHandler::userCommand(User* executer, std::vector<std::string>& comma
 
 	if (executer->getHasUserName() == true)
 	{
-		executer->sendMessage("User is already set"); // da vedere se si deve dare un errore o no
+		std::string msg = ":" + executer->getNickName() + "!" +
+						executer->getUserName() + "@" + executer->getHostNameAsString() + " USER " + " :" + commandArgs[0];
+
+		executer->sendMessage(msg);
 		return ;
 	}
 
 	executer->setUserName(commandArgs[0]);
+
+	if (!commandArgs[4].empty())
+		executer->setRealName(commandArgs[4]);
 
 	ReplyHandler::replyHandler(RPL_WELCOME, *executer, NULL, NULL);
 	ReplyHandler::replyHandler(RPL_YOURHOST, *executer, NULL, NULL);
