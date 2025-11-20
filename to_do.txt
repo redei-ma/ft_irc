@@ -1,16 +1,12 @@
 nc -C 127.0.0.1 6671
 
 Genarali:
-	Permettere la conessione a tutti i computer nella rete
 	Testare file transfer
-	Fare BOT
 	Testare tutto a fondo
 	PING PONG lo facciamo?
 
 Francesco:
-	prendere indirizzo di connesione degli utenti e salvarlo come host (prenderlo in accept)
 
 Giovanni:
 
 Renato:
-	

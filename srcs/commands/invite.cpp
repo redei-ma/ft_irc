@@ -4,8 +4,6 @@
 #include "Channel.hpp"
 #include <iostream>
 
-
-
 void	CommandHandler::inviteCommand(User* executer, std::vector<std::string>& commandArgs)
 {
 	if (!executer->getIsAuthenticated())

@@ -12,7 +12,6 @@
 **	KICK #ch1,#ch2 user1,user2 :motivo			// Utente e canali abbinati
 */
 
-// Helper per validare il canale e i permessi dell'operatore
 static Channel* validateChannelAndOperator(User* executer, const std::string& channelName, Server& server)
 {
     Channel* channel = server.getChannelByName(channelName);
