@@ -202,18 +202,7 @@ void	Server::receiveNewMessage(int iterator)
 	ssize_t size = recv(_pollVector[iterator].fd, buffer, sizeof(buffer) - 1, 0);
 	if (size <= 0)                                                                // A client disconnected.
 	{
-		std::cout << "connesione chiusa" << std::endl;
-		std::map<int, User*>::iterator it = _fdUserMap.find(_pollVector[iterator].fd);
-		std::vector<Channel *> tmpVect = _fdUserMap[_pollVector[iterator].fd]->getChannelVector(); 
-		for (size_t i = 0; i < tmpVect.size(); i++)
-		{
-			if (tmpVect[i]->getUserCount() == 1)												  // Check if the user is alone in every channel he is in
-				deleteChannel(tmpVect[i]);
-		}
-		delete (_fdUserMap[_pollVector[iterator].fd]);
-		_pollVector.erase(_pollVector.begin() + iterator);
-		_fdUserMap.erase(it);
-		_userNbr--;
+		_command->execCommand(_fdUserMap[_pollVector[iterator].fd], "QUIT");
 		iterator--;
 		return ;
 	}
@@ -300,13 +289,8 @@ void 	  Server::disconnectUser(User* user)
 {
 	int userFd = user->getUserFd();
 	std::map<int, User*>::iterator it = _fdUserMap.find(userFd);
-
-	std::vector<Channel *> tmpVect = user->getChannelVector(); 
-	for (size_t i = 0; i < tmpVect.size(); i++)
-	{
-		if (tmpVect[i]->getUserCount() == 1)												  // Check if the user is alone in every channel he is in
-			deleteChannel(tmpVect[i]);
-	}
+	if (it == _fdUserMap.end())
+		return;
 	delete (_fdUserMap[userFd]);
 	for (std::vector<pollfd>::iterator pit = _pollVector.begin(); pit != _pollVector.end(); ++pit)
 	{
