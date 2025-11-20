@@ -133,7 +133,8 @@ void	CommandHandler::kickCommand(User* executer, std::vector<std::string>& comma
 		}
 	}
 	else
-		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "KICK"));
+		ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "KICK");
+	return ;
 }
 
 
