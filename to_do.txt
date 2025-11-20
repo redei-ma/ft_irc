@@ -13,4 +13,4 @@ Francesco:
 Giovanni:
 
 Renato:
-	cambiare host in tutte le reply tra client
+	
