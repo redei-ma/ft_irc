@@ -18,7 +18,7 @@ void CommandHandler::quitCommand(User* executer, std::vector<std::string>& comma
 
 	// Notifica a tutti i Canali
 	std::vector<Channel *>& userChannels = executer->getChannelVector();
-	std::string message = ":" + executer->getNickName() + "!" + executer->getUserName() + "@" + executer->getHostNameAsString() + " QUIT :" + quitMessage;
+	std::string message = executer->getPrefix() + " QUIT :" + quitMessage;
 	for (size_t i = 0; i < userChannels.size(); i++)
 	{
 		Channel *channel = userChannels[i];

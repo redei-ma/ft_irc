@@ -31,7 +31,7 @@ void CommandHandler::partCommand(User* executer, std::vector<std::string>& comma
 			ReplyHandler::errorHandler(ERR_NOTONCHANNEL, *executer, channelNames[i], "PART");
 			continue;
 		}
-		std::string msg = ":" + executer->getNickName() + "!" + executer->getUserName() + "@" + executer->getHostNameAsString() + " PART " + channel->getName();
+		std::string msg = executer->getPrefix() + " PART " + channel->getName();
 		if (!reason.empty())
 			msg += " :" + reason;
 		channel->broadcastMessage(msg);

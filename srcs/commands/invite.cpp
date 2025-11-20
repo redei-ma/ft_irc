@@ -28,7 +28,7 @@ void	CommandHandler::inviteCommand(User* executer, std::vector<std::string>& com
 		return (ReplyHandler::errorHandler(ERR_CHANOPRIVSNEEDED, *executer, commandArgs[1], "INVITE"));
 
 	channel->inviteUser(invitedUser);
-	std::string message = ":" + executer->getNickName() + "!" + executer->getUserName() + "@" + executer->getHostNameAsString() + " INVITE " + invitedUser->getNickName() + " :" + channel->getName();
+	std::string message = executer->getPrefix() + " INVITE " + invitedUser->getNickName() + " :" + channel->getName();
 	invitedUser->sendMessage(message);
 	
 	std::cout << "INVITE command executed: " << executer->getNickName() << " invited " << invitedUser->getNickName() << " to " << channel->getName() << std::endl;

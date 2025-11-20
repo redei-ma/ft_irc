@@ -34,7 +34,7 @@ void	CommandHandler::topicCommand(User* executer, std::vector<std::string>& comm
 			else
 			{
 				channel->setTopic(commandArgs[1]);
-				std::string message = ":" + executer->getNickName() + "!" + executer->getUserName() + "@" + executer->getHostNameAsString() + " TOPIC " + channel->getName() + " :" + commandArgs[1];
+				std::string message = executer->getPrefix() + " TOPIC " + channel->getName() + " :" + commandArgs[1];
 				channel->broadcastMessage(message);
 			}
 		}

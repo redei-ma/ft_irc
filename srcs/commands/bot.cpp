@@ -45,7 +45,6 @@ static void		sendBotCommands(User* executer)
 	sendBotLine(executer, "/help");
 	sendBotLine(executer, "/users");
 	sendBotLine(executer, "/channels");
-	sendBotLine(executer, "/game");
 }
 
 void	helpCommand(User* executer, const Server& server)

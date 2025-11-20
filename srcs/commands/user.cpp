@@ -11,7 +11,7 @@ void	CommandHandler::userCommand(User* executer, std::vector<std::string>& comma
 	if (!executer->getHasNickName())
 		return (ReplyHandler::errorHandler(ERR_NOTREGISTERED, *executer, "", "USER"));
 
-	if (commandArgs.size() > 4)
+	if (commandArgs.size() != 4)
 		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "USER"));
 
 	if (commandArgs[0].empty() || commandArgs[0].size() > 9)
@@ -25,17 +25,14 @@ void	CommandHandler::userCommand(User* executer, std::vector<std::string>& comma
 
 	if (executer->getHasUserName() == true)
 	{
-		std::string msg = ":" + executer->getNickName() + "!" +
-						executer->getUserName() + "@" + executer->getHostNameAsString() + " USER " + " :" + commandArgs[0];
-
+		std::string msg = executer->getPrefix() + " USER " + " :" + commandArgs[0];
 		executer->sendMessage(msg);
 		return ;
 	}
 
 	executer->setUserName(commandArgs[0]);
 
-	if (commandArgs.size() == 4 && !commandArgs[3].empty())
-		executer->setRealName(commandArgs[3]);
+	(!commandArgs[3].empty()) ? executer->setRealName(commandArgs[3]) : executer->setRealName("");
 
 	ReplyHandler::replyHandler(RPL_WELCOME, *executer, NULL, NULL);
 	ReplyHandler::replyHandler(RPL_YOURHOST, *executer, NULL, NULL);

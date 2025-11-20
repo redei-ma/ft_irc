@@ -53,22 +53,23 @@ class User
 
 			time_t	getLastPongTime() const;
 
-			std::string	getUserName() const;
-			std::string	getNickName() const;
-			std::string	getPassword() const;
-			std::string	getStrBuffer() const;
-			std::string	getRealName() const;
-			std::string	getHostNameAsString() const;
+			const std::string	getUserName() const;
+			const std::string	getNickName() const;
+			const std::string	getPassword() const;
+			const std::string	getStrBuffer() const;
+			const std::string	getRealName() const;
+			const std::string	getHostNameAsString() const;
+			const std::string	getPrefix() const;
 
 			sockaddr_in	getHostName() const;
 
-			void		joinChannel(Channel*);
-			void		exitChannel(Channel*);
-			void		updateStrBuffer(char*, size_t);
-			void		updateAuthenticationStatus();
-			void		sendMessage(const std::string&) const;
-			void		closeConnection();
-			void		resetBuffer();
+			void	joinChannel(Channel*);
+			void	exitChannel(Channel*);
+			void	updateStrBuffer(char*, size_t);
+			void	updateAuthenticationStatus();
+			void	sendMessage(const std::string&) const;
+			void	closeConnection();
+			void	resetBuffer();
 
 			~User();
 };

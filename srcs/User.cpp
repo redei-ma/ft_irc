@@ -138,17 +138,17 @@ void	User::setLastPongTime()
 void	User::setRealName(const std::string& realName) { _realName = realName;}
 
 /* ================GETTERS================ */
-std::string	User::getUserName() const { return (_userName); }
+const std::string	User::getUserName() const { return (_userName); }
 
-std::string	User::getNickName() const { return (_nickName); }
+const std::string	User::getNickName() const { return (_nickName); }
 
-std::string	User::getPassword() const { return (_password); }
+const std::string	User::getPassword() const { return (_password); }
 
-std::string	User::getRealName() const { return (_realName); }
+const std::string	User::getRealName() const { return (_realName); }
 
 sockaddr_in	User::getHostName() const { return (_hostName); }
 
-std::string	User::getHostNameAsString() const { return (inet_ntoa(_hostName.sin_addr)); }
+const std::string	User::getHostNameAsString() const { return (inet_ntoa(_hostName.sin_addr)); }
 
 bool	User::getIsAuthenticated() const { return (_isAuthenticated); }
 
@@ -162,9 +162,15 @@ int	User::getUserFd() const { return (_fd); }
 
 time_t	User::getLastPongTime() const { return (_lastPongTime); }
 
-std::string	User::getStrBuffer() const { return (_bufferStr); };
+const std::string	User::getStrBuffer() const { return (_bufferStr); };
 
 std::vector<Channel*>&	User::getChannelVector() { return (_channelVector);}
+
+const std::string	User::getPrefix() const
+{
+	std::string prefix = ":" + getNickName() + "!" + getUserName() + "@" + getHostNameAsString();
+	return prefix;
+}
 
 /* ================DESTRUCTOR================ */
 User::~User()
