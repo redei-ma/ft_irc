@@ -156,9 +156,6 @@ bool	Server::acceptNewConnection()
 	return true;
 }
 
-
-
-
 void	Server::receiveNewMessage(int iterator)
 {
 	std::cout << "Receiving new message..." << std::endl;
@@ -233,6 +230,18 @@ User*               Server::getUserByNick(const std::string &nickName)
 			return it->second;
 	}
 	return NULL;
+}
+
+std::vector<User*>	Server::getUserVector() const
+{
+	std::vector<User*>	userVector;
+	std::map<int, User*>::const_iterator	it;
+
+	for (it = _fdUserMap.begin(); it != _fdUserMap.end(); ++it)
+	{
+		userVector.push_back((it->second));
+	}
+	return (userVector);
 }
 
 Channel&	Server::createChannel(const std::string channelName)
