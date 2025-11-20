@@ -107,7 +107,7 @@ void    Server::sinInit()
 {
 	memset(&_serverSin, 0, sizeof(_serverSin));
 	_serverSin.sin_port = htons(_port);
-	_serverSin.sin_addr.s_addr = inet_addr("127.0.0.1");
+	_serverSin.sin_addr.s_addr = INADDR_ANY;
 	_serverSin.sin_family = AF_INET;
 }
 
@@ -125,9 +125,9 @@ bool	Server::putInListen()
 	return true;
 }
 
-bool	Server::acceptNewConnection()
+/* bool	Server::acceptNewConnection()
 {
-	int tmpFd = accept(_serverSocket, NULL, NULL);
+	int tmpFd = accept(_serverSocket, (struct sockaddr*)&_serverSin.sin_addr, &addrlen);
 	if (tmpFd == -1)
 	{
     	perror("accept");
@@ -147,12 +147,48 @@ bool	Server::acceptNewConnection()
 	}
 	else
 	{
+
 		std::cout << "Nuovo utente connesso" << std::endl;                  // Notify sended and new User added to the vector of poll.
 		_pollVector.push_back(tmpPoll);
 		User *tmpUser = new User(tmpFd);
 		this->_fdUserMap[tmpFd] = tmpUser;
 		_userNbr++;
 	}
+	return true;
+} */
+
+bool Server::acceptNewConnection()
+{
+    sockaddr_in clientAddr;
+    socklen_t addrlen = sizeof(clientAddr);
+
+    int tmpFd = accept(_serverSocket, (struct sockaddr*)&clientAddr, &addrlen);
+    if (tmpFd == -1)
+    {
+        perror("accept");
+        return false;
+	}
+    fcntl(tmpFd, F_SETFL, O_NONBLOCK);
+    struct pollfd tmpPoll;
+    tmpPoll.fd = tmpFd;
+    tmpPoll.events = POLLIN;
+    tmpPoll.revents = 0;
+    if (_userNbr >= MAX_USR_NBR)
+    {
+        const char *errorMsg = "Error: max capacity reached. Connection closed.";
+        send(tmpFd, errorMsg, strlen(errorMsg), 0);
+        close(tmpFd);
+        return false;
+    }
+	else
+	{
+    	std::cout << "Nuovo utente connesso" << std::endl;
+    	_pollVector.push_back(tmpPoll);
+    	User *tmpUser = new User(tmpFd, clientAddr);
+    	_fdUserMap[tmpFd] = tmpUser;
+    	_userNbr++;
+	}
+    
 	return true;
 }
 
