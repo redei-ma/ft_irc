@@ -34,12 +34,6 @@ void	CommandHandler::nickCommand(User* executer, std::vector<std::string>& comma
 	if (_server.userNickEsists(commandArgs[0]))
 		return (ReplyHandler::errorHandler(ERR_NICKNAMEINUSE, *executer, commandArgs[0], "NICK"));
 
-	if (executer->getHasNickName() == true)
-	{
-		executer->sendMessage("NickName is already set"); // da vedere se si deve dare un errore o no
-		return ;
-	}
-
 	executer->setNickName(commandArgs[0]);
 
 	std::cout << "NICK command executed: " << executer->getNickName() << std::endl;

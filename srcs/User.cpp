@@ -5,30 +5,33 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <algorithm>
+#include <arpa/inet.h>
 
 /* ================CONSTRUCTORS================ */
 User::User():
 			_fd(-1), _userName(""),
 			_nickName(""), _password(""),
-			_bufferStr(""), _isAuthenticated(false),
-			_hasNickName(false), _hasUserName(false),
+			_bufferStr(""), _realName(""),
+			_isAuthenticated(false), _hasNickName(false), _hasUserName(false),
 			_hasPassword(false), _lastPongTime(0)
-{}
+{
+	memset(&_hostName, 0, sizeof(_hostName));
+}
 
-User::User(int fd) :
+User::User(const int& fd, const sockaddr_in& hostName) :
 			_fd(fd), _userName(""),
 			_nickName(""), _password(""),
-			_bufferStr(""), _isAuthenticated(false),
-			_hasNickName(false), _hasUserName(false),
+			_bufferStr(""), _realName(""),  _hostName(hostName),
+			_isAuthenticated(false), _hasNickName(false), _hasUserName(false),
 			_hasPassword(false), _lastPongTime(0)
 {}
 
-User::User(const User &other) :
+User::User(const User& other) :
 			_fd(getUserFd()), _userName(other.getUserName()),
 			_nickName(other.getNickName()), _password(other.getPassword()),
-			_bufferStr(other.getStrBuffer()), _isAuthenticated(other.getIsAuthenticated()),
-			_hasNickName(other.getHasNickName()), _hasUserName(other.getHasUserName()),
-			_hasPassword(other.getHasPassword()), _lastPongTime(0)
+			_bufferStr(other.getStrBuffer()), _realName(other.getRealName()), _hostName(other.getHostName()),
+			_isAuthenticated(other.getIsAuthenticated()), _hasNickName(other.getHasNickName()),
+			_hasUserName(other.getHasUserName()), _hasPassword(other.getHasPassword()), _lastPongTime(other.getLastPongTime())
 {}
 
 /* ================OPERATOR================ */
@@ -40,6 +43,8 @@ User&	User::operator=(const User& other)
 		_nickName = other.getNickName();
 		_password = other.getPassword();
 		_bufferStr = other.getStrBuffer();
+		_realName = other.getRealName();
+		_hostName = other.getHostName();
 
 		_hasUserName = other.getHasUserName();
 		_hasNickName = other.getHasNickName();
@@ -69,7 +74,7 @@ void	User::updateAuthenticationStatus()
 	_isAuthenticated = (getHasUserName() && getHasNickName() && getHasPassword());
 }
 
-void	User::sendMessage(std::string message) const
+void	User::sendMessage(const std::string& message) const
 {
 	try
 	{
@@ -103,28 +108,31 @@ void	User::exitChannel(Channel* channel)
 		_channelVector.erase(it);
 }
 
+<<<<<<< HEAD
 // void	User::exitAllChannel()
 // {
 // 	for (size_t i = 0; i < _channelVector.size(); i++)
 // 		_channelVector[i]->removeUser(this);
 // }
 
+=======
+>>>>>>> origin/giovanni
 /* ================SETTERS================ */
-void	User::setUserName(std::string userName)
+void	User::setUserName(const std::string& userName)
 {
 	_userName = userName;
 	_hasUserName = true;
 	updateAuthenticationStatus();
 }
 
-void	User::setNickName(std::string nickName)
+void	User::setNickName(const std::string& nickName)
 {
 	_nickName = nickName;
 	_hasNickName = true;
 	updateAuthenticationStatus();
 }
 
-void	User::setPassword(std::string password)
+void	User::setPassword(const std::string& password)
 {
 	_password = password;
 	_hasPassword = true;
@@ -136,12 +144,20 @@ void	User::setLastPongTime()
 	_lastPongTime = time(NULL);
 }
 
+void	User::setRealName(const std::string& realName) { _realName = realName;}
+
 /* ================GETTERS================ */
 std::string	User::getUserName() const { return (_userName); }
 
 std::string	User::getNickName() const { return (_nickName); }
 
 std::string	User::getPassword() const { return (_password); }
+
+std::string	User::getRealName() const { return (_realName); }
+
+sockaddr_in	User::getHostName() const { return (_hostName); }
+
+std::string	User::getHostNameAsString() const { return (inet_ntoa(_hostName.sin_addr)); }
 
 bool	User::getIsAuthenticated() const { return (_isAuthenticated); }
 
@@ -162,6 +178,9 @@ std::vector<Channel*>&	User::getChannelVector() { return (_channelVector);}
 /* ================DESTRUCTOR================ */
 User::~User()
 {
+<<<<<<< HEAD
 	// exitAllChannel(); non serve piu viene fatto in quit
+=======
+>>>>>>> origin/giovanni
 	closeConnection();
 }

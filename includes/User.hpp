@@ -3,6 +3,7 @@
 
 # include <string>
 # include <time.h>
+#include <netinet/in.h>
 # include <vector>
 
 class Channel;
@@ -10,12 +11,14 @@ class Channel;
 class User
 {
 	private:
-				int	_fd;
+				const int	_fd;
 				
 				std::string	_userName;
 				std::string	_nickName;
 				std::string	_password;
 				std::string	_bufferStr;
+				std::string	_realName;
+				sockaddr_in	_hostName;
 
 				std::vector<Channel*>	_channelVector;
 
@@ -28,20 +31,22 @@ class User
 
 				User();
 	public:
-			User(int fd);
-			User(const User& other);
-			User& operator=(const User& other);
-			bool operator!=(const User& other);
+			User(const int&, const sockaddr_in&);
+			User(const User&);
+			User& operator=(const User&);
+			bool operator!=(const User&);
 
-			void	setUserName(std::string userName);
-			void	setNickName(std::string nickName);
-			void	setPassword(std::string password);
+			void	setUserName(const std::string&);
+			void	setNickName(const std::string&);
+			void	setPassword(const std::string&);
 			void	setLastPongTime();
+			void	setRealName(const std::string&);
 
 			bool	getIsAuthenticated() const;
 			bool	getHasUserName() const;
 			bool	getHasNickName() const;
 			bool	getHasPassword() const;
+
 			std::vector<Channel*>&	getChannelVector();
 
 			int getUserFd() const;
@@ -52,12 +57,16 @@ class User
 			std::string	getNickName() const;
 			std::string	getPassword() const;
 			std::string	getStrBuffer() const;
+			std::string	getRealName() const;
+			std::string	getHostNameAsString() const;
+
+			sockaddr_in	getHostName() const;
 
 			void		joinChannel(Channel*);
 			void		exitChannel(Channel*);
-			void		updateStrBuffer(char *buffer, size_t size);
+			void		updateStrBuffer(char*, size_t);
 			void		updateAuthenticationStatus();
-			void		sendMessage(std::string message) const;
+			void		sendMessage(const std::string&) const;
 			void		closeConnection();
 			void		resetBuffer();
 			// void		exitAllChannel();
