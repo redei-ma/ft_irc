@@ -141,7 +141,7 @@ void ReplyHandler::replyHandler(t_status status, const User& user, const Channel
 	switch (status)
 	{
 		case RPL_WELCOME:
-			buffer = _prefix + " 001 " + user.getNickName() + " :Welcome to the Internet Relay Network " + user.getNickName() + "!" + user.getUserName() + "@irc.rfg.com";
+			buffer = _prefix + " 001 " + user.getNickName() + " :Welcome to the Internet Relay Network " + user.getNickName() + "!" + user.getUserName() + "@" + user.getHostNameAsString();
 			break;
 		case RPL_YOURHOST:
 			buffer = _prefix + " 002 " + user.getNickName() + " :Your host is irc.rfg.com, running version 1.0";

@@ -7,7 +7,7 @@
 static void addUserToChannel(User* executer, Channel* channel)
 {
 	channel->addUser(executer);
-	std::string message = ":" + executer->getNickName() + "!" + executer->getUserName() + "@irc.rfg.com" + " JOIN " + channel->getName();
+	std::string message = ":" + executer->getNickName() + "!" + executer->getUserName() + "@" + executer->getHostNameAsString() + " JOIN " + channel->getName();
 	channel->broadcastMessage(message);
 
 	if (channel->hasTopic())

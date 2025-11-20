@@ -48,9 +48,7 @@ static User* validateTargetUser(User* executer, const std::string& userName, Cha
     
     if (targetUser == executer)
     {
-        std::string message = ":" + executer->getNickName() + "!" + executer->getUserName() + 
-                             "@irc.rfg.com KICK " + channel->getName() + " " + 
-                             targetUser->getNickName() + " :You can't kick yourself";
+        std::string message = ":" + executer->getNickName() + "!" + executer->getUserName() + "@" + executer->getHostNameAsString() + " KICK " + channel->getName() + " " + targetUser->getNickName() + " :You can't kick yourself";
         executer->sendMessage(message);
         return NULL;
     }
@@ -66,7 +64,7 @@ static User* validateTargetUser(User* executer, const std::string& userName, Cha
 
 static void kicking(User* executer, Channel* channel, User* targetUser, const std::string& reason)
 {
-	std::string message = ":" + executer->getNickName() + "!" + executer->getUserName() + "@irc.rfg.com" + " KICK " + channel->getName() + " " + targetUser->getNickName() + reason;
+	std::string message = ":" + executer->getNickName() + "!" + executer->getUserName() + "@" + executer->getHostNameAsString() + " KICK " + channel->getName() + " " + targetUser->getNickName() + reason;
 	channel->broadcastMessage(message, NULL);
 	channel->removeUser(targetUser);
 
