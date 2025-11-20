@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: redei-ma <redei-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/11 16:42:12 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/20 12:02:10 by gpirozzi         ###   ########.fr       */
+/*   Updated: 2025/11/20 15:16:15 by redei-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 	
 	if (argc != 3)
 	{
-		std::cerr << "Invalid input" << std::endl;
+		std::cerr << "Usage: ./IRC <port> <password>" << std::endl;
 		return (1);
 	}
 

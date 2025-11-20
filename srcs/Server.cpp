@@ -8,15 +8,13 @@
 #include <iostream>
 #include <fcntl.h>
 #include <algorithm>
+#include <cstdlib>
 // #include <sys/socket.h>
 
 // #include <stdlib.h>
 // #include <sys/types.h>
 // #include <unistd.h>
 // #include <netinet/in.h>
-
-
-
 
 /*-------------------------------------- SIGNAL --------------------------------------*/
 
@@ -202,7 +200,8 @@ void	Server::receiveNewMessage(int iterator)
 	ssize_t size = recv(_pollVector[iterator].fd, buffer, sizeof(buffer) - 1, 0);
 	if (size <= 0)                                                                // A client disconnected.
 	{
-		_command->execCommand(_fdUserMap[_pollVector[iterator].fd], "QUIT");
+		std::string command = "QUIT";
+		_command->execCommand(_fdUserMap[_pollVector[iterator].fd], command);
 		iterator--;
 		return ;
 	}
@@ -309,7 +308,9 @@ void 	  Server::disconnectUser(User* user)
 
 void	Server::run()
 {
-	std::cout << "Server running" << std::endl;                     // The Server is prepared to run in the constructor
+	std::cout << "Server is running on port " << this->_port << std::endl;
+	// std::cout << "Server IP address: ";
+	// std::system("hostname -I | awk '{print $1}'");
 
 	_pollVector[0].fd = this->_serverSocket;
 	_pollVector[0].events = POLLIN;
