@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: gpirozzi <gpirozzi@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/11 16:42:12 by gpirozzi          #+#    #+#             */
-/*   Updated: 2025/11/20 16:33:21 by gpirozzi         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Server.hpp"
 #include <cstdlib>
 #include <errno.h>
@@ -21,7 +9,7 @@ int main(int argc, char **argv)
 
 	if (argc != 3)
 	{
-		std::cerr << "Invalid input" << std::endl;
+		std::cerr << "Usage: ./IRC <port> <password>" << std::endl;
 		return (1);
 	}
 
