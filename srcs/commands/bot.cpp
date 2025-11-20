@@ -17,14 +17,13 @@ typedef enum s_bot
 
 t_bot	findCommandToExec(const std::string& input)
 {
-	const char* botCommands[4] {
+	const char* botCommands[3] = {
 		"/help",
 		"/users",
 		"/channels",
-		"/game"
 	};
 
-	for (size_t i = 0; i < 4; i++)
+	for (size_t i = 0; i < 3; i++)
 	{
 		if (input == botCommands[i])
 			return (static_cast<t_bot>(i));
@@ -57,13 +56,14 @@ void	helpCommand(User* executer)
 
 void	usersCommand(User* executer)
 {
-
+	(void)executer;
 }
 
 void	channelsCommand(User* executer)
 {
-
+	(void)executer;
 }
+
 
 static void	setBotMapExecuter(std::map<t_bot, void(*)(User*)>& botMapExecuter)
 {

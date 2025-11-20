@@ -108,15 +108,6 @@ void	User::exitChannel(Channel* channel)
 		_channelVector.erase(it);
 }
 
-<<<<<<< HEAD
-// void	User::exitAllChannel()
-// {
-// 	for (size_t i = 0; i < _channelVector.size(); i++)
-// 		_channelVector[i]->removeUser(this);
-// }
-
-=======
->>>>>>> origin/giovanni
 /* ================SETTERS================ */
 void	User::setUserName(const std::string& userName)
 {
@@ -178,9 +169,5 @@ std::vector<Channel*>&	User::getChannelVector() { return (_channelVector);}
 /* ================DESTRUCTOR================ */
 User::~User()
 {
-<<<<<<< HEAD
-	// exitAllChannel(); non serve piu viene fatto in quit
-=======
->>>>>>> origin/giovanni
 	closeConnection();
 }

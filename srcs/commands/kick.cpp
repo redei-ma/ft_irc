@@ -161,7 +161,7 @@ void	CommandHandler::kickCommand(User* executer, std::vector<std::string>& comma
 
 // 	if (targetUser == executer)
 // 	{
-// 		std::string message = ":" + executer->getNickName() + "!" + executer->getUserName() + "@irc.rfg.com" + " KICK " + channel->getName() + " " + targetUser->getNickName() + " :You can't kick yourself";;
+// 		std::string message = ":" + executer->getNickName() + "!" + executer->getUserName() + "@" + executer->getHostNameAsString() + " KICK " + channel->getName() + " " + targetUser->getNickName() + " :You can't kick yourself";;
 // 		executer->sendMessage(message);
 // 		return ;
 // 	}
@@ -175,7 +175,7 @@ void	CommandHandler::kickCommand(User* executer, std::vector<std::string>& comma
 // 	else
 // 		reason += executer->getNickName();
 	
-// 	std::string message = ":" + executer->getNickName() + "!" + executer->getUserName() + "@irc.rfg.com" + " KICK " + channel->getName() + " " + targetUser->getNickName() + reason;
+// 	std::string message = ":" + executer->getNickName() + "!" + executer->getUserName() + "@" + executer->getHostNameAsString() + " KICK " + channel->getName() + " " + targetUser->getNickName() + reason;
 // 	channel->broadcastMessage(message, NULL);
 
 // 	channel->removeUser(targetUser);

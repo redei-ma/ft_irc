@@ -29,7 +29,7 @@ void CommandHandler::initCommand()
 	REGISTERED_CMD(PART, part);
 	REGISTERED_CMD(QUIT, quit);
 	REGISTERED_CMD(BOT, bot);
-	REGISTERED_CMD(PING, ping);
+	// REGISTERED_CMD(PING, ping);
 }
 
 t_command	CommandHandler::recognizeCommand(std::string command)
@@ -49,7 +49,7 @@ t_command	CommandHandler::recognizeCommand(std::string command)
 		"CAP",
 		"WHO",
 		"BOT",
-		"PING"
+		// "PING"
 	};
 	for (int i = 0; i < 15; i++)
 	{
