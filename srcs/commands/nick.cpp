@@ -40,11 +40,11 @@ void	CommandHandler::nickCommand(User* executer, std::vector<std::string>& comma
 	{
 		std::vector<Channel*>&	channelVector = executer->getChannelVector();
 		std::string msg = ":" + executer->getNickName() + "!" +
-						executer->getUserName() + "@" + executer->getHostNameAsString() + " NICK " + commandArgs[0];
+		executer->getUserName() + "@" + executer->getHostNameAsString() + " NICK " + commandArgs[0];
 		for (size_t i = 0; i < channelVector.size(); i++)
-			channelVector[i]->broadcastMessage(msg, executer);
+			channelVector[i]->broadcastMessage(msg, NULL);
 	}
-	
+
 	executer->setNickName(commandArgs[0]);
 	
 	std::cout << "NICK command executed: " << executer->getNickName() << std::endl;

@@ -25,25 +25,22 @@ static bool	SplitChannelKeys(std::vector<std::string> &channelToJoin,
 							std::vector<std::string> &keys,
 							const std::vector<std::string>& commandArgs)
 {
-	bool	finishedChannels = false;
-	for (size_t i = 0; i < commandArgs.size(); i++)
+	std::vector<std::string>	channelsSplittedByComma = split(commandArgs[0], ',');
+	for (size_t j = 0; j < channelsSplittedByComma.size(); j++)
 	{
-		std::vector<std::string>	splittedByComma = split(commandArgs[i], ',');
-		for (size_t j = 0; j < splittedByComma.size(); j++)
-		{
-			//prendo channel con # seguendo IRC
-			if (splittedByComma[j][0] == '#' && !finishedChannels)
-			{
-				channelToJoin.push_back(splittedByComma[j]);
-			}
-			else
-			{
-				finishedChannels = true;
-				if (splittedByComma[j][0] == '#')
-					return (false);
-				keys.push_back(splittedByComma[j]);
-			}
-		}
+		//prendo channel con # seguendo IRC
+		if (channelsSplittedByComma[j][0] == '#')
+			channelToJoin.push_back(channelsSplittedByComma[j]);
+		else
+			return false;
+	}
+
+	if (commandArgs[1].empty())
+		return (true);
+	std::vector<std::string>	keysSplittedByComma = split(commandArgs[1], ',');
+	for (size_t j = 0; j < keysSplittedByComma.size(); j++)
+	{
+		keys.push_back(keysSplittedByComma[j]);
 	}
 	return (true);
 }
@@ -177,9 +174,6 @@ void	CommandHandler::joinCommand(User* executer, std::vector<std::string>& comma
 	//Dopo aver splittato e controllato il nome di ogni canale accoppio canale e key(se c e)
 	std::vector<std::pair<std::string, std::string> >	channelAndKeys;
 	channelAndKeys = pairChannelAndKeys(channelToJoin, keys);
-
-	if (keys.size() > channelToJoin.size())
-		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, channelToJoin[i], "JOIN"));
 
 	//eseguo il comando su ogni canale
 	for (size_t i = 0; i < channelAndKeys.size(); i++)
