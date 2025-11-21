@@ -178,6 +178,9 @@ void	CommandHandler::joinCommand(User* executer, std::vector<std::string>& comma
 	std::vector<std::pair<std::string, std::string> >	channelAndKeys;
 	channelAndKeys = pairChannelAndKeys(channelToJoin, keys);
 
+	if (keys.size() > channelToJoin.size())
+		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, channelToJoin[i], "JOIN"));
+
 	//eseguo il comando su ogni canale
 	for (size_t i = 0; i < channelAndKeys.size(); i++)
 	{	
