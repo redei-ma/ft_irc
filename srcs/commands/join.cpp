@@ -34,14 +34,14 @@ static bool	SplitChannelKeys(std::vector<std::string> &channelToJoin,
 			//prendo channel con # seguendo IRC
 			if (splittedByComma[j][0] == '#' && !finishedChannels)
 			{
-				channelToJoin.push_back(commandArgs[j]);
+				channelToJoin.push_back(splittedByComma[j]);
 			}
 			else
 			{
 				finishedChannels = true;
-				if (commandArgs[j][0] == '#')
+				if (splittedByComma[j][0] == '#')
 					return (false);
-				keys.push_back(commandArgs[j]);
+				keys.push_back(splittedByComma[j]);
 			}
 		}
 	}

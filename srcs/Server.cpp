@@ -284,19 +284,18 @@ std::string&        Server::getPassword()
 	return this->_password;
 }
 
-void		Server::deleteChannel(Channel *toDelete)
+void	Server::deleteChannel(Channel *toDelete)
 {
-	std::vector<Channel *>::iterator i = std::find(this->_channelVector.begin(), this->_channelVector.end(), toDelete);
-	if (i != this->_channelVector.end())
+	std::vector<Channel *>::iterator it = std::find(this->_channelVector.begin(), this->_channelVector.end(), toDelete);
+	if (it != this->_channelVector.end())
 	{
-		this->_channelVector.erase(i);
-		delete(*i);
+		delete(*it);
+		this->_channelVector.erase(it);
 	}
-	if (i != this->_channelVector.end())
 	return;
 }
 
-void 	  Server::disconnectUser(User* user)
+void	Server::disconnectUser(User* user)
 {
 	int userFd = user->getUserFd();
 	std::map<int, User*>::iterator it = _fdUserMap.find(userFd);

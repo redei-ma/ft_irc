@@ -8,5 +8,6 @@ Genarali:
 Francesco:
 
 Giovanni:
+	JOIN #c1,#c2,c3 crash
 
 Renato:

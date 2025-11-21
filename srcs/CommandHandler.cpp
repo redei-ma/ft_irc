@@ -91,8 +91,8 @@ static void	splitCommand(std::vector<std::string>& splittedCommands, std::string
 void	CommandHandler::execCommand(User* executer, std::string input)
 {
 	std::vector<std::string>	splittedCommands;
-	std::cout << input << std::endl;
 	splitCommand(splittedCommands, input);
+
 	for (size_t i = 0; i < splittedCommands.size(); i++)
 	{
 		std::vector<std::string> splittedArgs = splitArgs(splittedCommands[i]);
@@ -103,7 +103,7 @@ void	CommandHandler::execCommand(User* executer, std::string input)
 			continue ;
 		else if (commandToExec == NOT_FOUND)
 		{
-			ReplyHandler::errorHandler(ERR_UNKNOWNCOMMAND, *executer, splittedArgs[1], splittedArgs[0]);
+			ReplyHandler::errorHandler(ERR_UNKNOWNCOMMAND, *executer, "", splittedArgs[0]);
 			continue ;
 		}
 

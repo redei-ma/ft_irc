@@ -7,11 +7,9 @@
 
 #define REGISTERED_BOT_CMD(enum, name) botMapExecuter[enum] = name##Command
 
-const std::string _SERVERNAME = "irc.rfg.com";
-
 static void sendBotLine(User* executer, const std::string& text)
 {
-	std::string msg = ":" + _SERVERNAME + " NOTICE " + executer->getNickName() + " :" + text;
+	std::string msg = ":" + SERVERNAME + " NOTICE " + executer->getNickName() + " :" + text;
 	executer->sendMessage(msg);
 }
 
@@ -23,7 +21,7 @@ typedef enum s_bot
 	ERROR,
 }	t_bot;
 
-t_bot	findCommandToExec(const std::string& input)
+static t_bot	findCommandToExec(const std::string& input)
 {
 	const char* botCommands[3] = {
 		"/help",
@@ -47,7 +45,7 @@ static void		sendBotCommands(User* executer)
 	sendBotLine(executer, "/channels");
 }
 
-void	helpCommand(User* executer, const Server& server)
+static void	helpCommand(User* executer, const Server& server)
 {
 	(void)server;
 
@@ -63,7 +61,7 @@ void	helpCommand(User* executer, const Server& server)
 	sendBotLine(executer, "BOT with arg: /help | /users | /channels");
 }
 
-void	usersCommand(User* executer, const Server& _server)
+static void	usersCommand(User* executer, const Server& _server)
 {
 	std::vector<User*>	userVector = _server.getUserVector();
 	if (userVector.empty())
@@ -73,11 +71,13 @@ void	usersCommand(User* executer, const Server& _server)
 	}
 	for (size_t i = 0; i < userVector.size(); i++)
 	{
+		if (executer == userVector[i])
+			continue ;
 		sendBotLine(executer, userVector[i]->getNickName());
 	}
 }
 
-void	channelsCommand(User* executer, const Server& _server)
+static void	channelsCommand(User* executer, const Server& _server)
 {
 	std::vector<Channel*>	channelVector = _server.getChannelVector();
 	if (channelVector.empty())
@@ -116,8 +116,8 @@ void	CommandHandler::botCommand(User* executer, std::vector<std::string>& comman
 		return ;
 	}
 
-	t_bot	command = findCommandToExec(commandArgs[1]);
-	if (command == ERROR)
+	t_bot	botCommand = findCommandToExec(commandArgs[1]);
+	if (botCommand == ERROR)
 	{
 		sendBotLine(executer, "Invalid command");
 		return ;
@@ -126,5 +126,5 @@ void	CommandHandler::botCommand(User* executer, std::vector<std::string>& comman
 	static std::map<t_bot, void(*)(User*, const Server&)> botMapExecuter;
 	setBotMapExecuter(botMapExecuter);
 
-	botMapExecuter[command](executer, _server);
+	botMapExecuter[botCommand](executer, _server);
 }
