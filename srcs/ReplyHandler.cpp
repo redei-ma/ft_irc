@@ -27,6 +27,9 @@ void ReplyHandler::errorHandler(t_status error, const User& user, const std::str
 		case ERR_TOOMANYCHANNELS:
 			buffer = _prefix + " 405 " + target + " " + arg + " :You have joined too many channels";
 			break;
+		case ERR_NOORIGIN:
+			buffer = _prefix + " 409 " + target + " :No origin specified";
+			break;
 		case ERR_NORECIPIENT:
 			buffer = _prefix + " 411 " + target + " :No recipient given (" + command + ")";
 			break;

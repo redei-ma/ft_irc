@@ -27,6 +27,7 @@ typedef enum	s_status
 	ERR_NOSUCHCHANNEL = 403,	//<channel> :No such channel	Canale non esistente.
 	ERR_CANNOTSENDTOCHAN = 404,	//<channel> :Cannot send to channel	Il client non può inviare messaggi al canale.
 	ERR_TOOMANYCHANNELS = 405,	//<channel> :You have joined too many channels	Limite di canali raggiunto per un utente.
+	ERR_NOORIGIN = 409,        // :No origin specified	Comando senza origine.
 	ERR_NORECIPIENT = 411,		//No recipient given (<command>)	Comando senza destinatario.
 	ERR_NOTEXTTOSEND = 412,		//No text to send	Messaggio vuoto da inviare.
 	ERR_UNKNOWNCOMMAND = 421,	//Unknown command	Comando non riconosciuto.
