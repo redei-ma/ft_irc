@@ -71,8 +71,8 @@ class Server
     bool                putInListen();
     bool                acceptNewConnection();
     void                receiveNewMessage(int iterator);
-    void                sendPing();
-    void                checkPong();
+    // void                sendPing();
+    // void                checkPong();
 };
 
 #endif
