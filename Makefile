@@ -28,7 +28,7 @@ fclean: clean
 
 re: fclean all
 
-# make val port='1234' pass='xxxx' --> valgrind ./IRC 1234 xxxx
+# make val port='1234' pass='xxxx' -> valgrind ./IRC 1234 xxxx
 val: $(NAME)
 	@echo "Running Valgrind..."
 	@$(VALGRIND) ./$(NAME) $(port) $(pass)

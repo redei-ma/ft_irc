@@ -166,34 +166,37 @@ bool Server::acceptNewConnection()
         perror("accept");
         return false;
 	}
-    fcntl(tmpFd, F_SETFL, O_NONBLOCK);
-    struct pollfd tmpPoll;
-    tmpPoll.fd = tmpFd;
-    tmpPoll.events = POLLIN;
-    tmpPoll.revents = 0;
-    if (_userNbr >= MAX_USR_NBR)
+	if (_userNbr >= MAX_USR_NBR)
     {
         const char *errorMsg = "Error: max capacity reached. Connection closed.";
         send(tmpFd, errorMsg, strlen(errorMsg), 0);
         close(tmpFd);
         return false;
     }
-	else
+    if (fcntl(tmpFd, F_SETFL, O_NONBLOCK) < 0)
 	{
-    	std::cout << "Nuovo utente connesso" << std::endl;
-    	_pollVector.push_back(tmpPoll);
-    	User *tmpUser = new User(tmpFd, clientAddr);
-    	_fdUserMap[tmpFd] = tmpUser;
-    	_userNbr++;
+		perror("fcntl");
+		close(tmpFd);
+		return false;
 	}
-    
+    struct pollfd tmpPoll;
+    tmpPoll.fd = tmpFd;
+    tmpPoll.events = POLLIN;
+    tmpPoll.revents = 0;
+
+	std::cout << "Nuovo utente connesso" << std::endl;
+	_pollVector.push_back(tmpPoll);
+	User *tmpUser = new User(tmpFd, clientAddr);
+	_fdUserMap[tmpFd] = tmpUser;
+	_userNbr++;
+
 	return true;
 }
 
 void	Server::receiveNewMessage(int iterator)
 {
 	std::cout << "Receiving new message..." << std::endl;
-	char buffer[513]; 														      // Max 512 characters per buffer, + 1 for terminal.
+	char buffer[513]; 														      // Max 512 characters for buffer, + 1 for terminal.
 	ssize_t size = recv(_pollVector[iterator].fd, buffer, sizeof(buffer) - 1, 0);
 	if (size <= 0)                                                                // A client disconnected.
 	{
@@ -321,8 +324,6 @@ void 	  Server::disconnectUser(User* user)
 void	Server::run()
 {
 	std::cout << "Server is running on port " << this->_port << std::endl;
-	// std::cout << "Server IP address: ";
-	// std::system("hostname -I | awk '{print $1}'");
 
 	_pollVector[0].fd = this->_serverSocket;
 	_pollVector[0].events = POLLIN;

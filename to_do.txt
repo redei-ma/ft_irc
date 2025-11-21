@@ -4,6 +4,7 @@ Genarali:
 	Testare file transfer
 	Testare tutto a fondo
 	PING PONG lo facciamo?
+	Collegarsi da pc diversi del localhost
 
 Francesco:
 
