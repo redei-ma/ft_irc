@@ -11,6 +11,9 @@
 # include <vector>
 # include <map>
 
+// # define PING_INTERVAL 60 // Server invia un PING ogni 60 secondi
+// # define PONG_TIMEOUT 120 // Timeout per risposta del client con PONG
+
 //---------------------------RECOGNIZE OTHER CLASSES-----------------------------            
 
 class Channel;
@@ -68,6 +71,8 @@ class Server
     bool                putInListen();
     bool                acceptNewConnection();
     void                receiveNewMessage(int iterator);
+    void                sendPing();
+    void                checkPong();
 };
 
 #endif
