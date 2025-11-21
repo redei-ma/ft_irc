@@ -93,9 +93,13 @@ void	channelsCommand(User* executer, const Server& _server)
 
 static void	setBotMapExecuter(std::map<t_bot, void(*)(User*, const Server&)>& botMapExecuter)
 {
+	static bool	isInitialized = false;
+	if (isInitialized)
+		return ;
 	REGISTERED_BOT_CMD(HELP, help);
 	REGISTERED_BOT_CMD(USERS, users);
 	REGISTERED_BOT_CMD(CHANNELS, channels);
+	isInitialized = true;
 }
 
 void	CommandHandler::botCommand(User* executer, std::vector<std::string>& commandArgs)
@@ -119,7 +123,7 @@ void	CommandHandler::botCommand(User* executer, std::vector<std::string>& comman
 		return ;
 	}
 
-	std::map<t_bot, void(*)(User*, const Server&)> botMapExecuter;
+	static std::map<t_bot, void(*)(User*, const Server&)> botMapExecuter;
 	setBotMapExecuter(botMapExecuter);
 
 	botMapExecuter[command](executer, _server);
