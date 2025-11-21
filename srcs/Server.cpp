@@ -209,6 +209,7 @@ void	Server::receiveNewMessage(int iterator)
 		_fdUserMap[_pollVector[iterator].fd]->resetBuffer();
 		std::cout << "Received message from user " << _fdUserMap[_pollVector[iterator].fd]->getNickName() << ": " << commandToExec << std::endl;
 		_command->execCommand(_fdUserMap[_pollVector[iterator].fd], commandToExec);
+		if (commandToExec.substr(0, 4) == "PONG")
 		if (commandToExec.substr(0, 4) == "QUIT")
 			iterator--;
 	}
@@ -316,6 +317,55 @@ void 	  Server::disconnectUser(User* user)
 	return;
 }
 
+void Server::sendPing()
+{
+    time_t now = time(NULL);
+
+    for (std::map<int, User*>::iterator it = _fdUserMap.begin();
+         it != _fdUserMap.end();
+         it++)
+    {
+        User *tmpUsr = it->second;
+
+        if (!tmpUsr->getIsAuthenticated()) // Ping solo agli utenti autenticati
+            continue;
+        if (now - tmpUsr->getLastPongTime() >= PING_INTERVAL)  // Se è passato troppo tempo dall’ultimo PONG → manda un PING
+        {
+            std::string pingMsg = "PING :" + tmpUsr->getNickName() + "\r\n";
+            tmpUsr->sendMessage(pingMsg);
+        }
+    }
+}
+
+void Server::checkPong()
+{
+    time_t now = time(NULL);
+
+    std::map<int, User*>::iterator it = _fdUserMap.begin();
+    while (it != _fdUserMap.end())
+    {
+        User *usr = it->second;
+
+        // Consideriamo solo utenti autenticati
+        if (usr->getIsAuthenticated())
+        {
+            // Client non risponde da troppo tempo → lo disconnetto
+            if (now - usr->getLastPongTime() >= PONG_TIMEOUT)
+            {
+                std::cout << "User timed out: " << usr->getNickName() << std::endl;
+
+                // Serve salvare l’iteratore prima di eliminarlo
+                std::map<int, User*>::iterator toErase = it++;
+                disconnectUser(usr);
+                _fdUserMap.erase(toErase);
+                continue;   // Saltiamo il ++ finale
+            }
+        }
+        ++it;
+    }
+}
+
+
 /*------------------------------------------------CORE LOOP----------------------------------------------------------*/
 
 void	Server::run()
@@ -345,5 +395,7 @@ void	Server::run()
 					receiveNewMessage(i);                           // receive the message by recv() and handles the buffers.
 			}
 		}
+		sendPing();
+		checkPong();
 	}
 }

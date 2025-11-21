@@ -27,7 +27,7 @@ typedef enum	s_command
 	CAP,
 	WHO,
 	BOT,
-	PING,
+	PONG,
 	NOT_FOUND,
 }	t_command;
 
@@ -51,7 +51,7 @@ class	CommandHandler
 			DECLERE_COMMAND(part);
 			DECLERE_COMMAND(quit);
 			DECLERE_COMMAND(bot);
-			DECLERE_COMMAND(ping);
+			DECLERE_COMMAND(pong);
 
 			t_command	recognizeCommand(std::string);
 			void		parseCommandArgs(std::string);

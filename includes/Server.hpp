@@ -10,7 +10,9 @@
 # include <vector>
 # include <map>
 
-# define MAX_USR_NBR 5 // Max user capacity.
+# define MAX_USR_NBR 5    // Max user capacity.
+# define PING_INTERVAL 60 // Server invia un PING ogni 60 secondi
+# define PONG_TIMEOUT 120 // Timeout per risposta del client con PONG
 
 //---------------------------RECOGNIZE OTHER CLASSES-----------------------------            
 
@@ -69,6 +71,8 @@ class Server
     bool                putInListen();
     bool                acceptNewConnection();
     void                receiveNewMessage(int iterator);
+    void                sendPing();
+    void                checkPong();
 };
 
 #endif

@@ -47,11 +47,11 @@ class User
 			bool	getHasNickName() const;
 			bool	getHasPassword() const;
 
+			time_t	getLastPongTime() const;
+			
 			std::vector<Channel*>&	getChannelVector();
 
 			int getUserFd() const;
-
-			time_t	getLastPongTime() const;
 
 			const std::string	getUserName() const;
 			const std::string	getNickName() const;
