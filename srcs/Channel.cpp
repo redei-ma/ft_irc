@@ -1,14 +1,15 @@
+#include "config.hpp"
 #include "Channel.hpp"
-
 #include "User.hpp"
 #include <algorithm>
+#include <sstream>
 
 Channel::Channel(const std::string name)
 	: _name(name),
 	  _hasKey(false), _key(""),
 	  _isTopicRestricted(false), _topic(""),
 	  _isInviteOnly(false),
-	  _usersLimit(0), _isFull(false)
+	  _usersLimit(MAX_USER), _isFull(false)
 	  {}
 
 Channel::~Channel() {}
@@ -47,7 +48,7 @@ bool Channel::isInviteOnly() const { return _isInviteOnly; }
 
 void Channel::setInviteOnly(bool isInviteOnly) { _isInviteOnly = isInviteOnly; }
 
-bool Channel::hasUsersLimit() const { return _usersLimit > 0; }
+bool Channel::hasUsersLimit() const { return _usersLimit != MAX_USER; }
 
 std::size_t Channel::getUsersLimit() const { return _usersLimit; }
 
@@ -65,7 +66,7 @@ void	Channel::inviteUser(User* user)
 
 void Channel::removeUsersLimit()
 {
-	_usersLimit = 0;
+	_usersLimit = MAX_USER;
 	_isFull = false;
 }
 
@@ -92,7 +93,6 @@ void Channel::removeInvitedUser(User* user)
 void Channel::removeUser(User* user)
 {
 	removeOperator(user);
-	// removeInvitedUser(user);// on cdovrebbe eservire perche l'utente e gia dentro al canale
 	iterator it = std::find(_users.begin(), _users.end(), user);
 	if (it != _users.end())
 		_users.erase(it);
@@ -129,5 +129,32 @@ void Channel::broadcastMessage(const std::string& message, const User* sender)
 		if (*it != sender)
 			(*it)->sendMessage(message);
 	}
+}
+
+const std::string	Channel::getModes() const
+{
+	std::string modes;
+
+	if (_isInviteOnly)
+		modes += "i";
+	if (_isTopicRestricted)
+		modes += "t";
+	if (_hasKey)
+		modes += "k";
+	if (hasUsersLimit())
+		modes += "l";
+
+	if (_hasKey)
+		modes += " " + _key;
+	if (hasUsersLimit())
+	{
+		std::stringstream ss;
+		ss << getUsersLimit();
+		modes += " " + ss.str();;
+	}
+
+	if (!modes.empty())
+		modes = "+" + modes;
+	return modes;
 }
 

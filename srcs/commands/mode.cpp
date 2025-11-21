@@ -6,6 +6,8 @@
 #include <cerrno>
 #include <algorithm>
 
+#include <iostream>
+
 //struttura per ogni flag
 typedef struct s_flag
 {
@@ -19,7 +21,6 @@ bool	isValidFlag(std::string& c)
 	return (c == "k" || c == "i" || c == "o" || c == "t" || c == "l");
 }
 
-#include <iostream>
 bool	checkFlags(std::vector<t_flag>& flags)
 {
 	if (flags.size() < 1)
@@ -176,7 +177,7 @@ void	lFlag(Channel* channel, User* executer, t_flag& flag)
 		char* endptr;
 		long result = std::strtol(flag.arg.c_str(), &endptr, 10);
 		
-		if (*endptr != '\0' || errno == ERANGE || result > MAX_USR_NBR || result <= 0)
+		if (*endptr != '\0' || errno == ERANGE || result > MAX_USER || result <= 0)
 			return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "MODE"));
 		else
 		{

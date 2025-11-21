@@ -71,6 +71,8 @@ class Channel
 
 		const std::string&			getTopic() const;//
 
+		const std::string			getModes() const;//
+
 		void removeInvitedUser(User*);
 
 

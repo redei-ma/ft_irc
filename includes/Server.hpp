@@ -3,14 +3,13 @@
 
 //------------------EXTERN INCLUDES
 
+# include "config.hpp"
 # include <csignal>
 # include <poll.h>
 # include <arpa/inet.h>
 # include <string>
 # include <vector>
 # include <map>
-
-# define MAX_USR_NBR 5 // Max user capacity.
 
 //---------------------------RECOGNIZE OTHER CLASSES-----------------------------            
 
