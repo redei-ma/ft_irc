@@ -166,11 +166,7 @@ const std::string	User::getStrBuffer() const { return (_bufferStr); };
 
 std::vector<Channel*>&	User::getChannelVector() { return (_channelVector);}
 
-const std::string	User::getPrefix() const
-{
-	std::string prefix = ":" + getNickName() + "!" + getUserName() + "@" + getHostNameAsString();
-	return prefix;
-}
+const std::string	User::getPrefix() const { return (":" + _nickName + "!" + _userName + "@" + getHostNameAsString()); }
 
 /* ================DESTRUCTOR================ */
 User::~User()

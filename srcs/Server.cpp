@@ -1,3 +1,4 @@
+#include "config.hpp"
 #include "Server.hpp"
 #include "User.hpp"
 #include "Channel.hpp"
@@ -123,38 +124,6 @@ bool	Server::putInListen()
 	return true;
 }
 
-/* bool	Server::acceptNewConnection()
-{
-	int tmpFd = accept(_serverSocket, (struct sockaddr*)&_serverSin.sin_addr, &addrlen);
-	if (tmpFd == -1)
-	{
-    	perror("accept");
-    	return false;
-	}
-	fcntl(tmpFd, F_SETFL, O_NONBLOCK);       // make it NON-BLOCKING, same as the server.
-	struct pollfd tmpPoll;
-	tmpPoll.fd = tmpFd;
-	tmpPoll.events = POLLIN;
-	tmpPoll.revents = 0;
-	if (_userNbr >= MAX_USR_NBR)
-	{
-		const char *errorMsg = "Error: max capacity of user has been reached. Connection will be interrupted now."; // Max 1024 Users, please. 
-		send(tmpFd, errorMsg, 81, 0);
-		close(tmpFd);
-		return false;
-	}
-	else
-	{
-
-		std::cout << "Nuovo utente connesso" << std::endl;                  // Notify sended and new User added to the vector of poll.
-		_pollVector.push_back(tmpPoll);
-		User *tmpUser = new User(tmpFd);
-		this->_fdUserMap[tmpFd] = tmpUser;
-		_userNbr++;
-	}
-	return true;
-} */
-
 bool Server::acceptNewConnection()
 {
     sockaddr_in clientAddr;
@@ -166,49 +135,52 @@ bool Server::acceptNewConnection()
         perror("accept");
         return false;
 	}
-    fcntl(tmpFd, F_SETFL, O_NONBLOCK);
-    struct pollfd tmpPoll;
-    tmpPoll.fd = tmpFd;
-    tmpPoll.events = POLLIN;
-    tmpPoll.revents = 0;
-    if (_userNbr >= MAX_USR_NBR)
+	if (_userNbr >= MAX_USER)
     {
         const char *errorMsg = "Error: max capacity reached. Connection closed.";
         send(tmpFd, errorMsg, strlen(errorMsg), 0);
         close(tmpFd);
         return false;
     }
-	else
+    if (fcntl(tmpFd, F_SETFL, O_NONBLOCK) < 0)
 	{
-    	std::cout << "Nuovo utente connesso" << std::endl;
-    	_pollVector.push_back(tmpPoll);
-    	User *tmpUser = new User(tmpFd, clientAddr);
-    	_fdUserMap[tmpFd] = tmpUser;
-    	_userNbr++;
+		perror("fcntl");
+		close(tmpFd);
+		return false;
 	}
-    
+    struct pollfd tmpPoll;
+    tmpPoll.fd = tmpFd;
+    tmpPoll.events = POLLIN;
+    tmpPoll.revents = 0;
+
+	std::cout << "Nuovo utente connesso" << std::endl;
+	_pollVector.push_back(tmpPoll);
+	User *tmpUser = new User(tmpFd, clientAddr);
+	_fdUserMap[tmpFd] = tmpUser;
+	_userNbr++;
+
 	return true;
 }
 
 void	Server::receiveNewMessage(int iterator)
 {
 	std::cout << "Receiving new message..." << std::endl;
-	char buffer[513]; 														      // Max 512 characters per buffer, + 1 for terminal.
-	ssize_t size = recv(_pollVector[iterator].fd, buffer, sizeof(buffer) - 1, 0);
+	char buffer[BUFFER_SIZE + 1]; 														      // Max 512 characters for buffer, + 1 for terminal.
+	ssize_t size = recv(CLIENT, buffer, sizeof(BUFFER_SIZE), 0);
 	if (size <= 0)                                                                // A client disconnected.
 	{
-		_command->execCommand(_fdUserMap[_pollVector[iterator].fd], "QUIT\r\n");
+		_command->execCommand(_fdUserMap[CLIENT], "QUIT\r\n");
 		iterator--;
 		return ;
 	}
 	buffer[size] = '\0';
-	_fdUserMap[_pollVector[iterator].fd]->updateStrBuffer(buffer, std::strlen(buffer));
-	if (_fdUserMap[_pollVector[iterator].fd]->getStrBuffer().find("\r\n") != std::string::npos) // Reached the end of message. (delimited by : \r\n) 
+	_fdUserMap[CLIENT]->updateStrBuffer(buffer, std::strlen(buffer));
+	if (_fdUserMap[CLIENT]->getStrBuffer().find("\r\n") != std::string::npos) // Reached the end of message. (delimited by : \r\n) 
 	{
-		std::string commandToExec = _fdUserMap[_pollVector[iterator].fd]->getStrBuffer();
-		_fdUserMap[_pollVector[iterator].fd]->resetBuffer();
-		std::cout << "Received message from user " << _fdUserMap[_pollVector[iterator].fd]->getNickName() << ": " << commandToExec << std::endl;
-		_command->execCommand(_fdUserMap[_pollVector[iterator].fd], commandToExec);
+		std::string commandToExec = _fdUserMap[CLIENT]->getStrBuffer();
+		_fdUserMap[CLIENT]->resetBuffer();
+		std::cout << "Received message from user " << _fdUserMap[CLIENT]->getNickName() << ": " << commandToExec << std::endl;
+		_command->execCommand(_fdUserMap[CLIENT], commandToExec);
 		if (commandToExec.substr(0, 4) == "QUIT")
 			iterator--;
 	}
@@ -320,8 +292,6 @@ void	Server::disconnectUser(User* user)
 void	Server::run()
 {
 	std::cout << "Server is running on port " << this->_port << std::endl;
-	// std::cout << "Server IP address: ";
-	// std::system("hostname -I | awk '{print $1}'");
 
 	_pollVector[0].fd = this->_serverSocket;
 	_pollVector[0].events = POLLIN;

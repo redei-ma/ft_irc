@@ -1,10 +1,10 @@
+#include "config.hpp"
 #include "ReplyHandler.hpp"
 #include "User.hpp"
 #include "Channel.hpp"
-
 #include <sstream>
 
-const std::string ReplyHandler::_prefix = ":irc.rfg.com"; // capire se serve l'host name completo
+const std::string ReplyHandler::_prefix = ":" + std::string(SERVER_NAME); // capire se serve l'host name completo
 
 /* ================ERROR HANDLING================ */
 
@@ -107,32 +107,7 @@ void ReplyHandler::errorHandler(t_status error, const User& user, const std::str
 
 // ================REPLY HANDLING================ //
 
-static std::string findModes(const Channel& channel)
-{
-	std::string modes;
 
-	if (channel.isInviteOnly())
-		modes += "i";
-	if (channel.hasTopic())
-		modes += "t";
-	if (channel.hasPassword())
-		modes += "k";
-	if (channel.hasUsersLimit())
-		modes += "l";
-
-	if (channel.hasPassword())
-		modes += " " + channel.getPassword();
-	if (channel.hasUsersLimit())
-	{
-		std::stringstream ss;
-		ss << channel.getUsersLimit();
-		modes += " " + ss.str();;
-	}
-
-	if (!modes.empty())
-		modes = "+" + modes;
-	return modes;
-}
 
 void ReplyHandler::replyHandler(t_status status, const User& user, const Channel* channel, const User* targetUser)
 {
@@ -153,11 +128,8 @@ void ReplyHandler::replyHandler(t_status status, const User& user, const Channel
 			buffer = _prefix + " 004 " + user.getNickName() + " irc.rfg.com 1.0 - itkol";
 			break;
 		case RPL_CHANNELMODEIS:
-		{
-			std::string modes = findModes(*channel);	
-			buffer = _prefix + " 324 " + user.getNickName() + " " + channel->getName() + " " + modes;
+			buffer = _prefix + " 324 " + user.getNickName() + " " + channel->getName() + " " + channel->getModes();
 			break;
-		}
 		case RPL_LIST:
 		{
 			size_t userCount = channel->getUserCount();
