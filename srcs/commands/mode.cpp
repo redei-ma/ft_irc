@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <iostream>
 
-#include <iostream>
-
 //struttura per ogni flag
 typedef struct s_flag
 {

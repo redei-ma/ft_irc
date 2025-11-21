@@ -1,3 +1,4 @@
+#include "config.hpp"
 #include "CommandHandler.hpp"
 #include "Server.hpp"
 #include "User.hpp"
@@ -9,7 +10,7 @@
 
 static void sendBotLine(User* executer, const std::string& text)
 {
-	std::string msg = ":" + SERVERNAME + " NOTICE " + executer->getNickName() + " :" + text;
+	std::string msg = ":" + std::string(SERVER_NAME) + " NOTICE " + executer->getNickName() + " :" + text;
 	executer->sendMessage(msg);
 }
 

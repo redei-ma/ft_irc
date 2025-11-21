@@ -166,7 +166,7 @@ void	Server::receiveNewMessage(int iterator)
 {
 	std::cout << "Receiving new message..." << std::endl;
 	char buffer[BUFFER_SIZE + 1]; 														      // Max 512 characters for buffer, + 1 for terminal.
-	ssize_t size = recv(CLIENT, buffer, sizeof(BUFFER_SIZE), 0);
+	ssize_t size = recv(CLIENT, buffer, BUFFER_SIZE, 0);
 	if (size <= 0)                                                                // A client disconnected.
 	{
 		_command->execCommand(_fdUserMap[CLIENT], "QUIT\r\n");
