@@ -14,7 +14,6 @@ typedef struct s_flag
 	bool		modeFlag; //puo' essere '+' = true '-' = false
 	bool		needParam;
 	std::string	arg;
-	bool		success;
 }	t_flag;
 
 bool	isValidFlag(std::string& c)
@@ -70,14 +69,14 @@ void	getFlags(std::string& flagsToSplit,
 		//e la flag corrente (anche una flag sbagliata per ora e' accettata, lo controllo dopo)
 		t_flag	tmp;
 		tmp.modeFlag = modeFlag;
-		tmp.needParam = false;
-		tmp.success = false;
 		tmp.flag = std::string(1, flagsToSplit[i]);
 		if (flagsNeedArgs(tmp.flag, tmp.modeFlag))
 		{
 			tmp.needParam = true;
 			needParams++;
 		}
+		else
+			tmp.needParam = false;
 		flags.push_back(tmp);
 	}
 }
@@ -113,7 +112,6 @@ void	iFlag(Channel* channel, t_flag& flag)
 		channel->setInviteOnly(false);
 		std::cout << "In channel " << channel->getName() << " invite mode is changed in free mode" << std::endl;
 	}
-	flag.success = true;
 }
 
 void	tFlag(Channel* channel, t_flag& flag)
@@ -128,14 +126,10 @@ void	tFlag(Channel* channel, t_flag& flag)
 		channel->setTopicRestriction(false);
 		std::cout << "In channel " << channel->getName() << " topic mode is changed in no-restricted" << std::endl;
 	}
-	flag.success = true;
 }
 
 void	kFlag(Channel* channel, User* executer, t_flag& flag)
 {
-	if (flag.modeFlag && flag.arg.empty())
-		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, flag.arg, "MODE"));
-
 	if (flag.modeFlag && !flag.arg.empty())
 	{
 		if (!channel->getPassword().empty())
@@ -145,11 +139,11 @@ void	kFlag(Channel* channel, User* executer, t_flag& flag)
 	}
 	else if (!flag.modeFlag)
 	{
-		flag.success = true;
 		channel->removePassword();
 		std::cout << "In channel " << channel->getName() << " password mode has been removed" << std::endl;
 	}
-	flag.success = true;
+	else
+		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, flag.arg, "MODE"));
 }
 
 void	oFlag(Server& _server, Channel* channel, User* executer, t_flag& flag)
@@ -174,7 +168,6 @@ void	oFlag(Server& _server, Channel* channel, User* executer, t_flag& flag)
 		channel->removeOperator(user);
 		std::cout << "Operator mode of " << user->getNickName() << " is changed in non-operator in channel" << channel->getName() << std::endl;
 	}
-	flag.success = true;
 }
 
 void	lFlag(Channel* channel, User* executer, t_flag& flag)
@@ -199,8 +192,6 @@ void	lFlag(Channel* channel, User* executer, t_flag& flag)
 	}
 	else
 		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "MODE"));
-
-	flag.success = true;
 }
 
 void	execMode(Server& _server, Channel* channel, User* executer, t_flag& flag)
@@ -228,13 +219,14 @@ void	CommandHandler::modeCommand(User* executer, std::vector<std::string>& comma
 		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "MODE"));
 
 	//controllo che ci sia solo un canale in input
-	int	countChannel = 0;
-	for (size_t i = 0; i < commandArgs.size(); i++)
-		countChannel += std::count(commandArgs[i].begin(), commandArgs[i].end(), '#');
-	if (countChannel == 0 || countChannel > 1)
-		return (ReplyHandler::errorHandler(ERR_NOSUCHCHANNEL, *executer, "", "MODE"));
+	
+	// int	countChannel = 0;
+	// for (size_t i = 0; i < commandArgs.size(); i++)
+	// 	countChannel += std::count(commandArgs[i].begin(), commandArgs[i].end(), '#'); // non va bene se una chiave ha #
+	// if (countChannel != 1)
+	// 	return (ReplyHandler::errorHandler(ERR_NOSUCHCHANNEL, *executer, "", "MODE"));
 
-	//controllo s il canale esiste
+	//controllo se il canale esiste
 	Channel* channel = _server.getChannelByName(commandArgs[0]);
 	if (!channel)
 		return (ReplyHandler::errorHandler(ERR_NOSUCHCHANNEL, *executer, commandArgs[0], "MODE"));
@@ -273,9 +265,4 @@ void	CommandHandler::modeCommand(User* executer, std::vector<std::string>& comma
 	//eseguo una flag alla volta
 	for (size_t i = 0; i < flags.size(); i++)
 		execMode(_server, channel, executer, flags[i]);
-
-	std::string finalMsg = ":" + executer->getNickName() + "!~" + executer->getUserName() + "@" + executer->getHostNameAsString() + 
-			" MODE " + channel->getName() + " " + channel->getModes();
-
-	channel->broadcastMessage(finalMsg);
 }
