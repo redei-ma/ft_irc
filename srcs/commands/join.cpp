@@ -158,7 +158,7 @@ void	CommandHandler::joinCommand(User* executer, std::vector<std::string>& comma
 
 	//riempio le due strutture splittando commandArgs
 	if (!SplitChannelKeys(channelToJoin, keys, commandArgs))
-		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, channelToJoin[0], "JOIN"));
+		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "JOIN"));
 
 	//La key e' opzionale quindi non potranno mai essere piu dei canali
 	if (keys.size() > channelToJoin.size())

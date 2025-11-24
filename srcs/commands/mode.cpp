@@ -168,7 +168,7 @@ void	oFlag(Server& _server, Channel* channel, User* executer, t_flag& flag)
 		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "MODE"));
 
 	User* user = _server.getUserByNick(flag.arg);
-	if (!user)
+	if (!user || executer->getNickName() == user->getNickName())
 		return (ReplyHandler::errorHandler(ERR_NOSUCHNICK, *executer, flag.arg, "MODE"));
 
 	if (!channel->isMember(user))
