@@ -45,10 +45,26 @@ bool	flagsNeedArgs(char& c, char& sign)
 	return (false);
 }
 
+void	initFlag(t_flag& flag, char &sign, char& flagValue, size_t& needParams)
+{
+	flag.sign = sign;
+	flag.needParam = false;
+	flag.success = false;
+	flag.flag = flagValue;
+	flag.arg = "";
+	if (flagsNeedArgs(flag.flag, flag.sign))
+	{
+		flag.needParam = true;
+		needParams++;
+	}
+	else
+		flag.needParam = false;
+}
+
 void	getFlags(std::string& flagsToSplit,
 						std::vector<t_flag>& flags, size_t& needParams)
 {
-	char sign = 0;
+	char sign = '+';
 
 	//parto da 1 perche':
 	//[0] = canale su cui applicare le flag
@@ -67,17 +83,7 @@ void	getFlags(std::string& flagsToSplit,
 		//creo una struttura flag con all interno sign per la flag corrente
 		//e la flag corrente (anche una flag sbagliata per ora e' accettata, lo controllo dopo)
 		t_flag	tmp;
-		tmp.sign = sign;
-		tmp.needParam = false;
-		tmp.success = false;
-		tmp.flag = flagsToSplit[i];
-		if (flagsNeedArgs(tmp.flag, tmp.sign))
-		{
-			tmp.needParam = true;
-			needParams++;
-		}
-		else
-			tmp.needParam = false;
+		initFlag(tmp, sign, flagsToSplit[i], needParams);
 		flags.push_back(tmp);
 	}
 }
@@ -113,6 +119,8 @@ void	iFlag(Channel* channel, t_flag& flag)
 		channel->setInviteOnly(false);
 		std::cout << "In channel " << channel->getName() << " invite mode is changed in free mode" << std::endl;
 	}
+
+	flag.success = true;
 }
 
 void	tFlag(Channel* channel, t_flag& flag)
@@ -127,6 +135,8 @@ void	tFlag(Channel* channel, t_flag& flag)
 		channel->setTopicRestriction(false);
 		std::cout << "In channel " << channel->getName() << " topic mode is changed in no-restricted" << std::endl;
 	}
+
+	flag.success = true;
 }
 
 void	kFlag(Channel* channel, User* executer, t_flag& flag)
@@ -148,6 +158,8 @@ void	kFlag(Channel* channel, User* executer, t_flag& flag)
 	}
 	else
 		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, flag.arg, "MODE"));
+
+	flag.success = true;
 }
 
 void	oFlag(Server& _server, Channel* channel, User* executer, t_flag& flag)
@@ -172,6 +184,8 @@ void	oFlag(Server& _server, Channel* channel, User* executer, t_flag& flag)
 		channel->removeOperator(user);
 		std::cout << "Operator mode of " << user->getNickName() << " is changed in non-operator in channel" << channel->getName() << std::endl;
 	}
+
+	flag.success = true;
 }
 
 void	lFlag(Channel* channel, User* executer, t_flag& flag)
@@ -196,6 +210,8 @@ void	lFlag(Channel* channel, User* executer, t_flag& flag)
 	}
 	else
 		return (ReplyHandler::errorHandler(ERR_NEEDMOREPARAMS, *executer, "", "MODE"));
+
+	flag.success = true;
 }
 
 void	execMode(Server& _server, Channel* channel, User* executer, t_flag& flag)
@@ -231,16 +247,16 @@ void	CommandHandler::modeCommand(User* executer, std::vector<std::string>& comma
 	if (!channel->isMember(executer))
 		return (ReplyHandler::errorHandler(ERR_NOTONCHANNEL, *executer, commandArgs[0], "MODE"));
 
-	//controllo se executer e' operatore del canale
-	if (!channel->isOperator(executer))
-		return (ReplyHandler::errorHandler(ERR_CHANOPRIVSNEEDED, *executer, commandArgs[0], "MODE"));
-
 	//controllo che il vettore di input se ho solo un argomento, do in risposta le mode del canale
 	if (commandArgs.size() == 1 || commandArgs[1].empty())
 	{
 		ReplyHandler::replyHandler(RPL_CHANNELMODEIS, *executer, channel, NULL);
 		return ;
 	}
+
+	//controllo se executer e' operatore del canale
+	if (!channel->isOperator(executer))
+		return (ReplyHandler::errorHandler(ERR_CHANOPRIVSNEEDED, *executer, commandArgs[0], "MODE"));
 
 	//crep vettore di t_flag e controllo che ci siano solo flag valide
 	std::vector<t_flag> flags;
@@ -266,6 +282,9 @@ void	CommandHandler::modeCommand(User* executer, std::vector<std::string>& comma
 			continue;
 		std::string	msg = ":" + executer->getPrefix() + " MODE " +
 							channel->getName() + " " + flags[i].sign + flags[i].flag;
+		
+		if (!flags[i].arg.empty())
+			msg += " " + flags[i].arg;
 		channel->broadcastMessage(msg);
 	}
 }

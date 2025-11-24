@@ -10,7 +10,7 @@ HEADERS_DIR = ./includes/
 
 SRCS =	main.cpp \
 		$(addprefix $(SRCS_DIR), Server.cpp User.cpp Channel.cpp CommandHandler.cpp ReplyHandler.cpp utils.cpp) \
-		$(addprefix $(COMMANDS_DIR), pass.cpp nick.cpp user.cpp invite.cpp join.cpp kick.cpp privmsg.cpp topic.cpp mode.cpp part.cpp quit.cpp bot.cpp)
+		$(addprefix $(COMMANDS_DIR), pass.cpp nick.cpp user.cpp invite.cpp join.cpp kick.cpp privmsg.cpp topic.cpp mode.cpp part.cpp quit.cpp bot.cpp ping.cpp)
 HEADERS = $(addprefix $(HEADERS_DIR), Server.hpp User.hpp Channel.hpp CommandHandler.hpp ReplyHandler.hpp)
 
 all: $(NAME)
