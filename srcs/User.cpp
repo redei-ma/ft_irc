@@ -66,7 +66,7 @@ void	User::updateStrBuffer(char *buffer, size_t size)
 
 void	User::resetBuffer()
 {
-	_bufferStr = "";
+	_bufferStr.clear();
 }
 
 void	User::updateAuthenticationStatus()
