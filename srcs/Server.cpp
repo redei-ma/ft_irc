@@ -287,9 +287,9 @@ void	Server::disconnectUser(User* user)
 	return;
 }
 
-// void Server::sendPing()
-// {
-//     time_t now = time(NULL);
+/* void Server::sendPing()
+{
+    time_t now = time(NULL);
 
 //     for (std::map<int, User*>::iterator it = _fdUserMap.begin();
 //          it != _fdUserMap.end();
@@ -324,17 +324,17 @@ void	Server::disconnectUser(User* user)
 //             {
 //                 std::cout << "User timed out: " << usr->getNickName() << std::endl;
 
-//                 // Serve salvare l’iteratore prima di eliminarlo
-//                 std::map<int, User*>::iterator toErase = it++;
-//                 disconnectUser(usr);
-//                 _fdUserMap.erase(toErase);
-//                 continue;   // Saltiamo il ++ finale
-//             }
-//         }
-//         ++it;
-//     }
-// }
-
+                // Serve salvare l’iteratore prima di eliminarlo
+                std::map<int, User*>::iterator toErase = it++;
+                disconnectUser(usr);
+                _fdUserMap.erase(toErase);
+                continue;   // Saltiamo il ++ finale
+            }
+        }
+        ++it;
+    }
+}
+ */
 
 /*------------------------------------------------CORE LOOP----------------------------------------------------------*/
 
@@ -363,7 +363,12 @@ void	Server::run()
 					receiveNewMessage(i);                           // receive the message by recv() and handles the buffers.
 			}
 		}
+<<<<<<< HEAD
 		//sendPing();
 		//checkPong();
+=======
+		// sendPing();
+		// checkPong();
+>>>>>>> 33abdb3 (dio camne)
 	}
 }
