@@ -70,7 +70,7 @@ class Server
     bool                bindSocket();
     bool                putInListen();
     bool                acceptNewConnection();
-    void                receiveNewMessage(int iterator);
+    void                receiveNewMessage(size_t& iterator);
     // void                sendPing();
     // void                checkPong();
 };

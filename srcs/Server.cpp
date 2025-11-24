@@ -162,7 +162,7 @@ bool Server::acceptNewConnection()
 	return true;
 }
 
-void	Server::receiveNewMessage(int iterator)
+void	Server::receiveNewMessage(size_t& iterator)
 {
 	std::cout << "Receiving new message..." << std::endl;
 	char buffer[BUFFER_SIZE + 1]; 														      // Max 512 characters for buffer, + 1 for terminal.

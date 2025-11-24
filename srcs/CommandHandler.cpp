@@ -91,6 +91,10 @@ static void	splitCommand(std::vector<std::string>& splittedCommands, std::string
 void	CommandHandler::execCommand(User* executer, std::string input)
 {
 	std::vector<std::string>	splittedCommands;
+
+	if (input.empty())
+		return ;
+	
 	splitCommand(splittedCommands, input);
 
 	for (size_t i = 0; i < splittedCommands.size(); i++)
