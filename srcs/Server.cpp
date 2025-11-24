@@ -362,8 +362,8 @@ void	Server::run()
 				else											    // else, it only can be a message.
 					receiveNewMessage(i);                           // receive the message by recv() and handles the buffers.
 			}
+			// sendPing();
 		}
-		sendPing();
-		checkPong();
+		// checkPong();
 	}
 }

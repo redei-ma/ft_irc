@@ -1,14 +1,9 @@
 nc -C 127.0.0.1 6666
 
 Genarali:
-	Testare file transfer
-	Testare tutto a fondo
-	PING PONG lo facciamo?
-	Collegarsi da pc diversi del localhost
 
 Francesco:
 
 Giovanni:
-	JOIN #c1,#c2,c3 crash
 
 Renato:
