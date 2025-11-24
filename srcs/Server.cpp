@@ -363,7 +363,7 @@ void	Server::run()
 					receiveNewMessage(i);                           // receive the message by recv() and handles the buffers.
 			}
 		}
-		sendPing();
-		checkPong();
+		//sendPing();
+		//checkPong();
 	}
 }
