@@ -260,5 +260,12 @@ void	CommandHandler::modeCommand(User* executer, std::vector<std::string>& comma
 
 	//eseguo una flag alla volta
 	for (size_t i = 0; i < flags.size(); i++)
+	{
 		execMode(_server, channel, executer, flags[i]);
+		if (!flags[i].success)
+			continue;
+		std::string	msg = ":" + executer->getPrefix() + " MODE " +
+							channel->getName() + " " + flags[i].sign + flags[i].flag;
+		channel->broadcastMessage(msg);
+	}
 }
