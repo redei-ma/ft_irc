@@ -134,7 +134,6 @@ static void	execJoin(Server& _server, User* executer,
 			handleWithPassword(channel, executer, key);
 		else
 			addUserToChannel(executer, channel);
-		
 	}
 	else
 	{
