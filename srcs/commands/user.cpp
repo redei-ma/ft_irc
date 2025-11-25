@@ -32,13 +32,6 @@ void	CommandHandler::userCommand(User* executer, std::vector<std::string>& comma
 
 	executer->setUserName(commandArgs[0]);
 
-	(!commandArgs[3].empty()) ? executer->setRealName(commandArgs[3]) : executer->setRealName("");
-
-	ReplyHandler::replyHandler(RPL_WELCOME, *executer, NULL, NULL);
-	ReplyHandler::replyHandler(RPL_YOURHOST, *executer, NULL, NULL);
-	ReplyHandler::replyHandler(RPL_CREATED, *executer, NULL, NULL);
-	ReplyHandler::replyHandler(RPL_MYINFO, *executer, NULL, NULL);
-
 	std::cout << "USER command executed: " << executer->getNickName() << " set username" << std::endl;
 	return ;
 }

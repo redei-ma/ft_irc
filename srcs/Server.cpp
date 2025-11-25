@@ -138,7 +138,7 @@ bool Server::acceptNewConnection()
 	if (_userNbr >= MAX_USER)
     {
         const char *errorMsg = "Error: max capacity reached. Connection closed.";
-        send(tmpFd, errorMsg, strlen(errorMsg), 0);
+        send(tmpFd, errorMsg, strlen(errorMsg), MSG_NOSIGNAL);
         close(tmpFd);
         return false;
     }
@@ -310,8 +310,10 @@ void	Server::run()
 					if (!acceptNewConnection())                     // Accept new connection, listened by listen().
 						continue ;
 				}
-				else											    // else, it only can be a message.
+				else
+				{
 					receiveNewMessage(i);                           // receive the message by recv() and handles the buffers.
+				}											    // else, it only can be a message.
 			}
 		}
 	}

@@ -79,7 +79,7 @@ void	User::sendMessage(const std::string& message) const
 	try
 	{
 		std::string result(message + "\r\n");
-		if (send(_fd, result.c_str(), result.size(), 0) < 0)
+		if (send(_fd, result.c_str(), result.size(), MSG_NOSIGNAL) <= 0)
 			throw std::runtime_error("Error in sending the message");
 	}
 	catch(const std::exception& e)

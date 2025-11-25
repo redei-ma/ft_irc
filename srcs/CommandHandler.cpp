@@ -94,7 +94,7 @@ void	CommandHandler::execCommand(User* executer, std::string input)
 
 	if (input.empty())
 		return ;
-	
+
 	splitCommand(splittedCommands, input);
 
 	for (size_t i = 0; i < splittedCommands.size(); i++)
